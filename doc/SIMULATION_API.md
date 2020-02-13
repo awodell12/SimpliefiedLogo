@@ -1,4 +1,8 @@
 ## Simulation API
+
+Austin Odell, James Rumsey, Cary Shindell, Sam Thompson
+awo6, jpr31, css57, stt13
+
 The following is based on Team 21's Simulation module:
 #### Should Not be In API
 - setType in Cell (should be protected)
