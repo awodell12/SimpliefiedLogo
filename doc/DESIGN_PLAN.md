@@ -1,6 +1,6 @@
 # DESIGN PLAN
-names
-netids
+names: Austin Odell, James Rumsey
+netids: awo6, jpr31
 
 ## Introduction
 
@@ -104,7 +104,18 @@ The four APIs we intend to create are:
 
 ## User Interface
 
-See hand drawn diagram
+See diagram below:
+
+![](https://i.imgur.com/qiKJc6A.jpg)
+* Color dropdown: Selects the path color of the turtle
+* Language dropdown: Select language for view and SLogo commands
+* Background dropdown: Select the background color of the TurtleView. 
+* Set Turtle Image Button: Change the image for the turtle sprite from an image file. 
+* Help: Display a help screen with the lost of valid commands
+* Run: Take the text in the CommandBox and pass it to the CommandParser to turn it into Commands
+* Clear: Deletes the text in the CommandBox
+* CommandBox: A textbox where the user can type in Slogo commands. This is used to define variables and user-defined commands as well. The user can execute the "script" in the box by pressing the run botton or delete the text by pressing the clear button. 
+
 
 ## Design Details 
 This section describes each API introduced in the Overview in detail (as well as any other sub-components that may be needed but are not significant to include in a high-level description of the program). Describe how each API supports specific features given in the assignment specification, what resources it might use, how it is intended to be used, and how it could be extended to include additional requirements (from the assignment specification or discussed by your team). Finally, justify the decision to create each class introduced with respect to the design's key goals, principles, and abstractions. This section should go into as much detail as necessary to cover all your team wants to say.
@@ -193,3 +204,67 @@ Front End Internal API
 * Command (abstract)
     * constructor
     * execute (pass in Turtle object, variables, user defined commands)
+
+Justifying decision to create each class:
+* Visualizer
+    * This is a separate class rather than having the controller interact directy with the components, because we want a single external API to handle demands for information about the model, and a single internal API to handle managing the model, enclosing the multiple different views/panes of the display
+    * This also allows us to have multiple models at once
+    * The purpose of the controller is only to manage and communicate, not deal directly with the model (we want that to be encapsulated)
+* TurtleView
+    * Stays focused by only being used to show the side effects of SLogo on the turtle.
+    * It encapsulates the view of the turtle from the other possible views, allowing a display to use a costumized set of views
+* CommandBox
+    * Handles the specific role of displaying the command box and retrieving its contents
+    * It is unlike other buttons and view components
+    * Other view components don't need to know about it
+* History
+    * It is a unique component and we want to be able to modify how it's displayed in the future without touching the Visualizer class (closed)
+*
+
+* Path 
+    * Want it to be flexible to further information that needs to be added about a path
+        * for example, a path could have different line types. 
+* Back End 
+    * A public facing interface for the entire back-end
+    * We want to regiment what is controllable
+    * Also makes it so you could switch out any part of the model
+* Variable Map
+    * Wrap a map data structure for user-defined variables
+    * Pass its info through a commandResult to the front end
+* User Commands Map
+    * Wrap a map for user-defined commands
+* Command
+    * The unit of everything that can happen
+    * Needs to be extendable
+* Turtle
+    * Want to keep the state of the turtle separate
+    * Turtle's have behavior in the back-end
+* Controller
+    * Serves as a bridge between the model and view, so that no dependencies exist between them
+    * Allows for multiple models/views simultaneously
+
+## Design Considerations
+
+#### Use MVC in JavaFx
+Should some buttons be created/handled by the controller, or should all buttons be handled by the viewer (in this case the buttons that affect the model would be turned into commands, and the only way the controller interacts with/listens on in the viewer is the command queue).
+
+#### CommandResult class
+Do we run commands all at once or one at a time? Right now a script is processed in its entirety in the back end, and then the command results are given to the controller as a list so that the viewer can then animate the results of each individual command. But this means the model and viewer are briefly out of sync. Do we instead want viewer to update every time a single command is executed in the backend?
+
+Alternatively, should we do away with the CommandResult class entirely and have Controller implement a ModelListener that listens for when the model is updated, and just passes those parameters to the external visualizer update method?
+
+#### Pseudocommands
+Treating everything that can effect the model as a command
+Buttons produce their own pseudo-commands to communicate with the model
+
+pros: Only one way to communicate between front and back end 
+
+cons: Could end up with a lot of conditionals to figure out in the back-end how to handle all of these new commmands. 
+
+## Team Responsibilities
+
+#### Front - End
+
+
+#### Back - End
+
