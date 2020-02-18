@@ -116,7 +116,6 @@ See diagram below:
 * Clear: Deletes the text in the CommandBox
 * CommandBox: A textbox where the user can type in Slogo commands. This is used to define variables and user-defined commands as well. The user can execute the "script" in the box by pressing the run botton or delete the text by pressing the clear button. 
 
-
 ## Design Details 
 This section describes each API introduced in the Overview in detail (as well as any other sub-components that may be needed but are not significant to include in a high-level description of the program). Describe how each API supports specific features given in the assignment specification, what resources it might use, how it is intended to be used, and how it could be extended to include additional requirements (from the assignment specification or discussed by your team). Finally, justify the decision to create each class introduced with respect to the design's key goals, principles, and abstractions. This section should go into as much detail as necessary to cover all your team wants to say.
 
