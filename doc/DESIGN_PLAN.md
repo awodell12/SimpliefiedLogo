@@ -104,7 +104,8 @@ The four APIs we intend to create are:
 
 ## User Interface
 
-See hand drawn diagram
+See diagram below:
+![](https://i.imgur.com/qiKJc6A.jpg)
 
 ## Design Details 
 This section describes each API introduced in the Overview in detail (as well as any other sub-components that may be needed but are not significant to include in a high-level description of the program). Describe how each API supports specific features given in the assignment specification, what resources it might use, how it is intended to be used, and how it could be extended to include additional requirements (from the assignment specification or discussed by your team). Finally, justify the decision to create each class introduced with respect to the design's key goals, principles, and abstractions. This section should go into as much detail as necessary to cover all your team wants to say.
