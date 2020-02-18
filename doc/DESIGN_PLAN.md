@@ -107,7 +107,7 @@ The four APIs we intend to create are:
 See diagram below:
 
 ![](https://i.imgur.com/qiKJc6A.jpg)
-* Color dropdown: Selects the path color of the turtle
+* Color dropdown: Selects the path color for the turtle
 * Language dropdown: Select language for view and SLogo commands
 * Background dropdown: Select the background color of the TurtleView. 
 * Set Turtle Image Button: Change the image for the turtle sprite from an image file. 
@@ -116,16 +116,17 @@ See diagram below:
 * Clear: Deletes the text in the CommandBox
 * CommandBox: A textbox where the user can type in Slogo commands. This is used to define variables and user-defined commands as well. The user can execute the "script" in the box by pressing the run botton or delete the text by pressing the clear button. 
 
+
 ## Design Details 
 This section describes each API introduced in the Overview in detail (as well as any other sub-components that may be needed but are not significant to include in a high-level description of the program). Describe how each API supports specific features given in the assignment specification, what resources it might use, how it is intended to be used, and how it could be extended to include additional requirements (from the assignment specification or discussed by your team). Finally, justify the decision to create each class introduced with respect to the design's key goals, principles, and abstractions. This section should go into as much detail as necessary to cover all your team wants to say.
 
 Front End External API
 * Visualizer:
-    * constructor
-    * pop first entry from command queue
+    * Constructor
+    * Pop first entry from command queue
         * React to the text and update the model
-        * choose a language in which slogo commands are understood (with a button/menu)
-    * inerpret result of CommandResults object, update everything that is updateable
+        * Choose a language in which slogo commands are understood (with a button/menu)
+    * Interpret result of CommandResults object, update everything that is updateable
         * React to the text and update the model
         * See the results of the turtle executing commands displayed visually 
         * See resulting errors in user friendly way
@@ -133,26 +134,27 @@ Front End External API
 
 Front End Internal API
 * Visualizer:
-    * features:
+    * Features:
         * Allows us to enter in text and see it
         * See resulting errors in user friendly way
-        * set the pen color (with a button)
-        * see commands previously run
-        * see user defined commands currently available
-        * choose a language in which slogo commands are understood (with a button/menu)
-        * get help about available commands
+        * Set the pen color (with a button)
+        * See commands previously run
+        * See user defined commands currently available
+        * Choose a language in which SLogo commands are understood (with a drop-down menu)
+        * Get help about available commands
 * TurtleView:
-    * constructor
+    * Constructor
         * See the results of the turtle executing commands displayed visually
     * set turtle pos
     * set turtle heading
     * set image
         * set an image to use for the turtle
     * set background color
-        * set the background color of turtle viewing area
+        * Set the background color of turtle viewing area
     * owns Path objects
     * addPath: passes in 2 Points (start, end) and a color
     * clearPath
+        * Removes all paths in the turtle viewing area
 * CommandBox:
     * constructor
     * get contents
@@ -222,7 +224,7 @@ Justifying decision to create each class:
 
 * Path 
     * Want it to be flexible to further information that needs to be added about a path
-        * for example, a path could have different line types. 
+        * for example, a path could have different line types, or wrap around the view
 * Back End 
     * A public facing interface for the entire back-end
     * We want to regiment what is controllable
@@ -266,4 +268,5 @@ cons: Could end up with a lot of conditionals to figure out in the back-end how 
 
 
 #### Back - End
+
 
