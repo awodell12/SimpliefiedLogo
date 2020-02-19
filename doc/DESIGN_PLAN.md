@@ -1,6 +1,7 @@
 # DESIGN PLAN
-names: Austin Odell, James Rumsey
-netids: awo6, jpr31
+names: Austin Odell, James Rumsey, Samuel Thompson, Cary Shindell
+
+netids: awo6, jpr31, stt13, 
 
 ## Introduction
 
@@ -243,6 +244,26 @@ Justifying decision to create each class:
 * Controller
     * Serves as a bridge between the model and view, so that no dependencies exist between them
     * Allows for multiple models/views simultaneously
+
+## APIs as Code
+### Use cases
+1. The user types 'fd 50' in the command window, and sees the turtle move in the display window leaving a trail, and the command is added to the environment's history.
+Note, it is not necessary to understand exactly how parsing works in order to complete this example, just what the result of parsing the command will be.
+2. The user sets the pen's color using the UI so subsequent lines drawn when the turtle moves use that color.
+3. The user types 'make :dummy 50 abcdef 123456 fd 90' (while abcdef is not defined as a user-made instruction) and presses RUN. The variable view shows 'dummy = 50' and the
+error box shows 'Don't know how to abcdef'.
+* Visualizer.popCommandQueue() is run to get the user-entered String from the Visualizer's command box.
+* The String result is passed into BackEnd.parseScript, which produces a 'make' command that executes and creates a variable 'dummy' in
+VariableMap that maps to the number 50 and puts that information into a CommandResult.
+BackEnd recognizes that the second command is undefined and adds a CommandResult with error message "Don't know how to abcdef", then returns
+both CommandResults as a List.
+* Visualizer interprets each CommandResult using interpretResult(), first telling the VariableView to add the new variable, and then
+* telling the error text box to display the error message in the second CommandResult.
+4. The user changes the language from English to French by selecting French in the languages drop down menu. 
+* The Visualizer notifies whoever is listening that the languages drop down menu has been activated, and passes the value of the drop down menu ("French").
+* The value is sent to the Model either as a 'pseudocommand' starting with some unique character like "&" or by being passed into a BackEnd.setLanguage() method.
+* The model transforms the String into a filename pointing to a resource properties file with French instructions enumerated, and uses this for further 
+command processing.
 
 ## Design Considerations
 
