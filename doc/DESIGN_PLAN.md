@@ -1,7 +1,6 @@
 # DESIGN PLAN
-names: Austin Odell, James Rumsey, Samuel Thompson, Cary Shindell
-
-netids: awo6, jpr31, stt13, 
+names: Austin Odell, James Rumsey, Cary Shindell, Sam Thompson
+netids: awo6, jpr31, css57, stt1
 
 ## Introduction
 
@@ -25,6 +24,9 @@ The four APIs we intend to create are:
 * Visualizer - External
 * Back End - Internal
 * Back End - External
+
+The following UML diagram shows the classes and public/protected methods that make up each of these APIs:
+![](https://i.imgur.com/n4YH8QP.jpg)
 
 
 #### Back End
@@ -245,26 +247,6 @@ Justifying decision to create each class:
     * Serves as a bridge between the model and view, so that no dependencies exist between them
     * Allows for multiple models/views simultaneously
 
-## APIs as Code
-### Use cases
-1. The user types 'fd 50' in the command window, and sees the turtle move in the display window leaving a trail, and the command is added to the environment's history.
-Note, it is not necessary to understand exactly how parsing works in order to complete this example, just what the result of parsing the command will be.
-2. The user sets the pen's color using the UI so subsequent lines drawn when the turtle moves use that color.
-3. The user types 'make :dummy 50 abcdef 123456 fd 90' (while abcdef is not defined as a user-made instruction) and presses RUN. The variable view shows 'dummy = 50' and the
-error box shows 'Don't know how to abcdef'.
-* Visualizer.popCommandQueue() is run to get the user-entered String from the Visualizer's command box.
-* The String result is passed into BackEnd.parseScript, which produces a 'make' command that executes and creates a variable 'dummy' in
-VariableMap that maps to the number 50 and puts that information into a CommandResult.
-BackEnd recognizes that the second command is undefined and adds a CommandResult with error message "Don't know how to abcdef", then returns
-both CommandResults as a List.
-* Visualizer interprets each CommandResult using interpretResult(), first telling the VariableView to add the new variable, and then
-* telling the error text box to display the error message in the second CommandResult.
-4. The user changes the language from English to French by selecting French in the languages drop down menu. 
-* The Visualizer notifies whoever is listening that the languages drop down menu has been activated, and passes the value of the drop down menu ("French").
-* The value is sent to the Model either as a 'pseudocommand' starting with some unique character like "&" or by being passed into a BackEnd.setLanguage() method.
-* The model transforms the String into a filename pointing to a resource properties file with French instructions enumerated, and uses this for further 
-command processing.
-
 ## Design Considerations
 
 #### Use MVC in JavaFx
@@ -283,11 +265,95 @@ pros: Only one way to communicate between front and back end
 
 cons: Could end up with a lot of conditionals to figure out in the back-end how to handle all of these new commmands. 
 
+## Use Cases
+
+The user types 'fd 50' in the command window, and sees the turtle move in the display window leaving a trail, and the command is added to the environment's history.
+* Run button is pressed and its lambda is called
+* The CommandBox getContents method is invoked
+* The String result is put onto the queue of instructions to be parsed
+* The History addEntry method is called to copy this string to the History view
+* The String is taken from the queue by BackEnd.Parse(), which parses the String into Command objects
+* The Forward Command executes, which causes the back end to update the model by moving the turtle forward 50
+* This returns a new CommandResult that contains the path taken by the turtle. 
+* The controler passes this CommandResult back to the visualizer which calls InterpretResult(), on it leading to the new path being drawn in the TurtleView and the position of the Turtle image to be updated
+
+User uses the pen color drop-down to select a new pen color
+* The dropdown uses a lambda or a binding to communicate to the back-end that the color must be updated via a pseudocommand that the background interprets and calls turtle.setColor()
+* New paths created after this will include this color as one of their fields. 
+
+#### Cary Use Cases:
+User enters a command to create a variable
+* Visualizer run button is activated, handle method is called
+* Handle method calls CommandBox's getContents method
+* The resulting String is put onto the instruction queue
+* The History's addEntry method is called to add this string to the list of previously run commands/scripts
+    * We probably want history to display the entire script (exactly what was inputted) rather than breaking it up into the individual commands
+* The Controller's instruction queue listener is activated, and popInstructionQueue is called
+* Controller makes sure it's not a special instruction, and then calls BackEnd's parseScript method
+* That method calls the Command constructor for the command subclass that creates a variable, and executes
+    * Might want to make execute method static, don't necessarily need to instaniate commands
+* This calls VariableMap's add method to store the new variable
+* A new CommandResult object is created, and it contains the new variable's name and value
+    * Do we want to return all the variable mappings, or just the new one?
+* This CommandResult object is returned to Controller (in a list, technically)
+* Controller then calls Visualizer's interpretResult method
+    * Or maybe just have the controller extract each element from command result and pass them as parameters to viewer? Seems like that would take away viewer’s dependency on commandresults.
+* Visualizer calls private method to add variable to variable box
+
+User clicks a button to clear the history
+* This only affects the viewer so the viewer can just manage that button by itself (no Controller involvement). The button is activated and the handle method is called, which calls History's clearEntries method
+
+#### Sam Use Cases
+
+The user types 'make :dummy 50 abcdef 123456 fd 90' (while abcdef is not defined as a user-made instruction) and presses RUN. The variable view shows 'dummy = 50' and the error box shows 'Don't know how to abcdef'.
+* Visualizer.popCommandQueue() is run to get the user-entered String from the Visualizer's command box.
+* The String result is passed into BackEnd.parseScript, which produces a 'make' command that executes and creates a variable 'dummy' inVariableMap that maps to the number 50 and puts that information into a CommandResult. BackEnd recognizes that the second command is undefined and adds a CommandResult with error message "Don't know how to abcdef", then returns both CommandResults as a List.
+* Visualizer interprets each CommandResult using interpretResult(), first telling the VariableView to add the new variable, and then
+* telling the error text box to display the error message in the second CommandResult.
+
+The user changes the language from English to French by selecting French in the languages drop down menu. 
+* The Visualizer notifies whoever is listening that the languages drop down menu has been activated, and passes the value of the drop down menu ("French").
+* The value is sent to the Model either as a 'pseudocommand' starting with some unique character like "&" or by being passed into a BackEnd.setLanguage() method.
+* The model transforms the String into a filename pointing to a resource properties file with French instructions enumerated, and uses this for further command processing.
+#### Austin Use Cases
+User changes the display image of the turtle 
+* User Clicks button which opens a file chooser where they select a new image
+* A lambda expression handles this event and updates the turtle ImageView (member variable) in the TurtleView with this new image file
+* Nothing is communicated to the back-end/model
+
+User sets a new Background color
+* User chooses from a drop-down list which color they want
+* Upon selecting there is an event Handler that will update the background color (a member variable) of the turtleView scene
+* Nothing is communicated to the model 
+
+
+#### James Use Cases
+User defines a new user-defined command
+* User types in command using TO and run button is activated, handle method is called
+* Handle method calls CommandBox's ```getContents()```
+method 
+* Controller's instruction queue listener is activated, ```popInstructionQueue()``` is called and the String returned by ```getContents()``` is passed in as a parameter to the BackEnd's ```parseScript(String script)``` method.
+* ```parseScript(String script)``` recognizes, based on the TO syntax, that this is a new user-defined command.
+* The UserCommandMap (which exists within the BackEnd class) calls ```setUserCommand(String cmdName, String command)``` and adds the name of the command and the SLogo code to its underlying map data structure. 
+* Command's ```execute()``` method is called, which returns a new CommandResult with the updated UserCommandsMap as a parameter.
+* A new CommandResult object is returned and added to the return value of ```parseScript``` (a CommandResultsList object).
+* ```interpretResult()``` in the Visualizer class should add the name and contents of the new command to CommandBox class, which will update the component on the front end.
+
+User uses a user-defined command in their input
+* Run button is activated and handle method calls CommandBox's ```getContents()```
+method 
+* Controller's instruction queue listener is activated, ```popInstructionQueue()``` is called and the String returned by ```getContents()``` is passed in as a parameter to the BackEnd's ```parseScript(String script)``` method.
+* ```parseScript()``` should recognize that this is a user-defined command by checking UserCommandsMap. 
+* ```getUserCommand(String cmdName)``` should be called in ```parseScript()```, which should then parse the contents of the returned String like any other SLogo code.
+*  Command's ```execute()``` method is called, which returns a new CommandResult. The parameters passed into this CommandResult depend on the outcome of the user-defined command.
+*  A new CommandResult object is returned and added to the return value of ```parseScript``` (a CommandResultsList object).
+* ```interpretResult()``` should interpret this command result and update Visualizer components as necessary. History's ```addEntry()``` method should be called so that this is added to the history.
+
+
 ## Team Responsibilities
 
 #### Front - End
-
+Cary, Austin
 
 #### Back - End
-
-
+Sam, James
