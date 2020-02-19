@@ -2,6 +2,10 @@ package slogo;
 
 import java.util.List;
 
+/**
+ * The public side of the model of the SLogo parser. View and controller classes that interact
+ * with the model can only assume that it has the public methods listed.
+ */
 public interface BackEndExternal {
 
   /**
