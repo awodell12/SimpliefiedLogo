@@ -1,6 +1,7 @@
 # DESIGN PLAN
 names: Austin Odell, James Rumsey, Cary Shindell, Sam Thompson
-netids: awo6, jpr31, css57, stt1
+
+netids: awo6, jpr31, css57, stt13
 
 ## Introduction
 
@@ -309,7 +310,7 @@ The user types 'make :dummy 50 abcdef 123456 fd 90' (while abcdef is not defined
 * Visualizer.popCommandQueue() is run to get the user-entered String from the Visualizer's command box.
 * The String result is passed into BackEnd.parseScript, which produces a 'make' command that executes and creates a variable 'dummy' inVariableMap that maps to the number 50 and puts that information into a CommandResult. BackEnd recognizes that the second command is undefined and adds a CommandResult with error message "Don't know how to abcdef", then returns both CommandResults as a List.
 * Visualizer interprets each CommandResult using interpretResult(), first telling the VariableView to add the new variable, and then
-* telling the error text box to display the error message in the second CommandResult.
+telling the error text box to display the error message in the second CommandResult.
 
 The user changes the language from English to French by selecting French in the languages drop down menu. 
 * The Visualizer notifies whoever is listening that the languages drop down menu has been activated, and passes the value of the drop down menu ("French").
@@ -356,4 +357,4 @@ method
 Cary, Austin
 
 #### Back - End
-Sam, James
+Sam (Parser & Command classes), James
