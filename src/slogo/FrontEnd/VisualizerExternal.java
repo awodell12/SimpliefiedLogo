@@ -1,4 +1,7 @@
-package slogo;
+package slogo.FrontEnd;
+
+import slogo.CommandResult;
+import slogo.FrontEnd.Visualizer;
 
 public interface VisualizerExternal {
 

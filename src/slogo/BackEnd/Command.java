@@ -1,4 +1,6 @@
-package slogo;
+package slogo.BackEnd;
+
+import slogo.CommandResult;
 
 /**
  * Carries out the functionality of individual instructions

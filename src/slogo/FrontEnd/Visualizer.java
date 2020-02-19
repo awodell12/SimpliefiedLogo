@@ -1,4 +1,4 @@
-package slogo;
+package slogo.FrontEnd;
 
 public class Visualizer {
 }

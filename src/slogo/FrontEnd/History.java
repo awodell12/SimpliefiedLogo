@@ -1,4 +1,4 @@
-package slogo;
+package slogo.FrontEnd;
 
 /**
  * This class is used to manage the display elements of the historu (i.e. commands that have been run)

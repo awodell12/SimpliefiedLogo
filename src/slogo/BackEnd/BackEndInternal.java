@@ -1,4 +1,4 @@
-package slogo;
+package slogo.BackEnd;
 
 import java.util.Collection;
 

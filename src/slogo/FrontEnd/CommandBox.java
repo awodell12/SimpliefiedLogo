@@ -1,4 +1,4 @@
-package slogo;
+package slogo.FrontEnd;
 
 /**
  * This class is used to manage the text box where the user can enter in their Slogo commands

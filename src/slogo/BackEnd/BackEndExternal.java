@@ -1,4 +1,6 @@
-package slogo;
+package slogo.BackEnd;
+
+import slogo.CommandResult;
 
 import java.util.List;
 
