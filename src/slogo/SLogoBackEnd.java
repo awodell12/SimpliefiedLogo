@@ -12,6 +12,9 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import slogo.BackEnd.BackEndInternal;
+import slogo.BackEnd.BackEndExternal;
+import slogo.BackEnd.ParseException;
 
 public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 

@@ -2,8 +2,6 @@ package slogo.commands;
 
 import java.util.List;
 import slogo.AltCommand;
-import slogo.BackEndExternal;
-import slogo.Command;
 import slogo.CommandResult;
 import slogo.SLogoBackEnd;
 
