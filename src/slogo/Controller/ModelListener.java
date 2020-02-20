@@ -1,4 +1,6 @@
-package slogo;
+package slogo.Controller;
+
+import slogo.CommandResult;
 
 /**
  * Allows the implementing class to be 'subscribed' to updates whenever the model changes,
