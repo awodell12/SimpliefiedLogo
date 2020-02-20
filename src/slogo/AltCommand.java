@@ -7,9 +7,11 @@ import java.util.List;
  * in the programming language used (SLogo in this case).
  * Implemented/Extended by concrete commands like "Forward".
  */
-public interface Command {
+public interface AltCommand {
 
-  public abstract int getNumArgs();
+  public int getNumArgs();
+
+  public int getNumVars();
 
   /**
    * Carries out the command, changing the relevant data in the model according to the
@@ -18,5 +20,5 @@ public interface Command {
    * @return The effects on the model of this individual command, bundled into a CommandResult
    * instance.
    */
-  public CommandResult execute(List<Double> arguments);
+  public CommandResult execute(List<Double> arguments, List<String> vars, String[] tokens, SLogoBackEnd backEnd);
 }
