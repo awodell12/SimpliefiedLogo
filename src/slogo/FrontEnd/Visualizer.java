@@ -13,6 +13,7 @@ import javafx.util.Duration;
 import org.xml.sax.SAXException;
 import slogo.CommandResult;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Queue;
 
@@ -24,15 +25,21 @@ public class Visualizer {
     private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 700, 650, 100);
     private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 650, 600);
     private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 200, 250);
+    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 200, 250);
+    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 200, 200);
     private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(950, 100, 50, 50);
-    private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(900, 900, 75, 50);
+    private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(900, 925, 75, 50);
+    private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(950, 400, 50, 50);
+    private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(950, 700, 50, 50);
 
     private Button myRunButton;
     private Button myClearCommandBoxButton;
     private Button myClearHistoryButton;
     private Button myHelpButton;
     private CommandBox myCommandBox;
-    private History myHistory;
+    private ClearableEntriesBox myHistory;
+    private ClearableEntriesBox myUserDefinedCommands;
+    private ClearableEntriesBox myVariables;
     private TurtleView myTurtleView;
     private Queue<String> myInstructionQueue;
     private Stage myStage;
@@ -76,8 +83,9 @@ public class Visualizer {
     private Scene setUpDisplay() throws IOException{
         myRoot = new Group();
         myCommandBox = new CommandBox(myRoot, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
-        myHistory = new History(myRoot, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE);
-        //TODO: make a class that encapsulates history, user-defined commands, and variables view
+        myHistory = new ClearableEntriesBox(myRoot, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE);
+        myUserDefinedCommands = new ClearableEntriesBox(myRoot, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE);
+        myVariables = new ClearableEntriesBox(myRoot, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE);
         myTurtleView = new TurtleView();
 
         makeButtons();
@@ -105,6 +113,7 @@ public class Visualizer {
 
     }
 
+    // maybe make it a rect so it can also resize the turtle
     private void updateTurtle(Point pos){
 
     }
