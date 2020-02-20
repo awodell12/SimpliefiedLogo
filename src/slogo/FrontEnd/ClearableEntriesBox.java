@@ -14,12 +14,7 @@ public class ClearableEntriesBox {
     public ClearableEntriesBox(Group root, Rectangle historyShape, Rectangle clearButtonShape){
 
       Button clearButton = new Button("Clear", clearButtonShape);
-      clearButton.setOnAction(new EventHandler<>() {
-        @Override
-        public void handle(ActionEvent event) {
-          clearHistory();
-        }
-      });
+      clearButton.setOnAction(event -> clearHistory());
       root.getChildren().add(clearButton);
     }
 

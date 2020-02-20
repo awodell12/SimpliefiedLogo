@@ -2,6 +2,8 @@ package slogo.FrontEnd;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -21,21 +23,23 @@ public class Visualizer {
     private static final int SIZE = 1000;
     private static final Paint BACKGROUND = Color.WHITE;
     private static final double MILLISECOND_DELAY = 1000;
-    private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(300, 750, 60, 40);
-    private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 700, 650, 100);
+    private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 800, 650, 125);
     private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 650, 600);
     private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 200, 250);
     private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 200, 250);
     private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 200, 200);
+    private static final Rectangle ERROR_MESSAGE_SHAPE = new Rectangle(100, 720, 650, 60);
+    private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(300, 750, 60, 40);
     private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(950, 100, 50, 50);
     private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(900, 925, 75, 50);
     private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(950, 400, 50, 50);
     private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(950, 700, 50, 50);
+    private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(850, 25, 75, 50);
+    private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
+    //TODO: add menu shapes and label shapes
 
-    private Button myRunButton;
     private Button myClearCommandBoxButton;
     private Button myClearHistoryButton;
-    private Button myHelpButton;
     private CommandBox myCommandBox;
     private ClearableEntriesBox myHistory;
     private ClearableEntriesBox myUserDefinedCommands;
@@ -119,10 +123,28 @@ public class Visualizer {
     }
 
     private void makeButtons(){
-
+        /*String[] buttonTexts = new String[]{"Run", "Help"};
+        Rectangle[] buttonShapes = new Rectangle[]{RUN_BUTTON_SHAPE, HELP_BUTTON_SHAPE};
+        EventHandler<ActionEvent>[] actions = new EventHandler<ActionEvent>[]{event -> myInstructionQueue.add(myCommandBox.getContents()),
+            event -> displayHelp()};
+        for(int i=0; i<buttonShapes.length; i++){
+            Button b = new Button(buttonTexts[i], buttonShapes[i]);
+            b.setOnAction(actions[i]);
+        }*/
+        Button myRunButton = new Button("Run", RUN_BUTTON_SHAPE);
+        myRunButton.setOnAction(event -> myInstructionQueue.add(myCommandBox.getContents()));
+        Button myHelpButton = new Button("Help", HELP_BUTTON_SHAPE);
+        myHelpButton.setOnAction(event -> displayHelp());
+        myRoot.getChildren().add(myRunButton);
+        myRoot.getChildren().add(myHelpButton);
+        //TODO: add other buttons
     }
 
     private void addVariable(String name, int value){
+
+    }
+
+    private void displayHelp(){
 
     }
 }

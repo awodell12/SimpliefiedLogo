@@ -18,12 +18,7 @@ public class CommandBox {
     public CommandBox(Group root, Rectangle commandBoxShape, Rectangle clearButtonShape){
         inputField = new TextField();
         Button clearButton = new Button("Clear", clearButtonShape);
-        clearButton.setOnAction(new EventHandler<>() {
-          @Override
-          public void handle(ActionEvent event) {
-            clearContents();
-          }
-        });
+        clearButton.setOnAction(event -> clearContents());
         root.getChildren().add(clearButton);
     }
 
