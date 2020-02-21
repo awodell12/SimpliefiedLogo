@@ -1,17 +1,12 @@
-package slogo;
+package slogo.BackEnd;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import slogo.commands.ForLoopCommand;
-import slogo.commands.ForwardCommand;
-import java.util.Collections;
-import slogo.commands.IfCommand;
-import slogo.commands.IfElseCommand;
-import slogo.commands.MakeCommand;
-import slogo.commands.RightCommand;
+import slogo.BackEnd.commands.*;
 
 public class CommandFactory {
-  private static final Map<String, AltCommand> myCommands;
+  private static Map<String, AltCommand> myCommands;
   static {
     Map<String, AltCommand> newMap = new HashMap<>();
     newMap.put("Forward", new ForwardCommand());
@@ -20,8 +15,10 @@ public class CommandFactory {
     newMap.put("MakeVariable", new MakeCommand());
     newMap.put("If", new IfCommand());
     newMap.put("IfElse",new IfElseCommand());
+    newMap.put("Repeat", new RepeatCommand());
     myCommands = Collections.unmodifiableMap(newMap);
   }
+
 
   public CommandFactory() {
   }

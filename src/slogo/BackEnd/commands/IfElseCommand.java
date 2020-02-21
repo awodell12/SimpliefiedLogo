@@ -1,10 +1,10 @@
-package slogo.commands;
+package slogo.BackEnd.commands;
 
 import java.util.Arrays;
 import java.util.List;
-import slogo.AltCommand;
+import slogo.BackEnd.AltCommand;
 import slogo.CommandResult;
-import slogo.SLogoBackEnd;
+import slogo.BackEnd.SLogoBackEnd;
 
 public class IfElseCommand implements AltCommand {
 
@@ -32,16 +32,17 @@ public class IfElseCommand implements AltCommand {
     int secondListIndex = firstListSize + firstListIndex + 1;
     System.out.println("Finding second list size.");
     int secondListSize = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,secondListIndex,tokens.length));
+    double returnVal = 0;
     if (arguments.get(0) != 0) {
       System.out.println("IF evaluated to TRUE");
-      backEnd.parseTokens(Arrays.copyOfRange(tokens,2,tokens.length));
+      returnVal = backEnd.parseTokens(Arrays.copyOfRange(tokens,2,tokens.length)).getReturnVal();
       System.out.println("Finished IF statement for TRUE.");
     }
     else {
       System.out.println("IF evaluated to FALSE");
-      backEnd.parseTokens(Arrays.copyOfRange(tokens,secondListIndex,tokens.length));
+      returnVal = backEnd.parseTokens(Arrays.copyOfRange(tokens,secondListIndex,tokens.length)).getReturnVal();
       System.out.println("Finished IF statement for FALSE.");
     }
-    return new CommandResult(0, secondListIndex+secondListSize-1);
+    return new CommandResult(returnVal, secondListIndex+secondListSize-1);
   }
 }

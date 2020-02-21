@@ -1,10 +1,10 @@
-package slogo.commands;
+package slogo.BackEnd.commands;
 
 import java.util.Arrays;
 import java.util.List;
-import slogo.AltCommand;
+import slogo.BackEnd.AltCommand;
 import slogo.CommandResult;
-import slogo.SLogoBackEnd;
+import slogo.BackEnd.SLogoBackEnd;
 
 public class IfCommand implements AltCommand {
 
@@ -21,13 +21,14 @@ public class IfCommand implements AltCommand {
   @Override
   public CommandResult execute(List<Double> arguments, List<String> vars, String[] tokens,
       SLogoBackEnd backEnd) {
+    double returnVal = 0;
     if (arguments.get(0) != 0) {
       System.out.println("IF evaluated to TRUE");
-      backEnd.parseTokens(Arrays.copyOfRange(tokens,2,tokens.length));
+      returnVal = backEnd.parseTokens(Arrays.copyOfRange(tokens,2,tokens.length)).getReturnVal();
     }
     else {
       System.out.println("IF evaluated to FALSE");
     }
-    return new CommandResult(0, backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length))+1);
+    return new CommandResult(returnVal, backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length))+1);
   }
 }

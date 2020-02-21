@@ -1,9 +1,9 @@
-package slogo.commands;
+package slogo.BackEnd.commands;
 
 import java.util.List;
-import slogo.AltCommand;
+import slogo.BackEnd.AltCommand;
 import slogo.CommandResult;
-import slogo.SLogoBackEnd;
+import slogo.BackEnd.SLogoBackEnd;
 
 public class RightCommand implements AltCommand {
 

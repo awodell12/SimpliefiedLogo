@@ -1,6 +1,8 @@
-package slogo;
+package slogo.BackEnd;
 
 import java.util.List;
+import slogo.BackEnd.SLogoBackEnd;
+import slogo.CommandResult;
 
 /**
  * Carries out the functionality of individual instructions
