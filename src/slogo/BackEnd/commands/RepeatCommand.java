@@ -23,7 +23,8 @@ public class RepeatCommand implements AltCommand {
     System.out.println("Beginning REPEAT Loop.");
     double numLoops = arguments.get(0);
     double returnVal = 0;
-    for (double i = 0; i < numLoops; i ++) {
+    for (double i = 1; i <= numLoops; i ++) {
+      backEnd.setVariable("repcount",numLoops);
       returnVal = backEnd.parseTokens(Arrays.copyOfRange(tokens,2,tokens.length)).getReturnVal();
     }
     System.out.println("Ending REPEAT Loop.");

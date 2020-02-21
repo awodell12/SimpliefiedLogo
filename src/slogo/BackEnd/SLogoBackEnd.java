@@ -68,13 +68,20 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public List<CommandResult> parseScript(String script) {
-    String[] scriptTokens = script.split(WHITESPACE);
+    String[] scriptLines = script.split("\\n+");
+    List<String> scriptTokenList = new ArrayList<>();
+    for (String line : scriptLines) {
+      System.out.println(line);
+      if (!line.matches("(^#(?s).*|\\s+)")) {
+        scriptTokenList.addAll(Arrays.asList(line.strip().split(WHITESPACE)));
+      }
+    }
+    String[] scriptTokens = scriptTokenList.toArray(new String[0]);
     parseTokens(scriptTokens);
     return null;
   }
 
   public CommandResult parseTokens(String[] scriptTokens) {
-    System.out.println("Start of parse");
     Stack<AltCommand> commands = new Stack<>();
     Stack<Double> commandValues = new Stack<>();
     Stack<String> controlVars = new Stack<>();
@@ -82,14 +89,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
     int programCounter;
     for (programCounter = 0; programCounter < scriptTokens.length; programCounter++) {
-      System.out.println("Currently on token " + programCounter);
-      printRemainingTokens(scriptTokens,programCounter);
       String currentToken = getSymbol(scriptTokens[programCounter]);
-      System.out.println("scriptTokens[programCounter] = " + scriptTokens[programCounter]);
-      System.out.println("currentToken = " + currentToken);
       if (isClosedBracket(currentToken)) {
-        System.out.println("end bracket, DONE WITH PARSE, at token " + programCounter);
-        System.out.println();
         return new CommandResult(lastCommandRet,programCounter+1); //end the current call if an end bracket happens.
       }
       else if (isOpenBracket(currentToken)) {
@@ -100,14 +101,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
             scriptTokens, programCounter);
       }
 
-
-      System.out.println("commands = " + commands);
-      System.out.println("controlVars = " + controlVars);
-      System.out.println("commandValues = " + commandValues);
-      System.out.println();
-
-      System.out.println("commands = " + commands);
-      System.out.println("commands.peek() = " + commands.peek());
       while (!commands.isEmpty() && commandValues.size() >= commands.peek().getNumArgs()) {
         List<Double> argList = new ArrayList<>();
         for (int arg = 0; arg < commands.peek().getNumArgs(); arg ++) {
@@ -134,8 +127,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         }
       }
     }
-    System.out.println("DONE WITH PARSE");
-    System.out.println("programCounter = " + programCounter);
     return new CommandResult(lastCommandRet,programCounter);
   }
 
@@ -143,19 +134,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       Stack<Double> commandValues, Stack<String> vars,
       String[] tokenList, int programCounter) {
     String tokenType = getSymbol(tokenList[programCounter]);
-//    if (isControl(tokenType) || isCommand(tokenType)) {
-//      commands.add(CommandFactory.makeCommand(tokenType));
-//      if (isForLoop(tokenType)) {
-//        int offset = 2;
-//        vars.add(tokenList[programCounter+offset].substring(1));
-//        return offset;
-//      }
-//      if (tokenType.equals("MakeVariable")) {
-//        int offset = 1;
-//        vars.add(tokenList[programCounter+offset].substring(1));
-//        return offset;
-//      }
-//    }
     if (isValue(tokenType)) {
       Double value;
       if (isVariable(tokenType)) {
@@ -167,7 +145,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         }
       }
       else {
-        System.out.println("currentToken = " + tokenList);
         value = Double.parseDouble(tokenList[programCounter]);
       }
       if (!commands.isEmpty()) {
@@ -176,12 +153,13 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     }
     else { //if it's not a bracket or a value, it's a command.
       commands.add(CommandFactory.makeCommand(tokenType));
-      if (isForLoop(tokenType)) {
+      //TODO: This is a fantastic spot to stop repeating myself.
+      if (isForLoop(tokenType) || tokenType.equals("DoTimes")) {
         int offset = 2;
         vars.add(tokenList[programCounter+offset].substring(1));
         return offset;
       }
-      if (tokenType.equals("MakeVariable")) {
+      else if (tokenType.equals("MakeVariable")) {
         int offset = 1;
         vars.add(tokenList[programCounter+offset].substring(1));
         return offset;
@@ -193,7 +171,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private void printRemainingTokens(String[] scriptTokens, int i) {
     String[] remaining = Arrays.copyOfRange(scriptTokens,i,scriptTokens.length);
     for (String string : remaining) {
-      System.out.print(string + " ");
+      System.out.printf("(%s) ", string);
     }
     System.out.println();
   }
@@ -228,8 +206,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public int distanceToEndBracket(String[] tokenList) {
-    System.out.println("Beginning to parse for distance to end bracket.");
-    printRemainingTokens(tokenList,0);
     Stack<String> openBrackets = new Stack<>();
     for (int i = 0; i < tokenList.length; i ++) {
       String tokenSymbol = getSymbol(tokenList[i]);
@@ -238,7 +214,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       }
       else if (isClosedBracket(tokenSymbol)) {
         if (openBrackets.isEmpty()) {
-          System.out.println("Found an end bracket at distance " + (i +1) + ".\n");
           return i + 1;
         }
         else {
@@ -246,7 +221,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         }
       }
     }
-    System.out.println("No end bracket found.\n");
     return tokenList.length;
   }
 

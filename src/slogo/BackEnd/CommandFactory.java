@@ -16,6 +16,10 @@ public class CommandFactory {
     newMap.put("If", new IfCommand());
     newMap.put("IfElse",new IfElseCommand());
     newMap.put("Repeat", new RepeatCommand());
+    newMap.put("DoTimes", new DoTimesCommand());
+    newMap.put("Sum", new SumCommand());
+    newMap.put("Product", new MultCommand());
+    newMap.put("GreaterThan",new GreaterCommand());
     myCommands = Collections.unmodifiableMap(newMap);
   }
 
