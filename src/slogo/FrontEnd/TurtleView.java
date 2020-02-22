@@ -1,5 +1,12 @@
 package slogo.FrontEnd;
 
+
+import java.net.URL;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 
@@ -8,19 +15,37 @@ import javafx.scene.shape.Path;
  * Turtle and its taken paths to be displayed to the user.
  */
 public class TurtleView {
+  private ImageView myTurtle;
+  private final String myTurtleImage = "Resources/turtle";
+  private Canvas myCanvas;
 
+  public TurtleView(double width, double height){
+    myTurtle = new ImageView(myTurtleImage);
+    myTurtle.setPreserveRatio(true);
+    myTurtle.setFitWidth(50);
+    myTurtle.setCache(true);
+    myCanvas = new Canvas(width, height);
+    myCanvas.getGraphicsContext2D().drawImage(myTurtle.getImage(), myTurtle.getX(), myTurtle.getY());
+// add some listener/binding to canvas to update whenever the turtle moves?
+  //  myTurtle.imageProperty().addListener((observable, oldValue, newValue) -> myCanvas.getGraphicsContext2D().drawImage(newValue));
+  }
   /**
    * Updates the position of the turtle in the Display to the desired set of coordinates.
    * @param x the new x coordinate for the turtle
    * @param y the new y coordinate for the turtle
    */
-  void setTurtlePosition(double x, double y){};
+  void setTurtlePosition(double x, double y){
+    myTurtle.setX(x);
+    myTurtle.setY(y);
+  };
 
   /**
    *
    * @param angle
    */
-  void setTurtleHeading(double angle){};
+  void setTurtleHeading(double angle){
+    myTurtle.setRotate(myTurtle.getRotate() + angle);
+  };
 
   /**
    * Change the background color of the turtleView section of the display to a desired color.
@@ -41,4 +66,8 @@ public class TurtleView {
    * back to its starting position
    */
   void clearPaths(){};
+
+  void setTurtleImage(Image newTurtleImage){
+    myTurtle.setImage(newTurtleImage);
+  }
 }

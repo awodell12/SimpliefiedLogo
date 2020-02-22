@@ -90,7 +90,7 @@ public class Visualizer {
         myHistory = new ClearableEntriesBox(myRoot, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE);
         myUserDefinedCommands = new ClearableEntriesBox(myRoot, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE);
         myVariables = new ClearableEntriesBox(myRoot, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE);
-        myTurtleView = new TurtleView();
+        myTurtleView = new TurtleView(300,300);
 
         makeButtons();
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
@@ -132,7 +132,7 @@ public class Visualizer {
             b.setOnAction(actions[i]);
         }*/
         Button myRunButton = new Button("Run", RUN_BUTTON_SHAPE);
-        myRunButton.setOnAction(event -> myInstructionQueue.add(myCommandBox.getContents()));
+        myRunButton.setOnAction(event -> runButtonEvent());
         Button myHelpButton = new Button("Help", HELP_BUTTON_SHAPE);
         myHelpButton.setOnAction(event -> displayHelp());
         myRoot.getChildren().add(myRunButton);
@@ -142,6 +142,12 @@ public class Visualizer {
 
     private void addVariable(String name, int value){
 
+    }
+
+    private void runButtonEvent(){
+      String instruction = myCommandBox.getContents();
+      myInstructionQueue.add(instruction);
+      myHistory.addHistoryEntry(instruction);
     }
 
     private void displayHelp(){
