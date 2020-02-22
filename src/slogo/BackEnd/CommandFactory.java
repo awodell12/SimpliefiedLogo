@@ -28,10 +28,10 @@ public class CommandFactory {
   }
 
   //TODO: Make this throw a "DON'T KNOW HOW TO" exception.
-  public static AltCommand makeCommand(String type) {
+  public static AltCommand makeCommand(String type) throws ParseException {
     if (myCommands.containsKey(type)) {
       return myCommands.get(type);
     }
-    return null;
+    throw new ParseException();
   }
 }

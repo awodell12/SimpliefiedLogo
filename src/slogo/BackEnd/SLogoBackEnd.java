@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import javafx.util.Pair;
+import slogo.BackEnd.commands.UserCommand;
 import slogo.CommandResult;
 
 /**
@@ -24,11 +26,16 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private static final String RESOURCES_PACKAGE = "resources/languages/";
   private List<Entry<String, Pattern>> mySymbols;
   private Map<String, Double> myVariables;
+  private Map<String, Pair<Collection<String>,Collection<String>>> myUserInstructions;
+  private Map<String, AltCommand> myUserCommands;
+//  private Map<String, Collection<String>> myUserInstructions;
   private int myProgramCounter;
 
   public SLogoBackEnd() {
     mySymbols = new ArrayList<>();
     myVariables = new HashMap<>();
+    myUserInstructions = new HashMap<>();
+    myUserCommands = new HashMap<>();
   }
 
   /**
@@ -96,6 +103,34 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       else if (isOpenBracket(currentToken)) {
         programCounter += parseTokens(Arrays.copyOfRange(scriptTokens,programCounter+1,scriptTokens.length)).getTokensParsed();
       }
+      else if (currentToken.equals("MakeUserInstruction")) {
+        System.out.println("Making user defined command");
+        printRemainingTokens(scriptTokens,programCounter);
+        programCounter += 1;
+        String cmdName = scriptTokens[programCounter];
+        System.out.printf("Command has name %s\n", cmdName);
+        programCounter += 2;
+        System.out.println("Finding variables.");
+        printRemainingTokens(scriptTokens,programCounter);
+        int numVars = distanceToEndBracket(Arrays.copyOfRange(scriptTokens,programCounter,scriptTokens.length)) - 1;
+        List<String> toVars = new ArrayList<>();
+        for (int i = programCounter; i < programCounter + numVars; i ++) {
+          toVars.add(scriptTokens[i].substring(1));
+          System.out.printf("Added variable %s\n", scriptTokens[i].substring(1));
+        }
+        programCounter += numVars + 2;
+        System.out.println("Finding instructions.");
+        printRemainingTokens(scriptTokens,programCounter);
+        int numCommands = distanceToEndBracket(Arrays.copyOfRange(scriptTokens,programCounter,scriptTokens.length)) - 1;
+        System.out.printf("There are %d tokens and an end bracket.\n", numCommands);
+        try {
+          setUserCommand(cmdName,toVars,Arrays.copyOfRange(scriptTokens,programCounter,programCounter + numCommands));
+        } catch (ParseException e) {
+          System.out.printf("Couldn't make command %s", cmdName);
+        }
+        programCounter += numCommands;
+        continue;
+      }
       else {
         programCounter += recordToken(commands, commandValues, controlVars,
             scriptTokens, programCounter);
@@ -127,6 +162,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         }
       }
     }
+    if (!commands.isEmpty()) {
+      System.out.println("Unexpected end of instructions");
+    }
     return new CommandResult(lastCommandRet,programCounter);
   }
 
@@ -141,6 +179,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
           value = getVariable(tokenList[programCounter].substring(1));
         }
         catch (ParseException e) {
+          System.out.printf("Don't know about variable %s", tokenList[programCounter].substring(1));
           value = 0.0;
         }
       }
@@ -150,9 +189,25 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       if (!commands.isEmpty()) {
         commandValues.add(value);
       }
+      else {
+        System.out.printf("Don't know what to do with %f",value);
+      }
     }
     else { //if it's not a bracket or a value, it's a command.
-      commands.add(CommandFactory.makeCommand(tokenType));
+      try {
+        commands.add(CommandFactory.makeCommand(tokenType));
+      } catch (ParseException e) {
+        if (myUserCommands.containsKey(tokenList[programCounter])) {
+          //TODO: Handle a situation where the user uses the return value of
+          // TO as the argument for a previous version of the command they
+          // are setting.
+          // (ex.) TO foo [ :distance ] [ fd :distance ] foo TO foo [ ] [ rt 90 ]
+          commands.add(myUserCommands.get(tokenList[programCounter]));
+        }
+        else {
+          System.out.printf("Don't know how to %s", tokenList[programCounter]);
+        }
+      }
       //TODO: This is a fantastic spot to stop repeating myself.
       if (isForLoop(tokenType) || tokenType.equals("DoTimes")) {
         int offset = 2;
@@ -234,9 +289,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     if (myVariables.containsKey(name)) {
        return myVariables.get(name);
     }
-    //TODO: Make this throw an exception.
-    System.out.println("VARIABLE " + name + " DOES NOT EXIST.");
-    return 0;
+    throw new ParseException();
   }
 
   @Override
@@ -245,18 +298,29 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   @Override
-  public void setUserCommand(String name, Collection<String> parameters, String script)
+  public void setUserCommand(String name, List<String> parameters, String[] commands)
       throws ParseException {
-
+//    myUserInstructions.put(name,new Pair<>((parameters),Arrays.asList(commands)));
+    myUserCommands.put(name, new UserCommand(parameters,Arrays.asList(commands)));
   }
-
   @Override
   public Collection<String> getUserCommandArgs(String name) {
     return null;
   }
 
   @Override
-  public String getUserCommandScript(String name) {
+  public Collection<String> getUserCommandScript(String name) {
+    if (myUserInstructions.containsKey(name)) {
+      return myUserInstructions.get(name).getValue();
+    }
+    //TODO: Put an error here.
     return null;
+  }
+
+  private CommandResult runUserCommand(String name) throws ParseException {
+    if (myUserInstructions.containsKey(name)) {
+      return parseTokens(getUserCommandScript(name).toArray(new String[0]));
+    }
+    throw new ParseException();
   }
 }

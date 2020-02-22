@@ -46,7 +46,13 @@ public class BackEndTester {
 //    String userInput = "right make :b 5 right :b";
     String userInput; // = "fd sum sum sum sum 10 20 30 5 5\n";
 //    File logoFile = new File("data/examples/simple/forward.logo");
-    userInput = new String(Files.readAllBytes(Paths.get("data/examples/simple/forward_forward.logo")));
-    parser.parseScript(userInput);
+//    userInput = new String(Files.readAllBytes(Paths.get("data/examples/simple/forward_forward.logo")));
+//    parser.parseScript("fd 10 rt "); //unexpected end of instructions
+//    parser.parseScript("10 fd 2"); //don't know what to do with 10
+//    parser.parseScript("fd :b"); //variable b isn't known
+//    parser.parseScript("rt 1 dunk 50"); //don't know how to dunk
+//    parser.parseScript("to foo [ :distance ] [ fd :distance ] fd 3 foo foo foo 30.0\n"
+//        + "to foo [ :turn :fdamt :useless ] [ ] fd foo foo 88 21 -100.0 -200.0 0.1");
+    parser.parseScript("to foo [ :n ] [ fd :n rt 45.0 if greater? 4 :n [ foo sum :n 1 ] ] foo 1");
   }
 }

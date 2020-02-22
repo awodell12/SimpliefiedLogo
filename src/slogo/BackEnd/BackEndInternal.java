@@ -1,6 +1,7 @@
 package slogo.BackEnd;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Classes inside the view with access to the model may assume that it has these functions, which allow
@@ -39,10 +40,10 @@ public interface BackEndInternal {
    * @param name The name to give the user-defined command to be used in the future.
    * @param parameters The local variables that are set by calls to the command and are used within
    *                   the command to execute it.
-   * @param script The contents of the command, which are parsed and executed whenever the
+   * @param commands The contents of the command, which are parsed and executed whenever the
    *               command is called.
    */
-  public void setUserCommand(String name, Collection<String> parameters, String script) throws ParseException;
+  public void setUserCommand(String name, List<String> parameters, String[] commands) throws ParseException;
 
   /**
    * Returns a list of named arguments whose size is equal to the number of
@@ -59,5 +60,5 @@ public interface BackEndInternal {
    * @return The code that makes up the command's definition, as a String, referencing its
    * named constants.
    */
-  public String getUserCommandScript(String name);
+  public Collection<String> getUserCommandScript(String name);
 }
