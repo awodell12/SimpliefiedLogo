@@ -1,5 +1,6 @@
 package slogo.BackEnd.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -15,6 +16,10 @@ public class UserCommand implements AltCommand {
   public UserCommand(List<String> arguments, Collection<String> commands) {
     myArguments = arguments;
     myInstructions = commands;
+  }
+
+  public Collection<String> getCommands() {
+    return new ArrayList<>(myInstructions);
   }
 
   @Override
@@ -34,7 +39,12 @@ public class UserCommand implements AltCommand {
     for (int i = 0; i < arguments.size(); i++) {
       backEnd.setVariable(myArguments.get(i),arguments.get(i));
     }
-    returnVal = backEnd.parseTokens(myInstructions.toArray(new String[0])).getReturnVal();
+    returnVal = backEnd.parseCommandsList(myInstructions.toArray(new String[0])).getReturnVal();
     return new CommandResult(returnVal, 0);
+  }
+
+  @Override
+  public List<String> findVars(String[] tokenList) {
+    return null;
   }
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 import slogo.BackEnd.commands.*;
 
 public class CommandFactory {
-  private static Map<String, AltCommand> myCommands;
+  private static final Map<String, AltCommand> myCommands;
   static {
     Map<String, AltCommand> newMap = new HashMap<>();
     newMap.put("Forward", new ForwardCommand());
@@ -20,6 +20,7 @@ public class CommandFactory {
     newMap.put("Sum", new SumCommand());
     newMap.put("Product", new MultCommand());
     newMap.put("GreaterThan",new GreaterCommand());
+    newMap.put("MakeUserInstruction",new ToCommand());
     myCommands = Collections.unmodifiableMap(newMap);
   }
 
@@ -27,11 +28,14 @@ public class CommandFactory {
   public CommandFactory() {
   }
 
-  //TODO: Make this throw a "DON'T KNOW HOW TO" exception.
   public static AltCommand makeCommand(String type) throws ParseException {
     if (myCommands.containsKey(type)) {
       return myCommands.get(type);
     }
     throw new ParseException();
+  }
+
+  public static boolean hasCommand(String type) {
+    return myCommands.containsKey(type);
   }
 }

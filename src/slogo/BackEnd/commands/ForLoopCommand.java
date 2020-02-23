@@ -27,13 +27,20 @@ public class ForLoopCommand implements AltCommand {
     System.out.println("Start is " + start);
     System.out.println("End is " + end);
     System.out.println("Increment is " + increment);
-    String var = vars.get(0);
+    //This is because the first 'var' was actually the opening bracket.
+    String var = vars.get(1);
     double returnVal = 0;
+    int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length));
     for (double i = start; i <= end; i += increment) {
       backEnd.setVariable(var,i);
-      returnVal = backEnd.parseTokens(Arrays.copyOfRange(tokens,3,tokens.length)).getReturnVal();
+      returnVal = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)).getReturnVal();
     }
     System.out.println("Ending FOR Loop.");
-    return new CommandResult(returnVal, backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,3,tokens.length))+2);
+    return new CommandResult(returnVal, backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length))+2);
+  }
+
+  @Override
+  public List<String> findVars(String[] tokenList) {
+    return List.of(tokenList[0],tokenList[1].substring(1));
   }
 }

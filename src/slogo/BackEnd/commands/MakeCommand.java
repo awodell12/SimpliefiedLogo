@@ -23,4 +23,9 @@ public class MakeCommand implements AltCommand {
     backEnd.setVariable(vars.get(0),arguments.get(0));
     return new CommandResult(arguments.get(0),0);
   }
+
+  @Override
+  public List<String> findVars(String[] tokenList) {
+    return List.of(tokenList[0].substring(1));
+  }
 }

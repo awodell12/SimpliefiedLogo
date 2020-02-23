@@ -22,4 +22,9 @@ public class MultCommand implements AltCommand {
       SLogoBackEnd backEnd) {
     return new CommandResult(arguments.get(0) * arguments.get(1),0);
   }
+
+  @Override
+  public List<String> findVars(String[] tokenList) {
+    return null;
+  }
 }

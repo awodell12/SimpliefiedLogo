@@ -27,6 +27,11 @@ public class ForwardCommand implements AltCommand {
   }
 
   @Override
+  public List<String> findVars(String[] tokenList) {
+    return null;
+  }
+
+  @Override
   public String toString() {
     return COMMAND_NAME;
   }

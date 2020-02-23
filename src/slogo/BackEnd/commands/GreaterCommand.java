@@ -24,4 +24,9 @@ public class GreaterCommand implements AltCommand {
     if (arguments.get(0) > arguments.get(1)) { retValue = 1; }
     return new CommandResult(retValue,0);
   }
+
+  @Override
+  public List<String> findVars(String[] tokenList) {
+    return null;
+  }
 }

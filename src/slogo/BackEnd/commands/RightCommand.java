@@ -25,4 +25,9 @@ public class RightCommand implements AltCommand {
     System.out.println("Turning right by " + arguments.get(0) + " degrees.");
     return new CommandResult(arguments.get(0),0);
   }
+
+  @Override
+  public List<String> findVars(String[] tokenList) {
+    return null;
+  }
 }

@@ -20,14 +20,18 @@ public class RepeatCommand implements AltCommand {
 
   @Override
   public CommandResult execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
-    System.out.println("Beginning REPEAT Loop.");
     double numLoops = arguments.get(0);
     double returnVal = 0;
+    int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
     for (double i = 1; i <= numLoops; i ++) {
       backEnd.setVariable("repcount",numLoops);
-      returnVal = backEnd.parseTokens(Arrays.copyOfRange(tokens,2,tokens.length)).getReturnVal();
+      returnVal = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength)).getReturnVal();
     }
-    System.out.println("Ending REPEAT Loop.");
-    return new CommandResult(returnVal, backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,3,tokens.length))+2);
+    return new CommandResult(returnVal, listLength+1);
+  }
+
+  @Override
+  public List<String> findVars(String[] tokenList) {
+    return null;
   }
 }
