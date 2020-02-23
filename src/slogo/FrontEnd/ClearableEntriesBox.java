@@ -1,9 +1,9 @@
 package slogo.FrontEnd;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -14,12 +14,13 @@ import javafx.scene.text.TextFlow;
 public class ClearableEntriesBox {
 
     private TextFlow myTextFlow;
-    public ClearableEntriesBox(Group root, Rectangle historyShape, Rectangle clearButtonShape){
+    public ClearableEntriesBox(Pane layout, Rectangle historyShape, Rectangle clearButtonShape){
       myTextFlow = new TextFlow();
-      myTextFlow.setMaxWidth(historyShape.getWidth());
+      myTextFlow.setPrefWidth(historyShape.getWidth());
+      myTextFlow.setMaxSize(Control.USE_PREF_SIZE,Control.USE_PREF_SIZE);
       Button clearButton = new Button("Clear", clearButtonShape);
       clearButton.setOnAction(event -> clearEntryBox());
-      root.getChildren().add(clearButton);
+      layout.getChildren().add(clearButton);
     }
 
     /**

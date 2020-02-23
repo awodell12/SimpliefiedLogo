@@ -3,9 +3,12 @@ package slogo.FrontEnd;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -16,16 +19,15 @@ public class CommandBox {
 
     //private TextField inputField; // need a better data structure for this
     private TextArea inputArea;
+    private HBox myHBox;
 
-    public CommandBox(Group root, Rectangle commandBoxShape, Rectangle clearButtonShape){
+    public CommandBox(Pane root, Rectangle commandBoxShape, Rectangle clearButtonShape){
+        myHBox = new HBox(10);
         inputArea = new TextArea("Enter commands here");
-        inputArea.maxWidth(commandBoxShape.getWidth());
+        inputArea.setPrefWidth(commandBoxShape.getWidth());
         inputArea.maxHeight(commandBoxShape.getHeight());
-
-        Button clearButton = new Button("Clear", clearButtonShape);
-        clearButton.setOnAction(event -> clearContents());
-        root.getChildren().add(clearButton);
-        root.getChildren().add(inputArea);
+        myHBox.getChildren().add(inputArea);
+        root.getChildren().add(myHBox);
     }
 
     /**

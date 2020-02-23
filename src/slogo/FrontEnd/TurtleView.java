@@ -7,6 +7,8 @@ import javafx.beans.Observable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 
@@ -17,9 +19,9 @@ import javafx.scene.shape.Path;
 public class TurtleView {
   private ImageView myTurtle;
   private final String myTurtleImage;
-  private Canvas myCanvas;
+  private Canvas myCanvas; //don't think canvas is the right thing for this
 
-  public TurtleView(double width, double height){
+  public TurtleView(Pane layout, double width, double height){
     myTurtleImage = "slogo/FrontEnd/Resources/turtle.jpg";
     myTurtle = new ImageView(myTurtleImage);
     myTurtle.setPreserveRatio(true);
@@ -27,6 +29,7 @@ public class TurtleView {
     myTurtle.setCache(true);
     myCanvas = new Canvas(width, height);
     myCanvas.getGraphicsContext2D().drawImage(myTurtle.getImage(), myTurtle.getX(), myTurtle.getY());
+    layout.getChildren().add(myCanvas);
 // add some listener/binding to canvas to update whenever the turtle moves?
   //  myTurtle.imageProperty().addListener((observable, oldValue, newValue) -> myCanvas.getGraphicsContext2D().drawImage(newValue));
   }

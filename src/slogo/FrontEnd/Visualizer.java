@@ -5,14 +5,19 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javax.swing.SizeRequirements;
 import org.xml.sax.SAXException;
 import slogo.CommandResult;
 
@@ -21,7 +26,9 @@ import java.io.IOException;
 import java.util.Queue;
 
 public class Visualizer extends Application {
-    private static final int SIZE = 600;
+    private static final double HEIGHT = 600;
+    private static final double ASPECT_RATIO = (16.0/9.0);
+    private static final double WIDTH = HEIGHT * ASPECT_RATIO;
     private static final Paint BACKGROUND = Color.WHITE;
     private static final double MILLISECOND_DELAY = 1000;
     private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 800, 650, 125);
@@ -37,7 +44,7 @@ public class Visualizer extends Application {
     private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(950, 700, 50, 50);
     private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(850, 25, 75, 50);
     private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
-  private static final double ASPECT_RATIO = (16.0/9.0);
+    private static final double SPACING = 10;
   //TODO: add menu shapes and label shapes
 
     private Button myClearCommandBoxButton;
@@ -50,8 +57,11 @@ public class Visualizer extends Application {
     private Queue<String> myInstructionQueue;
     private Stage myStage;
     private Group myRoot;
+  private VBox myLeftVBox;
+  private VBox myRightVBox;
+  private HBox myLayout;
 
-    /**
+  /**
      * Constructor for the visualizer class, which manages the display components and state
      */
     public Visualizer() throws IOException {
@@ -96,13 +106,20 @@ public class Visualizer extends Application {
 
     private Scene setUpDisplay() throws IOException{
         myRoot = new Group();
-        myCommandBox = new CommandBox(myRoot, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
-        myHistory = new ClearableEntriesBox(myRoot, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE);
-        myUserDefinedCommands = new ClearableEntriesBox(myRoot, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE);
-        myVariables = new ClearableEntriesBox(myRoot, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE);
-        myTurtleView = new TurtleView(300,300);
+        myLayout = new HBox(20);
+        myLayout.setMaxSize(WIDTH, HEIGHT);
 
-        makeButtons();
+
+        myLeftVBox = new VBox(SPACING);
+        myLeftVBox.setMaxSize(WIDTH * 0.5, HEIGHT);
+        myLeftVBox.setMinSize(myLeftVBox.getMaxWidth(), myLeftVBox.getMaxHeight());
+
+        myRightVBox = new VBox(SPACING);
+        myRightVBox.setMaxSize(WIDTH*0.25, HEIGHT);
+        setUpRightPane();
+
+        setUpLeftPane();
+
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
             try {
                 step();
@@ -116,14 +133,51 @@ public class Visualizer extends Application {
 
             }
         });
+        myLayout.getChildren().addAll(myLeftVBox,myRightVBox);
+        myLayout.setMargin(myLeftVBox, new Insets( SPACING, 0, 0, 50));
+        myLayout.setMargin(myRightVBox, new Insets(SPACING,50,0,0));
+        myRoot.getChildren().add(myLayout);
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
         animation.play();
-        return new Scene(myRoot, SIZE * ASPECT_RATIO, SIZE , BACKGROUND);
+        return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
-    private void step(){
+  private void setUpLeftPane() {
+
+    myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
+    myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
+  }
+
+  private void setUpRightPane() {
+    setUpTopButtons();
+    myHistory = new ClearableEntriesBox(myRightVBox, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE);
+    myUserDefinedCommands = new ClearableEntriesBox(myRightVBox, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE);
+    myVariables = new ClearableEntriesBox(myRightVBox, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE);
+    setUpBottomButtons();
+  }
+
+  private void setUpTopButtons() {
+
+      HBox topButtons = new HBox(SPACING);
+    Button myHelpButton = new Button("Help", HELP_BUTTON_SHAPE);
+    myHelpButton.setOnAction(event -> displayHelp());
+    topButtons.getChildren().add(myHelpButton);
+    myRightVBox.getChildren().add(topButtons);
+  }
+
+  private void setUpBottomButtons() {
+    HBox bottomButtons = new HBox(SPACING);
+    Button runButton = new Button("Run", RUN_BUTTON_SHAPE);
+    runButton.setOnAction(event -> runButtonEvent());
+    Button clearButton = new Button("Clear", CLEAR_COMMAND_BOX_SHAPE);
+    clearButton.setOnAction(event -> myCommandBox.clearContents());
+    bottomButtons.getChildren().addAll(runButton, clearButton);
+    myRightVBox.getChildren().add(bottomButtons);
+  }
+
+  private void step(){
 
     }
 
@@ -141,12 +195,7 @@ public class Visualizer extends Application {
             Button b = new Button(buttonTexts[i], buttonShapes[i]);
             b.setOnAction(actions[i]);
         }*/
-        Button myRunButton = new Button("Run", RUN_BUTTON_SHAPE);
-        myRunButton.setOnAction(event -> runButtonEvent());
-        Button myHelpButton = new Button("Help", HELP_BUTTON_SHAPE);
-        myHelpButton.setOnAction(event -> displayHelp());
-        myRoot.getChildren().add(myRunButton);
-        myRoot.getChildren().add(myHelpButton);
+
         //TODO: add other buttons
     }
 
