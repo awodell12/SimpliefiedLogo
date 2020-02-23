@@ -1,4 +1,9 @@
 ## Java Collections API
+Austin Odell (awo6@duke.edu)
+James Rumsey (jpr31@duke.edu)
+Cary Shindell (css57@duke.edu)
+Sam Thompson (stt13@duke.edu)
+
 
 ### Purpose
 Allows for you to write your code without having to specify a specific data structure instead you can
