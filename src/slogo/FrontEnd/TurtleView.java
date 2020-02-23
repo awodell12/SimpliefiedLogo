@@ -16,10 +16,11 @@ import javafx.scene.shape.Path;
  */
 public class TurtleView {
   private ImageView myTurtle;
-  private final String myTurtleImage = "Resources/turtle";
+  private final String myTurtleImage;
   private Canvas myCanvas;
 
   public TurtleView(double width, double height){
+    myTurtleImage = "slogo/FrontEnd/Resources/turtle.jpg";
     myTurtle = new ImageView(myTurtleImage);
     myTurtle.setPreserveRatio(true);
     myTurtle.setFitWidth(50);
