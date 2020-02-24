@@ -61,7 +61,7 @@ public class Visualizer extends Application {
     private ClearableEntriesBox myHistory;
     private ClearableEntriesBox myUserDefinedCommands;
     private ClearableEntriesBox myVariables;
-    private Map<String, Integer> myVariableMap;
+    //private Map<String, Integer> myVariableMap;
     private TurtleView myTurtleView;
     private Queue<String> myInstructionQueue;
     private Stage myStage;
@@ -115,7 +115,7 @@ public class Visualizer extends Application {
 
     private Scene setUpDisplay() throws IOException{
         myInstructionQueue = new PriorityQueue<>();
-        myVariableMap = new HashMap<>();
+        //myVariableMap = new HashMap<>();
 
         myRoot = new Group();
         myLayout = new HBox(20);
@@ -230,13 +230,14 @@ public class Visualizer extends Application {
     }
 
     private void addVariable(String name, int value){
-        if(myVariableMap.containsKey(name)){
+        myVariables.addEntry(name + " : " + value, name);
+        /*if(myVariableMap.containsKey(name)){
             myVariables.addEntry(name + " : " + value, name);
         }
         else{
             myVariables.addEntry(name + " : " + value, null);
         }
-        myVariableMap.put(name, value);
+        myVariableMap.put(name, value);*/
     }
 
     private void runButtonEvent(){
