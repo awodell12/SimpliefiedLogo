@@ -91,6 +91,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResult parseCommandsList(String[] tokenList) {
+    List<CommandResult> results = new ArrayList<>();
     int numTokens = tokenList.length;
     int programCounter = 0;
     CommandResult result = null;
@@ -98,33 +99,33 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       try {
         AltCommand command = identifyCommand(tokenList[programCounter]);
         result = parseCommand(command,Arrays.copyOfRange(tokenList,programCounter+1,numTokens));
+        results.add(result);
         programCounter += result.getTokensParsed() + 1;
       } catch (ParseException e) {
-        if (!e.getMessage().equals("")) {
-          System.out.println(e.getMessage());
-        }
-        else {
-          System.out.println("Globally read a non-command (" + tokenList[programCounter] + ") when expecting a command at PC = " + programCounter);
-        }
+        System.out.println(e.getMessage());
         result = new CommandResult(0.0,0);
         break;
       }
     }
+    System.out.println("results.size() = " + results.size());
     return new CommandResult(result.getReturnVal(),programCounter);
   }
 
   private AltCommand identifyCommand(String rawToken) throws ParseException {
+    if (isValue(getSymbol(rawToken))) {
+      throw new ParseException("Don't know what to do with " + rawToken);
+    }
     try {
       return CommandFactory.makeCommand(getSymbol(rawToken));
     } catch (ParseException e) {
       if (myUserCommands.containsKey(rawToken)) {
         return myUserCommands.get(rawToken);
       }
-      throw new ParseException("Don't know how to " + rawToken);
+      throw e;
     }
   }
 
-  private CommandResult parseCommand(AltCommand command, String[] tokenList) {
+  private CommandResult parseCommand(AltCommand command, String[] tokenList) throws ParseException {
     //'fd 50' expects to start at PC = 1, where '50' is.
     Stack<Double> commandValues = new Stack<>();
     List<String> variableNames = getCommandVars(command,tokenList);
@@ -134,16 +135,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         return executeCurrentCommand(command, tokenList, commandValues, variableNames,
             programCounter);
       }
-      try {
-        programCounter += parseNextToken(tokenList,programCounter,commandValues);
-      } catch (ParseException e) {
-        System.out.println(e.getMessage());
-        break;
-      }
+      programCounter += parseNextToken(tokenList,programCounter,commandValues);
     }
-    //TODO: This really should just throw an exception.
-    System.out.println("Unexpected end of the instructions");
-    return new CommandResult(0.0,programCounter+1);
+    throw new ParseException("Unexpected end of instructions.");
   }
 
   private CommandResult executeCurrentCommand(AltCommand command, String[] tokenList,
@@ -173,13 +167,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       commandValues.add(parseValue(currentTokenType,currentTokenRaw));
     }
     else { //It's a command. TODO: actually check if it's a command or if it's gibberish.
-      try {
         CommandResult insideResult = parseCommand(identifyCommand(currentTokenRaw),Arrays.copyOfRange(tokenList,programCounter+1,tokenList.length));
         commandValues.add(insideResult.getReturnVal());
         return insideResult.getTokensParsed();
-      } catch (ParseException e) {
-        throw new ParseException("Read a non-command (" + currentTokenRaw + ") when expecting a command at PC = " + programCounter);
-      }
     }
     return 0;
   }
@@ -193,15 +183,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return argList;
   }
 
-  private double parseValue(String type, String token) {
+  private double parseValue(String type, String token) throws ParseException {
     if (isVariable(type)) {
-      try {
         return getVariable(token.substring(1));
-      }
-      catch (ParseException e) {
-        System.out.printf("Don't know about variable %s\n", token);
-        return 0.0;
-      }
     }
     else {
       return Double.parseDouble(token);
@@ -218,11 +202,11 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     }
     programCounter += 2;
     int numCommands = distanceToEndBracket(Arrays.copyOfRange(tokenList,programCounter,tokenList.length)) - 1;
-    try {
+//    try {
       setUserCommand(cmdName,toVars,Arrays.copyOfRange(tokenList,programCounter,programCounter + numCommands));
-    } catch (ParseException e) {
-      throw e;
-    }
+//    } catch (ParseException e) {
+//      throw e;
+//    }
     return programCounter + numCommands + 1;
   }
 
