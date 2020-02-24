@@ -25,7 +25,8 @@ public class IfCommand implements AltCommand {
     int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,0,tokens.length));
     if (arguments.get(0) != 0) {
       System.out.println("IF evaluated to TRUE");
-      returnVal = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength-1)).getReturnVal();
+      List<CommandResult> results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength-1));
+      returnVal = results.get(results.size()-1).getReturnVal();
     }
     else {
       System.out.println("IF evaluated to FALSE");

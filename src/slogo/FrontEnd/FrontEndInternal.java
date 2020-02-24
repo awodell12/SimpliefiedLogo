@@ -26,7 +26,9 @@ public interface FrontEndInternal {
    * Constructor for a view panel that shows the history of Slogo commands entered/interpreted
    * @return a new instance of History
    */
-  History history();
+  //TEMPORARILY removed because (1) history doesn't exist yet (and might never) and
+  // (2) because we can discuss whether constructors belong in interfaces.
+//  History history();
 
   /**
    * Create a new path object so that the visualizer can draw the path the turtle takes for one command.

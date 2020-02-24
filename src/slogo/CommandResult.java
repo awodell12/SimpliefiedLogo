@@ -14,6 +14,9 @@ public class CommandResult {
   public void setErrorMessage(String msg) {
     myErrorMessage = msg;
   }
+  public String getErrorMessage() {
+    return myErrorMessage;
+  }
 
   public double getReturnVal() {
     return returnVal;

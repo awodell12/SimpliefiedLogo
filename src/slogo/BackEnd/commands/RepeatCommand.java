@@ -25,7 +25,8 @@ public class RepeatCommand implements AltCommand {
     int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
     for (double i = 1; i <= numLoops; i ++) {
       backEnd.setVariable("repcount",numLoops);
-      returnVal = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength)).getReturnVal();
+      List<CommandResult> results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength));
+      returnVal = results.get(results.size()-1).getReturnVal();
     }
     return new CommandResult(returnVal, listLength+1);
   }

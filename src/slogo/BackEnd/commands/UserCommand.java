@@ -39,7 +39,8 @@ public class UserCommand implements AltCommand {
     for (int i = 0; i < arguments.size(); i++) {
       backEnd.setVariable(myArguments.get(i),arguments.get(i));
     }
-    returnVal = backEnd.parseCommandsList(myInstructions.toArray(new String[0])).getReturnVal();
+    List<CommandResult> results = backEnd.parseCommandsList(myInstructions.toArray(new String[0]));
+    returnVal = results.get(results.size()-1).getReturnVal();
     return new CommandResult(returnVal, 0);
   }
 

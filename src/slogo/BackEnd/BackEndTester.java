@@ -53,10 +53,10 @@ public class BackEndTester {
 //    parser.parseScript("to spiral [ :size ] [ for [ :i 1 5 1 ] [ fd :size rt * :i 15 ] ] repeat 5 [ fd 10 spiral 18 ]"); //variable b isn't known
 //    parser.parseScript("to spiral [ :size ] [ for [ :i 1 2 1 ] [ fd :size rt * :i 15 ] ] repeat 2 [ fd 10 spiral 18 ] fd 999.999"); //variable b isn't known
 //    parser.parseScript("make :b 3 ifelse greater? :b 2 [ fd 10 ] [ rt 45 ] fd 1.5");
-//    parser.parseScript("set :b 120 for [ :a 1 3 1 ] [ fd sum :b fd :a ] fd 1234.1234");
-//    parser.parseScript("to foo [ :distance ] [ fd :distance ] fd 3 foo foo foo 30.0\n"
-//        + "to foo [ :turn :fdamt :useless ] [ rt :turn forward :fdamt ] fd foo foo 88 21 -100.0 -200.0 0.1");
-//    parser.parseScript("to foo [ :n ] [ fd :n rt 45.0 if greater? 4 :n [ foo sum :n 3.12 ] ] foo 1");
+    parser.parseScript("set :b 120 for [ :a 1 3 1 ] [ fd sum :b fd :a ] fd 1234.1234");
+    parser.parseScript("to foo [ :distance ] [ fd :distance ] fd 3 foo foo foo 30.0\n"
+        + "to foo [ :turn :fdamt :useless ] [ rt :turn forward :fdamt ] fd foo foo 88 21 -100.0 -200.0 0.1");
+    parser.parseScript("to foo [ :n ] [ fd :n rt 45.0 if greater? 4 :n [ foo sum :n 3.12 ] ] foo 1");
 //    parser.parseScript("to foo [ :n :useless :rightamt ] [ fd :n right :rightamt ] foo 100.0 1000.0 foo 3.0 1.0 -2.0");
 //      parser.parseScript("to foo [ :n ] [ fd :n ] foo to foo [ :n ] [ right :n ] fd 100.0 foo 10.0");
 //    System.out.println(SLogoBackEnd.distanceToEndBracketStatic(array));

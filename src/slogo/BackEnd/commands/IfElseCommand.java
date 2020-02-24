@@ -28,11 +28,13 @@ public class IfElseCommand implements AltCommand {
     System.out.println("secondListLength = " + secondListLength);
     if (arguments.get(0) != 0) {
       System.out.println("IF evaluated to TRUE");
-      returnVal = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,firstListLength)).getReturnVal();
+      List<CommandResult> results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,firstListLength));
+      returnVal = results.get(results.size()-1).getReturnVal();
     }
     else {
       System.out.println("IF evaluated to FALSE");
-      returnVal = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1)).getReturnVal();
+      List<CommandResult> results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1));
+      returnVal = results.get(results.size()-1).getReturnVal();
     }
     return new CommandResult(returnVal,firstListLength+secondListLength+2);
   }

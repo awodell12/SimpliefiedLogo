@@ -33,8 +33,8 @@ public class ForLoopCommand implements AltCommand {
     int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length));
     for (double i = start; i <= end; i += increment) {
       backEnd.setVariable(var,i);
-      returnVal = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)).getReturnVal();
-    }
+      List<CommandResult> results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1));
+      returnVal = results.get(results.size()-1).getReturnVal();    }
     System.out.println("Ending FOR Loop.");
     return new CommandResult(returnVal, backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length))+2);
   }

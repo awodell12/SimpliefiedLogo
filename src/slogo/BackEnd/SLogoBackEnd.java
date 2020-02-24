@@ -73,7 +73,11 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   @Override
   public List<CommandResult> parseScript(String script) {
     String[] scriptTokens = getTokenList(script).toArray(new String[0]);
-    parseCommandsList(scriptTokens);
+    List<CommandResult> results = parseCommandsList(scriptTokens);
+    CommandResult result = results.get(results.size()-1);
+    if (!result.getErrorMessage().equals("")) {
+      System.out.println(result.getErrorMessage());
+    }
     System.out.println("--------------------------------");
     return null;
   }
@@ -90,7 +94,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return scriptTokenList;
   }
 
-  public CommandResult parseCommandsList(String[] tokenList) {
+  public List<CommandResult> parseCommandsList(String[] tokenList) {
     List<CommandResult> results = new ArrayList<>();
     int numTokens = tokenList.length;
     int programCounter = 0;
@@ -102,13 +106,17 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         results.add(result);
         programCounter += result.getTokensParsed() + 1;
       } catch (ParseException e) {
-        System.out.println(e.getMessage());
         result = new CommandResult(0.0,0);
-        break;
+        result.setErrorMessage(e.getMessage());
+        results.add(result);
+        return results;
       }
     }
     System.out.println("results.size() = " + results.size());
-    return new CommandResult(result.getReturnVal(),programCounter);
+//    return new CommandResult(result.getReturnVal(),programCounter);
+    results.remove(result);
+    results.add(new CommandResult(result.getReturnVal(),programCounter));
+    return results;
   }
 
   private AltCommand identifyCommand(String rawToken) throws ParseException {
