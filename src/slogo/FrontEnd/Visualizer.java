@@ -59,7 +59,7 @@ public class Visualizer extends Application {
     private static final double SPACING = 10;
     //TODO: add menu shapes and label shapes
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
-    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "White", "Blue"}, {"English"}, {"White"}};
+    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "White", "Blue"}, {"English"}, {"White", "Blue"}};
     private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
         put("Red", Color.RED);
         put("White", Color.WHITE);
@@ -125,13 +125,17 @@ public class Visualizer extends Application {
      * @param path path object to draw
      */
     public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
-                                int variableValue, String udcName, String udcText){
-        // TODO: add more parameters
+                                int variableValue, String udcName, String udcText, boolean clearScreen,
+                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle){
         myTurtleView.setTurtleHeading(turtleRotate);
         myTurtleView.setTurtlePosition(turtlePos.x, turtlePos.y);
         myTurtleView.addPath(path);
         addVariable(variableName, variableValue);
         addUserDefinedCommand(udcName, udcText);
+        if(clearScreen) myTurtleView.clearPaths();
+        if(resetTurtle) myTurtleView.resetTurtle();
+        myTurtleView.setTurtleVisibility(turtleVisibility);
+        myTurtleView.setIsPenUp(isPenUp);
     }
 
     private Scene setUpDisplay() throws IOException{
