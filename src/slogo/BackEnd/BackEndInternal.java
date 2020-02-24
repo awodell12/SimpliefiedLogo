@@ -61,4 +61,20 @@ public interface BackEndInternal {
    * named constants.
    */
   Collection<String> getUserCommandScript(String name);
+
+  /**
+   * @return A list of all Turtles in this instance of the model.
+   */
+  List<Turtle> getTurtles();
+
+  /**
+   * Set a new list of turtles.
+   * @param t A list of Turtles that will be tied to this model.
+   */
+  void setTurtles(List<Turtle> t);
+
+  /**
+   * Remove all turtles from the model.
+   */
+  void clearTurtles();
 }

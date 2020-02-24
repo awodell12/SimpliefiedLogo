@@ -30,11 +30,14 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private Map<String, AltCommand> myUserCommands;
   // TODO: make UserCommand Map
   public static final String WHITESPACE = "\\s+";
+  private List<Turtle> myTurtles;
 
   public SLogoBackEnd() {
     mySymbols = new ArrayList<>();
     myVariables = new HashMap<>();
     myUserCommands = new HashMap<>();
+    myTurtles = new ArrayList<>();
+    myTurtles.add(new SLogoTurtle());
   }
 
   /**
@@ -323,4 +326,13 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   public Collection<String> getUserCommandScript(String name) {
     return null;
   }
+
+  @Override
+  public List<Turtle> getTurtles(){ return myTurtles; }
+
+  @Override
+  public void setTurtles(List<Turtle> t){ myTurtles = t; }
+
+  @Override
+  public void clearTurtles(){ myTurtles.clear(); }
 }
