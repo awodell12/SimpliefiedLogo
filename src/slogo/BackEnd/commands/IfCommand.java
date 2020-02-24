@@ -30,7 +30,7 @@ public class IfCommand implements AltCommand {
     else {
       System.out.println("IF evaluated to FALSE");
     }
-    return new CommandResult(returnVal, listLength-2);
+    return new CommandResult(returnVal, listLength);
   }
 
   @Override
