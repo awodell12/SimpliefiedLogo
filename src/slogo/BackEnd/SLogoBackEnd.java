@@ -26,7 +26,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   public static final String NEWLINE = "\\n+";
   private List<Entry<String, Pattern>> mySymbols;
   private Map<String, Double> myVariables;
+  // TODO: make VariableMap
   private Map<String, AltCommand> myUserCommands;
+  // TODO: make UserCommand Map
   public static final String WHITESPACE = "\\s+";
 
   public SLogoBackEnd() {
