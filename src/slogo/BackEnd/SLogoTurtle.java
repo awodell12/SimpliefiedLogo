@@ -24,8 +24,10 @@ public class SLogoTurtle implements Turtle {
     public double getY() { return myY; }
 
     @Override
-    public void setPos(double x, double y) {
+    public double setPos(double x, double y) {
+        double distanceTraveled = Math.sqrt(Math.pow(myX - x, 2) + Math.pow(myY - y, 2));
         myX = x; myY = y;
+        return distanceTraveled;
     }
 
     @Override
@@ -69,13 +71,21 @@ public class SLogoTurtle implements Turtle {
     public boolean getPenUp() { return myPenUp; }
 
     @Override
-    public void setPenUp(boolean up) { myPenUp = up; }
+    public int setPenUp(boolean up) {
+        myPenUp = up;
+        if(up)
+            return 1;
+        return 0;
+    }
 
     @Override
     public boolean getVisible(){ return myVisible; }
 
     @Override
-    public void setVisible(boolean vis){
+    public int setVisible(boolean vis){
         myVisible = vis;
+        if(vis)
+            return 1;
+        return 0;
     }
 }

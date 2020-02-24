@@ -14,7 +14,7 @@ public class RightCommand implements AltCommand {
 
   @Override
   public int getNumArgs() {
-    return 1;
+    return NUM_ARGS;
   }
 
   @Override

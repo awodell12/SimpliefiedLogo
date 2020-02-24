@@ -14,6 +14,13 @@ public class CommandFactory {
     newMap.put("Right", new RightCommand());
     newMap.put("Left", new LeftCommand());
     newMap.put("SetHeading", new SetHeadingCommand());
+    newMap.put("SetPosition", new SetPosCommand());
+    newMap.put("PenUp", new PenUpCommand());
+    newMap.put("PenDown", new PenDownCommand());
+    newMap.put("ShowTurtle", new ShowTurtleCommand());
+    newMap.put("HideTurtle", new HideTurtleCommand());
+    newMap.put("Home", new GoHomeCommand());
+    newMap.put("ClearScreen", new ClearScreenCommand());
     newMap.put("For", new ForLoopCommand());
     newMap.put("MakeVariable", new MakeCommand());
     newMap.put("If", new IfCommand());

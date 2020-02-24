@@ -22,7 +22,7 @@ public interface Turtle {
    * @param x The new X position of the turtle
    * @param y The new Y position of the turtle
    */
-  public void setPos(double x, double y);
+  public double setPos(double x, double y);
 
   /**
    * Moves the turtle forward in the direction of its heading.
@@ -65,8 +65,9 @@ public interface Turtle {
 
   /**
    * @param up True for setting the pen to up/inactive, False to set the pen to down/active.
+   * @return 1 if set to up, 0 if set to down
    */
-  public void setPenUp(boolean up);
+  public int setPenUp(boolean up);
 
   /**
    * @return whether turtle is visible
@@ -76,7 +77,8 @@ public interface Turtle {
   /**
    * Change visibility of the turtle
    * @param vis True for setting turtle to visible. False if not visible
+   * @return 1 if set to visible, 0 if set to not visible
    */
-  public void setVisible(boolean vis);
+  public int setVisible(boolean vis);
 
 }

@@ -9,11 +9,11 @@ import slogo.BackEnd.SLogoBackEnd;
 public class SetHeadingCommand implements AltCommand {
 
     public static final int NUM_ARGS = 1;
-    public static final String COMMAND_NAME = "Right";
+    public static final String COMMAND_NAME = "SetHeading";
 
     @Override
     public int getNumArgs() {
-        return 1;
+        return NUM_ARGS;
     }
 
     @Override
@@ -25,9 +25,7 @@ public class SetHeadingCommand implements AltCommand {
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
         backEnd.getTurtles().get(0).setHeading(arguments.get(0));
         //System.out.println("Setting heading to" + arguments.get(0) + " degrees.");
-        List<CommandResult> arr = new ArrayList<>();
-        arr.add(new CommandResult(arguments.get(0),0));
-        return arr;
+        return List.of(new CommandResult(arguments.get(0),0));
     }
 
     @Override

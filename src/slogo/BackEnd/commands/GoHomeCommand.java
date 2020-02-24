@@ -6,10 +6,10 @@ import slogo.BackEnd.AltCommand;
 import slogo.CommandResult;
 import slogo.BackEnd.SLogoBackEnd;
 
-public class BackCommand implements AltCommand {
+public class GoHomeCommand implements AltCommand {
 
-    public static final int NUM_ARGS = 1;
-    public static final String COMMAND_NAME = "Forward";
+    public static final int NUM_ARGS = 0;
+    public static final String COMMAND_NAME = "Home";
 
     @Override
     public int getNumArgs() {
@@ -23,18 +23,13 @@ public class BackCommand implements AltCommand {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
-        backEnd.getTurtles().get(0).moveBack(arguments.get(0));
-        //System.out.println("Moved forward by " + arguments.get(0));
+        backEnd.getTurtles().get(0).setPos(0, 0);
+        //System.out.println("Turtle now at x=0, y=0");
         return List.of(new CommandResult(arguments.get(0),0));
     }
 
     @Override
     public List<String> findVars(String[] tokenList) {
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return COMMAND_NAME;
     }
 }
