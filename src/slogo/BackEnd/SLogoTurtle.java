@@ -8,6 +8,15 @@ public class SLogoTurtle implements Turtle {
     private boolean myPenUp;
     private boolean myVisible;
 
+    public SLogoTurtle(){
+        myX = 0; myY = 0;
+        myHeading = 0;
+        myPenUp = true;
+        myVisible = true;
+    }
+
+    //TODO: add new constructors besides default
+
     @Override
     public double getX() { return myX; }
 
@@ -21,14 +30,14 @@ public class SLogoTurtle implements Turtle {
 
     @Override
     public void moveForward(double distance) {
-        myX += Math.cos(myHeading) * distance;
-        myY += Math.sin(myHeading) * distance;
+        myX += Math.cos(myHeading * Math.PI / 180) * distance;
+        myY += Math.sin(myHeading * Math.PI / 180) * distance;
     }
 
     @Override
     public void moveBack(double distance) {
-        myX -= Math.cos(myHeading) * distance;
-        myY -= Math.sin(myHeading) * distance;
+        myX -= Math.cos(myHeading * Math.PI / 180) * distance;
+        myY -= Math.sin(myHeading * Math.PI / 180) * distance;
     }
 
     @Override
