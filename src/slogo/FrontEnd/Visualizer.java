@@ -11,6 +11,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
@@ -55,6 +58,13 @@ public class Visualizer extends Application {
     private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
     private static final double SPACING = 10;
     //TODO: add menu shapes and label shapes
+    private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
+    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "White", "Blue"}, {"English"}, {"White"}};
+    private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
+        put("Red", Color.RED);
+        put("White", Color.WHITE);
+        put("Blue", Color.BLUE);
+    }};
 
     private Button myClearCommandBoxButton;
     private Button myClearHistoryButton;
@@ -169,6 +179,7 @@ public class Visualizer extends Application {
 
     private void setUpLeftPane() {
 
+        setUpMenus();
         myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
         myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
     }
@@ -191,6 +202,31 @@ public class Visualizer extends Application {
         topButtons.getChildren().add(myHelpButton);
         topButtons.getChildren().add(mySetTurtleImageButton);
         myRightVBox.getChildren().add(topButtons);
+    }
+
+    private void setUpMenus(){
+        MenuBar menuBar = new MenuBar();
+        myLeftVBox.getChildren().add(menuBar);
+        for(int i=0; i<MENU_NAMES.length; i++){
+            Menu menu = new Menu(MENU_NAMES[i]);
+            menuBar.getMenus().add(menu);
+            for(String entry : MENU_OPTIONS[i]){
+                MenuItem menuItem = new MenuItem(entry);
+                switch (i) {
+                    case 0:
+                        menuItem.setOnAction(event -> myTurtleView.setPenColor(COLOR_MAP.get(entry)));
+                    case 1:
+                        menuItem.setOnAction(event -> setLanguage(entry));
+                    case 2:
+                        menuItem.setOnAction(event -> myTurtleView.setBackGroundColor(COLOR_MAP.get(entry)));
+                }
+                menu.getItems().add(menuItem);
+            }
+        }
+    }
+
+    private void setLanguage(String language){
+        myInstructionQueue.add("language: " + language);
     }
 
     private void setTurtleImage() {

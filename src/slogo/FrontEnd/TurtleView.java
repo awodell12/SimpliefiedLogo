@@ -19,6 +19,7 @@ import javafx.scene.shape.Path;
 public class TurtleView {
     private ImageView myTurtle;
     private Canvas myCanvas; //don't think canvas is the right thing for this
+    private Color myPenColor;
 
     public TurtleView(Pane layout, double width, double height){
         String myTurtleImage = "slogo/FrontEnd/Resources/turtle.jpg";
@@ -26,12 +27,22 @@ public class TurtleView {
         myTurtle.setPreserveRatio(true);
         myTurtle.setFitWidth(50);
         myTurtle.setCache(true);
+        myPenColor = Color.BLACK;
         myCanvas = new Canvas(width, height);
         myCanvas.getGraphicsContext2D().drawImage(myTurtle.getImage(), myTurtle.getX(), myTurtle.getY());
         layout.getChildren().add(myCanvas);
         // add some listener/binding to canvas to update whenever the turtle moves?
         //  myTurtle.imageProperty().addListener((observable, oldValue, newValue) -> myCanvas.getGraphicsContext2D().drawImage(newValue));
     }
+
+    /**
+     * set the pen color (color of paths)
+     * @param color color to set to
+     */
+    public void setPenColor(Color color){
+        myPenColor = color;
+    }
+
     /**
      * Updates the position of the turtle in the Display to the desired set of coordinates.
      * @param x the new x coordinate for the turtle
@@ -55,7 +66,9 @@ public class TurtleView {
      * Will be controlled through a lambda from a drop-down menu
      * @param color the desired color for the background
      */
-    void setBackGroundColor(Color color){};
+    void setBackGroundColor(Color color){
+        System.out.println("changing color");
+    };
 
     /**
      * This method tells the TurtleView it must add a new path to the display by drawing it, in the color
