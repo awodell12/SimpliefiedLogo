@@ -64,4 +64,15 @@ public interface Turtle {
    */
   public void setPenUp(boolean up);
 
+  /**
+   * @return whether turtle is visible
+   */
+  public boolean getVisible();
+
+  /**
+   * Change visibility of the turtle
+   * @param vis True for setting turtle to visible. False if not visible
+   */
+  public void setVisible(boolean vis);
+
 }
