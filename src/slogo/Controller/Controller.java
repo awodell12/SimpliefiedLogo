@@ -8,7 +8,7 @@ import slogo.CommandResult;
 import slogo.FrontEnd.Visualizer;
 
 public class Controller implements ModelListener {
-  private static Visualizer myVisualizer;
+  private Visualizer myVisualizer;
   @Override
   public void handleModelUpdate(CommandResult update) {
 
