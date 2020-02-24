@@ -78,7 +78,13 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   @Override
   public List<CommandResult> parseScript(String script) {
     String[] scriptTokens = getTokenList(script).toArray(new String[0]);
-    parseCommandsList(scriptTokens);
+    List<CommandResult> results = parseCommandsList(scriptTokens);
+    System.out.println("results.size() = " + results.size());
+    CommandResult result = results.get(results.size()-1);
+    if (!result.getErrorMessage().equals("")) {
+      System.out.println(result.getErrorMessage());
+    }
+    System.out.println("--------------------------------");
     return null;
   }
 
@@ -94,94 +100,95 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return scriptTokenList;
   }
 
-  public CommandResult parseCommandsList(String[] tokenList) {
+  public List<CommandResult> parseCommandsList(String[] tokenList) {
+    List<CommandResult> results = new ArrayList<>();
     int numTokens = tokenList.length;
     int programCounter = 0;
     CommandResult result = null;
     while (programCounter < tokenList.length) {
-//      System.out.println("continuing parse command list on the outermost side at PC = " + programCounter);
-//      printRemainingTokens(tokenList,programCounter);
       try {
-        AltCommand command = CommandFactory.makeCommand(getSymbol(tokenList[programCounter]));
-        result = parseCommand(command,Arrays.copyOfRange(tokenList,programCounter+1,numTokens));
-        programCounter += result.getTokensParsed() + 1;
+        AltCommand command = identifyCommand(tokenList[programCounter]);
+        List<CommandResult> listResult = parseCommand(command,Arrays.copyOfRange(tokenList,programCounter+1,numTokens));
+        results.addAll(listResult);
+        programCounter += results.get(results.size()-1).getTokensParsed() + 1;
       } catch (ParseException e) {
-        if (myUserCommands.containsKey(tokenList[programCounter])) {
-          AltCommand command = myUserCommands.get(tokenList[programCounter]);
-          result = parseCommand(command,Arrays.copyOfRange(tokenList,programCounter+1,numTokens));
-          programCounter += result.getTokensParsed() + 1;
-        }
-        else {
-          System.out.println("Globally read a non-command (" + tokenList[programCounter] + ") when expecting a command at PC = " + programCounter);
-          break;
-        }
+        result = new CommandResult(0.0,0);
+        result.setErrorMessage(e.getMessage());
+        results.add(result);
+        return results;
       }
-
     }
-    return new CommandResult(result.getReturnVal(),programCounter);
+    result = results.get(results.size()-1);
+    results.add(new CommandResult(result.getReturnVal(),programCounter));
+    return results;
   }
 
-  private CommandResult parseCommand(AltCommand command, String[] tokenList) {
-//    System.out.println("Beginning parse of " + command);
-//    printRemainingTokens(tokenList,0);
+  private AltCommand identifyCommand(String rawToken) throws ParseException {
+    if (isValue(getSymbol(rawToken))) {
+      throw new ParseException("Don't know what to do with " + rawToken);
+    }
+    try {
+      return CommandFactory.makeCommand(getSymbol(rawToken));
+    } catch (ParseException e) {
+      if (myUserCommands.containsKey(rawToken)) {
+        return myUserCommands.get(rawToken);
+      }
+      throw e;
+    }
+  }
+
+  private List<CommandResult> parseCommand(AltCommand command, String[] tokenList) throws ParseException {
     //'fd 50' expects to start at PC = 1, where '50' is.
     Stack<Double> commandValues = new Stack<>();
-    List<String> variableNames = new ArrayList<>();
-    int startPos = 0;
-    if (command.getNumVars() > 0) {
-      variableNames.addAll(command.findVars(tokenList));
-      startPos = variableNames.size();
-    }
-    for (int programCounter = startPos; programCounter <= tokenList.length; programCounter ++) {
-      //Check this first because a command can have 0 arguments
+    List<String> variableNames = getCommandVars(command,tokenList);
+    int programCounter;
+    for (programCounter = variableNames.size(); programCounter <= tokenList.length; programCounter ++) {
       if (commandValues.size() >= command.getNumArgs()) {
-        List<Double> argList = getArgsFromStack(commandValues,command.getNumArgs());
-        CommandResult result = command.execute(argList,variableNames,
-            Arrays.copyOfRange(tokenList,programCounter,tokenList.length),
-            this);
-        return new CommandResult(result.getReturnVal(),result.getTokensParsed()+programCounter);
+        return executeCurrentCommand(command, tokenList, commandValues, variableNames,
+            programCounter);
       }
-
-      String currentTokenRaw = tokenList[programCounter];
-      String currentTokenType = getSymbol(tokenList[programCounter]);
-
-      if (isValue(currentTokenType)) {
-        commandValues.add(parseValue(currentTokenType,currentTokenRaw));
-      }
-      //if IS_COMMAND @ PC
-      else {
-        if (currentTokenType.equals("MakeUserInstruction")) {
-          try {
-            programCounter += handleUserCommandCreation(Arrays.copyOfRange(tokenList,programCounter+1,tokenList.length));
-            commandValues.add(1.0);
-          } catch (ParseException e) {
-            System.out.printf("Can't redefine primitive %s.", currentTokenRaw);
-            commandValues.add(0.0);
-          }
-        }
-        else {
-          try {
-            AltCommand insideCommand = CommandFactory.makeCommand(currentTokenType);
-            CommandResult insideResult = parseCommand(insideCommand,Arrays.copyOfRange(tokenList,programCounter+1,tokenList.length));
-            commandValues.add(insideResult.getReturnVal());
-            programCounter += insideResult.getTokensParsed();
-          } catch (ParseException e) {
-            if (myUserCommands.containsKey(currentTokenRaw)) {
-              AltCommand insideCommand = myUserCommands.get(currentTokenRaw);
-              CommandResult insideResult = parseCommand(insideCommand,Arrays.copyOfRange(tokenList,programCounter+1,tokenList.length));
-              commandValues.add(insideResult.getReturnVal());
-              programCounter += insideResult.getTokensParsed();
-            }
-            else {
-              //TODO: Realize that this is duplicated code.
-              System.out.println("Read a non-command (" + currentTokenRaw + ") when expecting a command at PC = " + programCounter);
-            }
-          }
-        }
-      }
+      programCounter += parseNextToken(tokenList,programCounter,commandValues);
     }
-    System.out.println("Unexpected end of instructions");
-    return null;
+    throw new ParseException("Unexpected end of instructions.");
+  }
+
+  private List<CommandResult> executeCurrentCommand(AltCommand command, String[] tokenList,
+      Stack<Double> commandValues, List<String> variableNames, int programCounter)
+      throws ParseException {
+    List<Double> argList = getArgsFromStack(commandValues,command.getNumArgs());
+    List<CommandResult> results = null;
+    results = new ArrayList<>(command.execute(argList,variableNames,
+        Arrays.copyOfRange(tokenList,programCounter,tokenList.length),
+        this));
+    CommandResult lastResult = results.get(results.size()-1);
+    results.add(new CommandResult(lastResult.getReturnVal(),lastResult.getTokensParsed()+programCounter));
+    return results;
+  }
+
+  //TODO: This method might be better replaced by changing the default behavior
+  //TODO: of AltCommand.findVars().
+  private List<String> getCommandVars(AltCommand command, String[] tokenList) {
+    if (command.getNumVars() > 0) {
+      return (command.findVars(tokenList));
+    }
+    return new ArrayList<>();
+  }
+
+  private int parseNextToken(String[] tokenList, int programCounter, Stack<Double> commandValues) throws ParseException{
+    if (programCounter >= tokenList.length) {
+      throw new ParseException("Unexpected end of instructions.");
+    }
+    String currentTokenRaw = tokenList[programCounter];
+    String currentTokenType = getSymbol(tokenList[programCounter]);
+    if (isValue(currentTokenType)) {
+      commandValues.add(parseValue(currentTokenType,currentTokenRaw));
+    }
+    else { //It's a command. TODO: actually check if it's a command or if it's gibberish.
+        List<CommandResult> insideResult = parseCommand(identifyCommand(currentTokenRaw),Arrays.copyOfRange(tokenList,programCounter+1,tokenList.length));
+        commandValues.add(insideResult.get(insideResult.size()-1).getReturnVal());
+        return insideResult.get(insideResult.size()-1).getTokensParsed();
+    }
+    return 0;
   }
 
   private List<Double> getArgsFromStack(Stack<Double> values, int numArgs) {
@@ -193,21 +200,13 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return argList;
   }
 
-  private double parseValue(String type, String token) {
-    double value;
+  private double parseValue(String type, String token) throws ParseException {
     if (isVariable(type)) {
-      try {
-        value = getVariable(token.substring(1));
-      }
-      catch (ParseException e) {
-        System.out.printf("Don't know about variable %s\n", token);
-        value = 0.0;
-      }
+        return getVariable(token.substring(1));
     }
     else {
-      value = Double.parseDouble(token);
+      return Double.parseDouble(token);
     }
-    return value;
   }
 
   public int handleUserCommandCreation(String[] tokenList) throws ParseException{
@@ -220,13 +219,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     }
     programCounter += 2;
     int numCommands = distanceToEndBracket(Arrays.copyOfRange(tokenList,programCounter,tokenList.length)) - 1;
-    System.out.println();
-    try {
       setUserCommand(cmdName,toVars,Arrays.copyOfRange(tokenList,programCounter,programCounter + numCommands));
-    } catch (ParseException e) {
-      throw new ParseException();
-    }
-//    System.out.println("Advanced PC by " + (programCounter + numCommands));
     return programCounter + numCommands + 1;
   }
 
@@ -272,18 +265,18 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public int distanceToEndBracket(String[] tokenList) {
-    Stack<String> openBrackets = new Stack<>();
+    int extraBrackets = 0;
     for (int i = 0; i < tokenList.length; i ++) {
       String tokenSymbol = getSymbol(tokenList[i]);
       if (isOpenBracket(tokenSymbol)) {
-        openBrackets.add(tokenList[i]); //THERE IS NOT A POINT TO DOING THIS WITH A STACK.
+        extraBrackets ++;
       }
       else if (isClosedBracket(tokenSymbol)) {
-        if (openBrackets.isEmpty()) {
+        if (extraBrackets == 0) {
           return i + 1;
         }
         else {
-          openBrackets.pop();
+          extraBrackets --;
         }
       }
     }
@@ -300,7 +293,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     if (myVariables.containsKey(name)) {
        return myVariables.get(name);
     }
-    throw new ParseException();
+    throw new ParseException("Don't know about variable " + name);
   }
 
   @Override
@@ -312,10 +305,11 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   public void setUserCommand(String name, List<String> parameters, String[] commands)
       throws ParseException {
     if (CommandFactory.hasCommand(getSymbol(name))) {
-      throw new ParseException();
+      throw new ParseException("Can't redefine primitive " + name);
     }
     myUserCommands.put(name, new UserCommand(parameters,Arrays.asList(commands)));
   }
+
   @Override
   public Collection<String> getUserCommandArgs(String name) {
     return null;

@@ -35,7 +35,7 @@ public class CommandFactory {
     if (myCommands.containsKey(type)) {
       return myCommands.get(type);
     }
-    throw new ParseException();
+    throw new ParseException("Don't know how to " + type);
   }
 
   public static boolean hasCommand(String type) {
