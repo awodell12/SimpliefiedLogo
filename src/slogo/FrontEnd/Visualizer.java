@@ -31,9 +31,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Deque;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class Visualizer extends Application {
     private static final double HEIGHT = 600;
@@ -63,6 +61,7 @@ public class Visualizer extends Application {
     private ClearableEntriesBox myHistory;
     private ClearableEntriesBox myUserDefinedCommands;
     private ClearableEntriesBox myVariables;
+    private Map<String, Integer> myVariableMap;
     private TurtleView myTurtleView;
     private Queue<String> myInstructionQueue;
     private Stage myStage;
@@ -116,6 +115,7 @@ public class Visualizer extends Application {
 
     private Scene setUpDisplay() throws IOException{
         myInstructionQueue = new PriorityQueue<>();
+        myVariableMap = new HashMap<>();
 
         myRoot = new Group();
         myLayout = new HBox(20);
@@ -230,14 +230,22 @@ public class Visualizer extends Application {
     }
 
     private void addVariable(String name, int value){
-        myVariables.addEntry(name + " : " + (char)value);
-        // TODO: overwrite variables that already existed
+        if(myVariableMap.containsKey(name)){
+            myVariables.addEntry(name + " : " + value, name);
+        }
+        else{
+            myVariables.addEntry(name + " : " + value, null);
+        }
+        myVariableMap.put(name, value);
     }
 
     private void runButtonEvent(){
         String instruction = myCommandBox.getContents();
         myInstructionQueue.add(instruction);
-        myHistory.addEntry(instruction);
+        myHistory.addEntry(instruction, null);
+        addVariable("wow", 8);
+        addVariable("nice", 6);
+        addVariable("wow", 5);
     }
 
     private void displayHelp(){
