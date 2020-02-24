@@ -230,9 +230,9 @@ public class Visualizer extends Application {
     }
 
     private void runButtonEvent(){
-      String instruction = myCommandBox.getContents();
-      myInstructionQueue.add(instruction);
-      myHistory.addHistoryEntry(instruction);
+        String instruction = myCommandBox.getContents();
+        myInstructionQueue.add(instruction);
+        myHistory.addEntry(instruction);
     }
 
     private void displayHelp(){

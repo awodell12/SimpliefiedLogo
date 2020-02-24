@@ -2,6 +2,7 @@ package slogo.FrontEnd;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -9,33 +10,38 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 /**
- * This class is used to manage the display elements of the historu (i.e. commands that have been run)
+ * This class is used to manage the display elements of the history, variables, and user defined commands
  */
 public class ClearableEntriesBox {
 
     private TextFlow myTextFlow;
-    public ClearableEntriesBox(Pane layout, Rectangle historyShape, Rectangle clearButtonShape){
-      myTextFlow = new TextFlow();
-      myTextFlow.setPrefWidth(historyShape.getWidth());
-      myTextFlow.setMaxSize(Control.USE_PREF_SIZE,Control.USE_PREF_SIZE);
-      Button clearButton = new Button("Clear", clearButtonShape);
-      clearButton.setOnAction(event -> clearEntryBox());
-      layout.getChildren().add(clearButton);
+    public ClearableEntriesBox(Pane layout, Rectangle shape, Rectangle clearButtonShape){
+        myTextFlow = new TextFlow();
+        myTextFlow.setPrefWidth(shape.getWidth());
+        myTextFlow.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(myTextFlow);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        layout.getChildren().add(scrollPane);
+        Button clearButton = new Button("Clear", clearButtonShape);
+        clearButton.setOnAction(event -> clearEntryBox());
+        layout.getChildren().add(clearButton);
     }
 
     /**
-     * Removes all entries from the History and its display
+     * Removes all entries from the box and its display
      */
     void clearEntryBox(){
-      myTextFlow.getChildren().clear();
+        myTextFlow.getChildren().clear();
     }
 
     /**
-     * Takes in the latest user entry and stores it into history so it can be displayed.
-     * @param userInput The String copy of what the user enters into the CommandBox
+     * Takes in the latest user entry and stores it so it can be displayed.
+     * @param entry the string to be added to the displayed entries
      */
-    void addHistoryEntry(String userInput){
-      Text newText = new Text(userInput);
-      myTextFlow.getChildren().add(newText);
+    void addEntry(String entry){
+        Text newText = new Text(entry);
+        myTextFlow.getChildren().add(newText);
     }
 }
