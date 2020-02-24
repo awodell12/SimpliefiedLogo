@@ -17,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -107,10 +108,20 @@ public class Visualizer extends Application {
      * See the results of the turtle executing commands displayed visually
      * See resulting errors in user friendly way
      * see user defined commands currently available
-     * @param result
+     * @param turtleRotate new angle to set turtle to
+     * @param turtlePos new coordinates for turtle
+     * @param variableName string name for variable to be created/overwritten
+     * @param variableValue value for new variable
+     * @param path path object to draw
      */
-    public void interpretResult(CommandResult result){
-        // maybe make this take exact parameters
+    public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
+                                int variableValue, String udcName, String udcText){
+        // TODO: add more parameters
+        myTurtleView.setTurtleHeading(turtleRotate);
+        myTurtleView.setTurtlePosition(turtlePos.x, turtlePos.y);
+        myTurtleView.addPath(path);
+        addVariable(variableName, variableValue);
+        addUserDefinedCommand(udcName, udcText);
     }
 
     private Scene setUpDisplay() throws IOException{
@@ -240,13 +251,14 @@ public class Visualizer extends Application {
         myVariableMap.put(name, value);*/
     }
 
+    private void addUserDefinedCommand(String name, String command){
+        myUserDefinedCommands.addEntry(name + ":\n" + command, name);
+    }
+
     private void runButtonEvent(){
         String instruction = myCommandBox.getContents();
         myInstructionQueue.add(instruction);
         myHistory.addEntry(instruction, null);
-        addVariable("wow", 8);
-        addVariable("nice", 6);
-        addVariable("wow", 5);
     }
 
     private void displayHelp(){
