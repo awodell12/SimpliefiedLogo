@@ -5,6 +5,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -15,7 +16,9 @@ import javafx.scene.text.TextFlow;
 public class ClearableEntriesBox {
 
     private TextFlow myTextFlow;
-    public ClearableEntriesBox(Pane layout, Rectangle shape, Rectangle clearButtonShape){
+    private Text descriptionText;
+
+    public ClearableEntriesBox(Pane layout, Rectangle shape, Rectangle clearButtonShape, String description){
         myTextFlow = new TextFlow();
         myTextFlow.setPrefWidth(shape.getWidth());
         myTextFlow.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
@@ -27,6 +30,10 @@ public class ClearableEntriesBox {
         Button clearButton = new Button("Clear", clearButtonShape);
         clearButton.setOnAction(event -> clearEntryBox());
         layout.getChildren().add(clearButton);
+        descriptionText = new Text(description + "\n");
+        descriptionText.setUnderline(true);
+        descriptionText.setFill(Color.BLUE);
+        myTextFlow.getChildren().add(descriptionText);
     }
 
     /**
@@ -34,6 +41,7 @@ public class ClearableEntriesBox {
      */
     void clearEntryBox(){
         myTextFlow.getChildren().clear();
+        myTextFlow.getChildren().add(descriptionText);
     }
 
     /**

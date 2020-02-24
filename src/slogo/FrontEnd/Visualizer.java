@@ -164,9 +164,9 @@ public class Visualizer extends Application {
 
     private void setUpRightPane() {
         setUpTopButtons();
-        myHistory = new ClearableEntriesBox(myRightVBox, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE);
-        myUserDefinedCommands = new ClearableEntriesBox(myRightVBox, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE);
-        myVariables = new ClearableEntriesBox(myRightVBox, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE);
+        myHistory = new ClearableEntriesBox(myRightVBox, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, "HISTORY");
+        myUserDefinedCommands = new ClearableEntriesBox(myRightVBox, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, "USER-DEFINED COMMANDS");
+        myVariables = new ClearableEntriesBox(myRightVBox, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, "ENVIRONMENT VARIABLES");
         setUpBottomButtons();
     }
 
@@ -198,16 +198,16 @@ public class Visualizer extends Application {
     }
 
     private void setUpBottomButtons() {
-    HBox bottomButtons = new HBox(SPACING);
-    Button runButton = new Button("Run", RUN_BUTTON_SHAPE);
-    runButton.setOnAction(event -> runButtonEvent());
-    Button clearButton = new Button("Clear", CLEAR_COMMAND_BOX_SHAPE);
-    clearButton.setOnAction(event -> myCommandBox.clearContents());
-    bottomButtons.getChildren().addAll(runButton, clearButton);
-    myRightVBox.getChildren().add(bottomButtons);
-  }
+        HBox bottomButtons = new HBox(SPACING);
+        Button runButton = new Button("Run", RUN_BUTTON_SHAPE);
+        runButton.setOnAction(event -> runButtonEvent());
+        Button clearButton = new Button("Clear", CLEAR_COMMAND_BOX_SHAPE);
+        clearButton.setOnAction(event -> myCommandBox.clearContents());
+        bottomButtons.getChildren().addAll(runButton, clearButton);
+        myRightVBox.getChildren().add(bottomButtons);
+    }
 
-  private void step(){
+    private void step(){
 
     }
 
@@ -230,7 +230,8 @@ public class Visualizer extends Application {
     }
 
     private void addVariable(String name, int value){
-
+        myVariables.addEntry(name + " : " + (char)value);
+        // TODO: overwrite variables that already existed
     }
 
     private void runButtonEvent(){
