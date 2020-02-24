@@ -22,7 +22,7 @@ public interface AltCommand {
    * @return The effects on the model of this individual command, bundled into a CommandResult
    * instance.
    */
-  CommandResult execute(List<Double> arguments, List<String> vars, String[] tokens, SLogoBackEnd backEnd);
+  List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, SLogoBackEnd backEnd);
 
   List<String> findVars(String[] tokenList);
 }

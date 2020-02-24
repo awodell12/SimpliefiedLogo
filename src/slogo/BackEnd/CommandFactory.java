@@ -10,7 +10,10 @@ public class CommandFactory {
   static {
     Map<String, AltCommand> newMap = new HashMap<>();
     newMap.put("Forward", new ForwardCommand());
+    newMap.put("Backward", new BackCommand());
     newMap.put("Right", new RightCommand());
+    newMap.put("Left", new LeftCommand());
+    newMap.put("SetHeading", new SetHeadingCommand());
     newMap.put("For", new ForLoopCommand());
     newMap.put("MakeVariable", new MakeCommand());
     newMap.put("If", new IfCommand());

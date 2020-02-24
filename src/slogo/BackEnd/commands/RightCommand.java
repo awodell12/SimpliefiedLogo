@@ -1,5 +1,6 @@
 package slogo.BackEnd.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
 import slogo.CommandResult;
@@ -21,9 +22,12 @@ public class RightCommand implements AltCommand {
   }
 
   @Override
-  public CommandResult execute(List<Double> arguments, List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
-    System.out.println("Turning right by " + arguments.get(0) + " degrees.");
-    return new CommandResult(arguments.get(0),0);
+  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
+    backEnd.getTurtles().get(0).turn(arguments.get(0));
+    //System.out.println("Turning right by " + arguments.get(0) + " degrees.");
+    List<CommandResult> arr = new ArrayList<>();
+    arr.add(new CommandResult(arguments.get(0),0));
+    return arr;
   }
 
   @Override

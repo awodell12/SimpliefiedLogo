@@ -29,32 +29,37 @@ public class SLogoTurtle implements Turtle {
     }
 
     @Override
-    public void moveForward(double distance) {
+    public double moveForward(double distance) {
         myX += Math.cos(myHeading * Math.PI / 180) * distance;
         myY += Math.sin(myHeading * Math.PI / 180) * distance;
+        return distance;
     }
 
     @Override
-    public void moveBack(double distance) {
+    public double moveBack(double distance) {
         myX -= Math.cos(myHeading * Math.PI / 180) * distance;
         myY -= Math.sin(myHeading * Math.PI / 180) * distance;
+        return distance;
     }
 
     @Override
-    public void turn(double degrees) {
+    public double turn(double degrees) {
         double newHeading = myHeading + degrees;
         newHeading = newHeading % 360;
         if(newHeading < 0)
             newHeading += 360;
         myHeading = newHeading;
+        return Math.abs(degrees);
     }
 
     @Override
-    public void setHeading(double direction) {
-        direction = direction % 360;
-        if(direction < 0)
-            direction += 360;
-        myHeading = direction;
+    public double setHeading(double direction) {
+        double normalizedDir = direction % 360;
+        if(normalizedDir < 0)
+            normalizedDir += 360;
+        double temp = myHeading;
+        myHeading = normalizedDir;
+        return Math.abs(temp - normalizedDir);
     }
 
     @Override
