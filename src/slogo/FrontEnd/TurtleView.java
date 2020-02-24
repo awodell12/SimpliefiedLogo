@@ -4,6 +4,7 @@ package slogo.FrontEnd;
 import java.net.URL;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
 
 /**
  * The TurtleView class encapsulated the view of the turtle and allows for the current state of the
@@ -18,8 +20,9 @@ import javafx.scene.shape.Path;
  */
 public class TurtleView {
     private ImageView myTurtle;
-    private Canvas myCanvas; //don't think canvas is the right thing for this
+    private Group myGroup;
     private Color myPenColor;
+    private Rectangle myBackground;
 
     public TurtleView(Pane layout, double width, double height){
         String myTurtleImage = "slogo/FrontEnd/Resources/turtle.jpg";
@@ -27,12 +30,17 @@ public class TurtleView {
         myTurtle.setPreserveRatio(true);
         myTurtle.setFitWidth(50);
         myTurtle.setCache(true);
+        myTurtle.setFitWidth(width);
+        myTurtle.setFitHeight(height);
+        myBackground = new Rectangle(width, height);
+        myBackground.setFill(Color.WHITE);
         myPenColor = Color.BLACK;
-        myCanvas = new Canvas(width, height);
-        myCanvas.getGraphicsContext2D().drawImage(myTurtle.getImage(), myTurtle.getX(), myTurtle.getY());
-        layout.getChildren().add(myCanvas);
+        myGroup = new Group();
+        myGroup.getChildren().add(myBackground);
+        myGroup.getChildren().add(myTurtle);
+        layout.getChildren().add(myGroup);
         // add some listener/binding to canvas to update whenever the turtle moves?
-        //  myTurtle.imageProperty().addListener((observable, oldValue, newValue) -> myCanvas.getGraphicsContext2D().drawImage(newValue));
+        //  myTurtle.imageProperty().addListener((observable, oldValue, newValue) -> myGroup.getGraphicsContext2D().drawImage(newValue));
     }
 
     /**
@@ -66,8 +74,8 @@ public class TurtleView {
      * Will be controlled through a lambda from a drop-down menu
      * @param color the desired color for the background
      */
-    void setBackGroundColor(Color color){
-        System.out.println("changing color");
+    public void setBackGroundColor(Color color){
+        myBackground.setFill(color);
     };
 
     /**
@@ -75,17 +83,23 @@ public class TurtleView {
      * specified by the Path object
      * @param path the path the turtle took from its previous location to its current
      */
-    void addPath(Path path){};
+    public void addPath(Path path){
+        path.setFill(myPenColor);
+        myGroup.getChildren().add(path);
+    };
 
     /**
      * Removes all of the taken paths displayed on the screen by clearing the display and returns the turtle
      * back to its starting position
      */
-    void clearPaths(){};
+    void clearPaths(){
+        myGroup.getChildren().remove(2, myGroup.getChildren().size());
+        myTurtle.setY(0);
+        myTurtle.setX(0);
+        myTurtle.setRotate(0);
+    };
 
     void setTurtleImage(Image newTurtleImage){
         myTurtle.setImage(newTurtleImage);
-        myCanvas.getGraphicsContext2D().drawImage(myTurtle.getImage(), myTurtle.getX(), myTurtle.getY());
-        // TODO: delete the previous turtle image
     }
 }
