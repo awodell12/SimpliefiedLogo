@@ -1,8 +1,10 @@
 package slogo.BackEnd.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.ParseException;
 import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
 
@@ -19,16 +21,19 @@ public class RepeatCommand implements AltCommand {
   }
 
   @Override
-  public CommandResult execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
+  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd)
+      throws ParseException {
     double numLoops = arguments.get(0);
     double returnVal = 0;
+    List<CommandResult> results = new ArrayList<>();
     int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
     for (double i = 1; i <= numLoops; i ++) {
       backEnd.setVariable("repcount",numLoops);
-      List<CommandResult> results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength));
+      results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength)));
       returnVal = results.get(results.size()-1).getReturnVal();
     }
-    return new CommandResult(returnVal, listLength+1);
+    results.add(new CommandResult(returnVal,listLength+1));
+    return results;
   }
 
   @Override

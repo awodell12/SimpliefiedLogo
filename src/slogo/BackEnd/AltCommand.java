@@ -1,7 +1,6 @@
 package slogo.BackEnd;
 
 import java.util.List;
-import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
 
 /**
@@ -22,7 +21,8 @@ public interface AltCommand {
    * @return The effects on the model of this individual command, bundled into a CommandResult
    * instance.
    */
-  CommandResult execute(List<Double> arguments, List<String> vars, String[] tokens, SLogoBackEnd backEnd);
+  List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, SLogoBackEnd backEnd)
+      throws ParseException;
 
   List<String> findVars(String[] tokenList);
 }

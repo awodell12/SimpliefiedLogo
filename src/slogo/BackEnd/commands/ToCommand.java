@@ -22,15 +22,10 @@ public class ToCommand implements AltCommand {
   }
 
   @Override
-  public CommandResult execute(List<Double> arguments, List<String> vars, String[] tokens,
-      SLogoBackEnd backEnd) {
-    try {
-      int tokensParsed = backEnd.handleUserCommandCreation(tokens);
-      return new CommandResult(1.0,tokensParsed);
-    } catch (ParseException e) {
-      System.out.println("Tried to redefine primitive.");
-      return new CommandResult(0.0, 0);
-    }
+  public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+      SLogoBackEnd backEnd) throws ParseException {
+    int tokensParsed = backEnd.handleUserCommandCreation(tokens);
+    return List.of(new CommandResult(1.0,tokensParsed));
   }
 
   @Override

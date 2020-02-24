@@ -1,9 +1,10 @@
 package slogo.BackEnd.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
-import slogo.BackEnd.Command;
+import slogo.BackEnd.ParseException;
 import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
 
@@ -20,19 +21,22 @@ public class DoTimesCommand implements AltCommand {
   }
 
   @Override
-  public CommandResult execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
+  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd)
+      throws ParseException {
     System.out.println("Beginning DOTIMES Loop.");
     double limit = arguments.get(0);
     String var = vars.get(1);
     double returnVal = 0;
+    List<CommandResult> results = new ArrayList<>();
     int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length));
     for (double i = 1; i <= limit; i ++) {
       backEnd.setVariable(var,i);
-      List<CommandResult> results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1));
+      results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)));
       returnVal = results.get(results.size()-1).getReturnVal();
     }
     System.out.println("Ending DOTIMES Loop.");
-    return new CommandResult(returnVal, backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length))+2);
+    results.add(new CommandResult(returnVal, listLength+2));
+    return results;
   }
 
   @Override
