@@ -1,14 +1,9 @@
-package slogo;
+package slogo.BackEnd;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import slogo.commands.ForLoopCommand;
-import slogo.commands.ForwardCommand;
-import java.util.Collections;
-import slogo.commands.IfCommand;
-import slogo.commands.IfElseCommand;
-import slogo.commands.MakeCommand;
-import slogo.commands.RightCommand;
+import slogo.BackEnd.commands.*;
 
 public class CommandFactory {
   private static final Map<String, AltCommand> myCommands;
@@ -20,17 +15,27 @@ public class CommandFactory {
     newMap.put("MakeVariable", new MakeCommand());
     newMap.put("If", new IfCommand());
     newMap.put("IfElse",new IfElseCommand());
+    newMap.put("Repeat", new RepeatCommand());
+    newMap.put("DoTimes", new DoTimesCommand());
+    newMap.put("Sum", new SumCommand());
+    newMap.put("Product", new MultCommand());
+    newMap.put("GreaterThan",new GreaterCommand());
+    newMap.put("MakeUserInstruction",new ToCommand());
     myCommands = Collections.unmodifiableMap(newMap);
   }
+
 
   public CommandFactory() {
   }
 
-  //TODO: Make this throw a "DON'T KNOW HOW TO" exception.
-  public static AltCommand makeCommand(String type) {
+  public static AltCommand makeCommand(String type) throws ParseException {
     if (myCommands.containsKey(type)) {
       return myCommands.get(type);
     }
-    return null;
+    throw new ParseException();
+  }
+
+  public static boolean hasCommand(String type) {
+    return myCommands.containsKey(type);
   }
 }

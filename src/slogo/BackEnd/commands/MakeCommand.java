@@ -1,9 +1,9 @@
-package slogo.commands;
+package slogo.BackEnd.commands;
 
 import java.util.List;
-import slogo.AltCommand;
+import slogo.BackEnd.AltCommand;
 import slogo.CommandResult;
-import slogo.SLogoBackEnd;
+import slogo.BackEnd.SLogoBackEnd;
 
 public class MakeCommand implements AltCommand {
 
@@ -22,5 +22,10 @@ public class MakeCommand implements AltCommand {
       SLogoBackEnd backEnd) {
     backEnd.setVariable(vars.get(0),arguments.get(0));
     return new CommandResult(arguments.get(0),0);
+  }
+
+  @Override
+  public List<String> findVars(String[] tokenList) {
+    return List.of(tokenList[0].substring(1));
   }
 }

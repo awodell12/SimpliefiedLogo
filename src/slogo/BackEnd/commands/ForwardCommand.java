@@ -1,9 +1,9 @@
-package slogo.commands;
+package slogo.BackEnd.commands;
 
 import java.util.List;
-import slogo.AltCommand;
+import slogo.BackEnd.AltCommand;
 import slogo.CommandResult;
-import slogo.SLogoBackEnd;
+import slogo.BackEnd.SLogoBackEnd;
 
 public class ForwardCommand implements AltCommand {
 
@@ -24,6 +24,11 @@ public class ForwardCommand implements AltCommand {
   public CommandResult execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
     System.out.println("Moved forward by " + arguments.get(0));
     return new CommandResult(arguments.get(0),0);
+  }
+
+  @Override
+  public List<String> findVars(String[] tokenList) {
+    return null;
   }
 
   @Override
