@@ -29,6 +29,7 @@ public class TurtleView {
     myTurtle.setCache(true);
     myCanvas = new Canvas(width, height);
     myCanvas.getGraphicsContext2D().drawImage(myTurtle.getImage(), myTurtle.getX(), myTurtle.getY());
+    myCanvas.setStyle("-fx-border-color: black");
     layout.getChildren().add(myCanvas);
 // add some listener/binding to canvas to update whenever the turtle moves?
   //  myTurtle.imageProperty().addListener((observable, oldValue, newValue) -> myCanvas.getGraphicsContext2D().drawImage(newValue));

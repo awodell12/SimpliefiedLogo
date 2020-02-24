@@ -2,6 +2,7 @@ package slogo.FrontEnd;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -17,10 +18,15 @@ public class ClearableEntriesBox {
     public ClearableEntriesBox(Pane layout, Rectangle historyShape, Rectangle clearButtonShape){
       myTextFlow = new TextFlow();
       myTextFlow.setPrefWidth(historyShape.getWidth());
+      myTextFlow.setPrefHeight(historyShape.getHeight());
       myTextFlow.setMaxSize(Control.USE_PREF_SIZE,Control.USE_PREF_SIZE);
       Button clearButton = new Button("Clear", clearButtonShape);
       clearButton.setOnAction(event -> clearEntryBox());
-      layout.getChildren().add(clearButton);
+      HBox hbox = new HBox(10);
+      myTextFlow.setStyle("-fx-border-color: black");
+      hbox.getChildren().addAll(myTextFlow,clearButton);
+      layout.getChildren().addAll(hbox);
+
     }
 
     /**
@@ -35,7 +41,7 @@ public class ClearableEntriesBox {
      * @param userInput The String copy of what the user enters into the CommandBox
      */
     void addHistoryEntry(String userInput){
-      Text newText = new Text(userInput);
+      Text newText = new Text(userInput + "\n");
       myTextFlow.getChildren().add(newText);
     }
 }

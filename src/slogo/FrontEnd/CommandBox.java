@@ -27,6 +27,7 @@ public class CommandBox {
         inputArea.setPrefWidth(commandBoxShape.getWidth());
         inputArea.maxHeight(commandBoxShape.getHeight());
         myHBox.getChildren().add(inputArea);
+        myHBox.setStyle("-fx-border-color: black");
         root.getChildren().add(myHBox);
     }
 

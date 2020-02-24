@@ -1,5 +1,7 @@
 package slogo.FrontEnd;
 
+import java.io.File;
+import java.util.PriorityQueue;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -15,8 +17,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javax.swing.JFileChooser;
 import javax.swing.SizeRequirements;
 import org.xml.sax.SAXException;
 import slogo.CommandResult;
@@ -73,6 +77,7 @@ public class Visualizer extends Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception {
+      myInstructionQueue = new PriorityQueue<String>();
     myStage = primaryStage;
     Scene display = setUpDisplay();
     myStage.setScene(display);
@@ -106,8 +111,9 @@ public class Visualizer extends Application {
 
     private Scene setUpDisplay() throws IOException{
         myRoot = new Group();
-        myLayout = new HBox(20);
+        myLayout = new HBox(SPACING * 2);
         myLayout.setMaxSize(WIDTH, HEIGHT);
+        myLayout.setMinSize(WIDTH,HEIGHT);
 
 
         myLeftVBox = new VBox(SPACING);
@@ -134,8 +140,9 @@ public class Visualizer extends Application {
             }
         });
         myLayout.getChildren().addAll(myLeftVBox,myRightVBox);
-        myLayout.setMargin(myLeftVBox, new Insets( SPACING, 0, 0, 50));
-        myLayout.setMargin(myRightVBox, new Insets(SPACING,50,0,0));
+        myLayout.setMargin(myLeftVBox, new Insets( SPACING, 25, 0, 50));
+        myLayout.setMargin(myRightVBox, new Insets(SPACING,50,0,25));
+        myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
@@ -159,11 +166,14 @@ public class Visualizer extends Application {
   }
 
   private void setUpTopButtons() {
-
+      FileChooser fileChooser = new FileChooser();
       HBox topButtons = new HBox(SPACING);
     Button myHelpButton = new Button("Help", HELP_BUTTON_SHAPE);
     myHelpButton.setOnAction(event -> displayHelp());
-    topButtons.getChildren().add(myHelpButton);
+    Button setTurtleImage = new Button("Set Turtle Image", SET_TURTLE_IMAGE_BUTTON_SHAPE);
+    setTurtleImage.setOnAction(event -> {
+      File selectedFile = fileChooser.showOpenDialog(myStage);});
+    topButtons.getChildren().addAll(myHelpButton, setTurtleImage);
     myRightVBox.getChildren().add(topButtons);
   }
 
