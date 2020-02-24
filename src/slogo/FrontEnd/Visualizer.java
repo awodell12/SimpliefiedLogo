@@ -53,7 +53,7 @@ public class Visualizer extends Application {
     private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(850, 25, 75, 50);
     private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
     private static final double SPACING = 10;
-  //TODO: add menu shapes and label shapes
+    //TODO: add menu shapes and label shapes
 
     private Button myClearCommandBoxButton;
     private Button myClearHistoryButton;
@@ -152,42 +152,44 @@ public class Visualizer extends Application {
         return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
-  private void setUpLeftPane() {
+    private void setUpLeftPane() {
 
-    myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
-    myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
-  }
+        myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
+        myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
+    }
 
-  private void setUpRightPane() {
-    setUpTopButtons();
-    myHistory = new ClearableEntriesBox(myRightVBox, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE);
-    myUserDefinedCommands = new ClearableEntriesBox(myRightVBox, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE);
-    myVariables = new ClearableEntriesBox(myRightVBox, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE);
-    setUpBottomButtons();
-  }
+    private void setUpRightPane() {
+        setUpTopButtons();
+        myHistory = new ClearableEntriesBox(myRightVBox, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE);
+        myUserDefinedCommands = new ClearableEntriesBox(myRightVBox, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE);
+        myVariables = new ClearableEntriesBox(myRightVBox, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE);
+        setUpBottomButtons();
+    }
 
-  private void setUpTopButtons() {
+    private void setUpTopButtons() {
 
-      HBox topButtons = new HBox(SPACING);
-      Button myHelpButton = new Button("Help", HELP_BUTTON_SHAPE);
-      myHelpButton.setOnAction(event -> displayHelp());
-      Button mySetTurtleImageButton = new Button("Set Turtle Image", SET_TURTLE_IMAGE_BUTTON_SHAPE);
-      mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
-      topButtons.getChildren().add(myHelpButton);
-      topButtons.getChildren().add(mySetTurtleImageButton);
-      myRightVBox.getChildren().add(topButtons);
-  }
+        HBox topButtons = new HBox(SPACING);
+        Button myHelpButton = new Button("Help", HELP_BUTTON_SHAPE);
+        myHelpButton.setOnAction(event -> displayHelp());
+        Button mySetTurtleImageButton = new Button("Set Turtle Image", SET_TURTLE_IMAGE_BUTTON_SHAPE);
+        mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
+        topButtons.getChildren().add(myHelpButton);
+        topButtons.getChildren().add(mySetTurtleImageButton);
+        myRightVBox.getChildren().add(topButtons);
+    }
 
     private void setTurtleImage() {
         final FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(myStage);
-        try {
-            BufferedImage buffImage = ImageIO.read(file);
-            WritableImage fximage = new WritableImage(buffImage.getWidth(), buffImage.getHeight());
-            Image image = SwingFXUtils.toFXImage(buffImage, fximage);
-            myTurtleView.setTurtleImage(image);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        if(file != null) {
+            try {
+                BufferedImage buffImage = ImageIO.read(file);
+                WritableImage fximage = new WritableImage(buffImage.getWidth(), buffImage.getHeight());
+                Image image = SwingFXUtils.toFXImage(buffImage, fximage);
+                myTurtleView.setTurtleImage(image);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
