@@ -31,6 +31,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Deque;
+import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class Visualizer extends Application {
@@ -113,6 +115,8 @@ public class Visualizer extends Application {
     }
 
     private Scene setUpDisplay() throws IOException{
+        myInstructionQueue = new PriorityQueue<>();
+
         myRoot = new Group();
         myLayout = new HBox(20);
         myLayout.setMaxSize(WIDTH, HEIGHT);

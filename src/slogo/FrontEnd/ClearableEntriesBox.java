@@ -41,7 +41,7 @@ public class ClearableEntriesBox {
      * @param entry the string to be added to the displayed entries
      */
     void addEntry(String entry){
-        Text newText = new Text(entry);
+        Text newText = new Text(entry + "\n");
         myTextFlow.getChildren().add(newText);
     }
 }
