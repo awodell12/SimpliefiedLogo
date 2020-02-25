@@ -23,9 +23,9 @@ public class SetHeadingCommand implements AltCommand {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
-        backEnd.getTurtles().get(0).setHeading(arguments.get(0));
+        double retVal = backEnd.getTurtles().get(0).setHeading(arguments.get(0));
         //System.out.println("Setting heading to" + arguments.get(0) + " degrees.");
-        return List.of(new CommandResult(arguments.get(0),0));
+        return List.of(new CommandResult(retVal,0));
     }
 
     @Override

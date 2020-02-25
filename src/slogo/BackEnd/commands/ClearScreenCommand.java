@@ -23,11 +23,11 @@ public class ClearScreenCommand implements AltCommand {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
-        backEnd.getTurtles().clear();
+        double retVal = backEnd.getTurtles().get(0).setPos(0, 0);
         //TODO un-comment this when paths are implemented
         //backend.getPaths().clear();
         //System.out.println("Screen cleared");
-        return List.of(new CommandResult(arguments.get(0),0));
+        return List.of(new CommandResult(retVal,0));
     }
 
     @Override

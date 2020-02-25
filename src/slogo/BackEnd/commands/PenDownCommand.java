@@ -23,9 +23,9 @@ public class PenDownCommand implements AltCommand {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
-        backEnd.getTurtles().get(0).setPenUp(false);
+        int retVal = backEnd.getTurtles().get(0).setPenUp(false);
         //System.out.println("Pen is down");
-        return List.of(new CommandResult(arguments.get(0),0));
+        return List.of(new CommandResult(retVal,0));
     }
 
     @Override
