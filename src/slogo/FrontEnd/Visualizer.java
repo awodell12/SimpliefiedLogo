@@ -13,10 +13,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -71,6 +68,15 @@ public class Visualizer extends Application implements FrontEndExternal{
         put("Billion Dollar Grass", Color.LAWNGREEN);
         put("Dark Salmon", Color.DARKSALMON);
     }};
+    private static final Map<String, String> HELP_CATEGORIES = new HashMap<>(){{
+        put("Basic Syntax", "Basic_Syntax");
+        put("Turtle Commands", "Turtle_Commands");
+        put("Turtle Queries", "Turtle_Queries");
+        put("Math Operations", "Math");
+        put("Boolean Operations", "Booleans");
+        put("Variables, Control Structures, and User-Defined Commands", "Variables_Control_UDC");
+    }};
+    private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
 
     private CommandBox myCommandBox;
     private ClearableEntriesBox myHistory;
@@ -320,8 +326,27 @@ public class Visualizer extends Application implements FrontEndExternal{
     private void displayHelp(){
         Stage stage = new Stage();
         stage.setTitle("Help Window");
-        ImageView helpImage = new ImageView("https://users.cs.duke.edu/~rcd/images/rcd.jpg");
-        stage.setScene(new Scene(new Group(helpImage), 450, 450));
+        VBox vBox = new VBox(SPACING);
+        MenuBar menuBar = new MenuBar();
+        vBox.getChildren().add(menuBar);
+        Menu menu = new Menu("Select Help Category");
+        menuBar.getMenus().add(menu);
+        for(String helpCategory : HELP_CATEGORIES.keySet()){
+            MenuItem menuItem = new Menu(helpCategory);
+            menuItem.setOnAction(event -> changeHelpImage(HELP_CATEGORIES.get(helpCategory), vBox));
+            menu.getItems().add(menuItem);
+        }
+        vBox.getChildren().add(new ImageView("slogo/FrontEnd/Resources/" + DEFAULT_HELP_CATEGORY_FILE + ".png"));
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(vBox);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        stage.setScene(new Scene(scrollPane, 600, 600));
         stage.show();
+    }
+
+    private void changeHelpImage(String imageName, VBox vBox){
+        vBox.getChildren().remove(1);
+        vBox.getChildren().add(new ImageView("slogo/FrontEnd/Resources/" + imageName + ".png"));
     }
 }
