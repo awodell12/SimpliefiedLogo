@@ -22,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -158,8 +159,10 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private Path makePath(Point2D startPos, Point2D turtlePos) {
     Path returnPath = new Path();
+    MoveTo moveTo = new MoveTo(startPos.getX(),startPos.getY());
     LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY());
     returnPath.getElements().add(line);
+    returnPath.getElements().add(moveTo);
 
     return returnPath;
   }
