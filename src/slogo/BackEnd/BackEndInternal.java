@@ -60,4 +60,6 @@ public interface BackEndInternal {
    * named constants.
    */
   Collection<String> getUserCommandScript(String name);
+
+  void setLanguage(String language);
 }

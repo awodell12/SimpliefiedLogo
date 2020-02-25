@@ -95,6 +95,11 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return results;
   }
 
+  @Override
+  public void applyChanger(Changer changer) {
+    changer.doChanges(this);
+  }
+
   private List<String> getTokenList(String script) {
     String[] scriptLines = script.split(NEWLINE);
     List<String> scriptTokenList = new ArrayList<>();
@@ -331,8 +336,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return null;
   }
 
-  void setLanguage(String language) {
+  public void setLanguage(String language) {
     ResourceBundle resources = ResourceBundle.getBundle(RESOURCES_PACKAGE + language);
     myLanguage = interpretPatterns(language);
+  }
+
+  private CommandResult makeCommandResult(double retVal) {
+    return null;
   }
 }

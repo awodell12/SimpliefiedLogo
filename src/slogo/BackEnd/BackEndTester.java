@@ -47,7 +47,7 @@ public class BackEndTester {
 //    String userInput = "for [ :a 1 4 1 ] [ fd :a ] make :b 2 ifelse :b [ fd :b ] [ right 20.0 ] fd :b";
 //    String userInput = "right make :b 5 right :b";
     String userInput; // = "fd sum sum sum sum 10 20 30 5 5\n";
-    parser.setLanguage("Chinese");
+    parser.applyChanger(new SLogoLanguageChanger("Chinese"));
     userInput = new String(Files.readAllBytes(Paths.get("data/examples/languages/circle_chinese.logo")));
     parser.parseScript(userInput);
     parser.setLanguage("English");
