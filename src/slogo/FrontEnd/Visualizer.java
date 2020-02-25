@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.LineTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -130,7 +131,7 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param turtlePos new coordinates for turtle
      * @param variableName string name for variable to be created/overwritten
      * @param variableValue value for new variable
-     * @param path path object to draw
+     * @param startPos path object to draw
      * @param udcName name of the newly created user defined command
      * @param udcText the actual commands that entail the user defined command
      * @param clearScreen whether or not the turtle view should be cleared
@@ -144,7 +145,7 @@ public class Visualizer extends Application implements FrontEndExternal{
                                 boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage){
         myTurtleView.setTurtleHeading(turtleRotate);
         myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
-        if(path != null) myTurtleView.addPath(path);
+        if(startPos != null) myTurtleView.addPath(makePath(startPos,turtlePos));
         if(variableName != null) addVariable(variableName, variableValue);
         if(udcName != null) addUserDefinedCommand(udcName, udcText);
         if(clearScreen) myTurtleView.clearPaths();
@@ -154,9 +155,20 @@ public class Visualizer extends Application implements FrontEndExternal{
         if(errorMessage != null) displayErrorMessage(errorMessage);
     }
 
+
+  private Path makePath(Point2D startPos, Point2D turtlePos) {
+    Path returnPath = new Path();
+    LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY());
+    returnPath.getElements().add(line);
+
+    return returnPath;
+  }
+
+
     private Scene setUpDisplay() throws IOException{
         Group myRoot = new Group();
         HBox myLayout = new HBox(SPACING * 2);
+
         myLayout.setMaxSize(WIDTH, HEIGHT);
         myLayout.setMinSize(WIDTH,HEIGHT);
 
