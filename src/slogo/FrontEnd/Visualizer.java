@@ -137,7 +137,7 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param turtlePos new coordinates for turtle
      * @param variableName string name for variable to be created/overwritten
      * @param variableValue value for new variable
-     * @param path path object to draw
+     * @param startPos path object to draw
      * @param udcName name of the newly created user defined command
      * @param udcText the actual commands that entail the user defined command
      * @param clearScreen whether or not the turtle view should be cleared
@@ -163,7 +163,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private Path makePath(Point2D startPos, Point2D turtlePos) {
     Path returnPath = new Path();
-    LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY())
+    LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY());
     returnPath.getElements().add(line);
 
     return returnPath;
