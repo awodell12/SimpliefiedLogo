@@ -34,8 +34,17 @@ public class ToCommand implements AltCommand {
     }
     programCounter += 2;
     int numCommands = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
-    backEnd.setUserCommand(cmdName,toVars,Arrays.copyOfRange(tokens,programCounter,programCounter + numCommands));
-    return List.of(new CommandResult(1.0,programCounter + numCommands + 1));
+    String[] commandTokens = Arrays.copyOfRange(tokens,programCounter,programCounter + numCommands);
+    backEnd.setUserCommand(cmdName,toVars,commandTokens);
+    return List.of(backEnd.makeCommandResult(1.0,programCounter+numCommands+1,cmdName,concatStringArray(commandTokens)));
+  }
+
+  private String concatStringArray(String[] tokens) {
+    StringBuffer sb = new StringBuffer();
+    for (String string : tokens) {
+      sb.append(string + " ");
+    }
+    return sb.toString();
   }
 
   @Override
