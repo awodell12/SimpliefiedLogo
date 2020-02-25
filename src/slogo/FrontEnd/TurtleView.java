@@ -1,15 +1,9 @@
 package slogo.FrontEnd;
 
-
-import java.net.URL;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.scene.Group;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
