@@ -23,19 +23,23 @@ public class ClearableEntriesBox {
     private Text descriptionText;
     private List<String> entryList;
 
+    private static final double SPACING = 10;
+
     public ClearableEntriesBox(Pane layout, Rectangle shape, Rectangle clearButtonShape, String description){
         myTextFlow = new TextFlow();
         myTextFlow.setPrefWidth(shape.getWidth());
-        myTextFlow.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+        myTextFlow.setPrefHeight(shape.getHeight()/2);
+        //myTextFlow.setMinSize(Control.USE_PREF_SIZE-1, Control.USE_PREF_SIZE-1);
         myTextFlow.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(myTextFlow);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        layout.getChildren().add(scrollPane);
         Button clearButton = Visualizer.makeButton("Clear", clearButtonShape);
         clearButton.setOnAction(event -> clearEntryBox());
-        layout.getChildren().add(clearButton);
+        HBox hbox = new HBox(SPACING);
+        hbox.getChildren().addAll(scrollPane,clearButton);
+        layout.getChildren().add(hbox);
         descriptionText = new Text(description + "\n");
         descriptionText.setUnderline(true);
         descriptionText.setFill(Color.BLUE);

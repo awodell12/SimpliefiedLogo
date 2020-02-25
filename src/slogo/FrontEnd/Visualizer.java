@@ -24,6 +24,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -44,9 +45,9 @@ public class Visualizer extends Application {
     private static final double MILLISECOND_DELAY = 1000;
     private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 800, 650, 125);
     private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 650, 600);
-    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 200, 250);
-    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 200, 250);
-    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 200, 200);
+    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 250, 250);
+    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 250, 250);
+    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 250, 200);
     private static final Rectangle ERROR_MESSAGE_SHAPE = new Rectangle(100, 720, 650, 60);
     private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(300, 750, 60, 40);
     private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(950, 100, 50, 50);
@@ -79,6 +80,7 @@ public class Visualizer extends Application {
     private VBox myLeftVBox;
     private VBox myRightVBox;
     private HBox myLayout;
+    private Text myErrorMessage;
 
     /**
      * Constructor for the visualizer class, which manages the display components and state
@@ -154,7 +156,7 @@ public class Visualizer extends Application {
         myLeftVBox.setMinSize(myLeftVBox.getMaxWidth(), myLeftVBox.getMaxHeight());
 
         myRightVBox = new VBox(SPACING);
-        myRightVBox.setMaxSize(WIDTH*0.25, HEIGHT);
+        myRightVBox.setMaxSize(WIDTH*0.33, HEIGHT);
         setUpRightPane();
 
         setUpLeftPane();
@@ -188,6 +190,9 @@ public class Visualizer extends Application {
 
         setUpMenus();
         myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
+        myErrorMessage = new Text("Error Message Goes Here");
+        myErrorMessage.setFill(Color.RED);
+        myLeftVBox.getChildren().add(myErrorMessage);
         myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
     }
 
@@ -283,17 +288,8 @@ public class Visualizer extends Application {
 
     }
 
-    private void makeButtons(){
-        /*String[] buttonTexts = new String[]{"Run", "Help"};
-        Rectangle[] buttonShapes = new Rectangle[]{RUN_BUTTON_SHAPE, HELP_BUTTON_SHAPE};
-        EventHandler<ActionEvent>[] actions = new EventHandler<ActionEvent>[]{event -> myInstructionQueue.add(myCommandBox.getContents()),
-            event -> displayHelp()};
-        for(int i=0; i<buttonShapes.length; i++){
-            Button b = makeButton(buttonTexts[i], buttonShapes[i]);
-            b.setOnAction(actions[i]);
-        }*/
-
-        //TODO: add other buttons
+    private void displayErrorMessage(String message){
+      myErrorMessage.setText(message);
     }
 
     private void addVariable(String name, double value){
