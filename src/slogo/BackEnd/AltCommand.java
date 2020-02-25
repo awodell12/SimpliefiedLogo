@@ -1,6 +1,7 @@
-package slogo;
+package slogo.BackEnd;
 
 import java.util.List;
+import slogo.CommandResult;
 
 /**
  * Carries out the functionality of individual instructions
@@ -9,9 +10,9 @@ import java.util.List;
  */
 public interface AltCommand {
 
-  public int getNumArgs();
+  int getNumArgs();
 
-  public int getNumVars();
+  int getNumVars();
 
   /**
    * Carries out the command, changing the relevant data in the model according to the
@@ -20,5 +21,9 @@ public interface AltCommand {
    * @return The effects on the model of this individual command, bundled into a CommandResult
    * instance.
    */
-  public CommandResult execute(List<Double> arguments, List<String> vars, String[] tokens, SLogoBackEnd backEnd);
+
+  List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, BackEndInternal backEnd)
+      throws ParseException;
+
+  List<String> findVars(String[] tokenList);
 }

@@ -49,4 +49,3 @@ our step method to step through and update the Grid. Then, call getGrid() so we 
 
 Extend the Grid class, override and implement checkForUpdates() based on the rules of the simulation and override updateCells() if required
 by the simulation type.
-
