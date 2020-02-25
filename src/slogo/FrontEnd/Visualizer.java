@@ -45,9 +45,9 @@ public class Visualizer extends Application {
     private static final double MILLISECOND_DELAY = 1000;
     private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 800, 650, 125);
     private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 650, 600);
-    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 250, 250);
-    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 250, 250);
-    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 250, 200);
+    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 250, 125);
+    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 250, 125);
+    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 250, 125);
     private static final Rectangle ERROR_MESSAGE_SHAPE = new Rectangle(100, 720, 650, 60);
     private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(300, 750, 60, 40);
     private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(950, 100, 50, 50);
@@ -57,6 +57,7 @@ public class Visualizer extends Application {
     private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(850, 25, 75, 50);
     private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
     private static final double SPACING = 10;
+    private static final double MARGIN = 25;
     //TODO: add menu shapes and label shapes
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
     private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "White", "Blue"}, {"English"}, {"White", "Blue"}};
@@ -78,6 +79,7 @@ public class Visualizer extends Application {
     private Stage myStage;
     private Group myRoot;
     private VBox myLeftVBox;
+    private VBox myCenterVBox;
     private VBox myRightVBox;
     private HBox myLayout;
     private Text myErrorMessage;
@@ -167,6 +169,7 @@ public class Visualizer extends Application {
         setUpRightPane();
 
         setUpLeftPane();
+        setUpCenterPane();
 
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
             try {
@@ -181,9 +184,9 @@ public class Visualizer extends Application {
 
             }
         });
-        myLayout.getChildren().addAll(myLeftVBox,myRightVBox);
-        myLayout.setMargin(myLeftVBox, new Insets( SPACING, 25, 0, 50));
-        myLayout.setMargin(myRightVBox, new Insets(SPACING,50,0,25));
+        myLayout.getChildren().addAll(myLeftVBox,myCenterVBox,myRightVBox);
+        myLayout.setMargin(myLeftVBox, new Insets(SPACING, 0, 0, MARGIN));
+        myLayout.setMargin(myRightVBox, new Insets(SPACING,MARGIN,0,0));
         myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
         Timeline animation = new Timeline();
@@ -193,7 +196,17 @@ public class Visualizer extends Application {
         return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
-    private void setUpLeftPane() {
+  private void setUpCenterPane() {
+      myCenterVBox = new VBox(SPACING);
+      myCenterVBox.setPrefHeight(HEIGHT);
+      setUpBottomButtons();
+      myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
+      int lastIndex = myCenterVBox.getChildren().size();
+      myCenterVBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
+
+  }
+
+  private void setUpLeftPane() {
 
         setUpMenus();
         myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
@@ -208,7 +221,6 @@ public class Visualizer extends Application {
         myHistory = new ClearableEntriesBox(myRightVBox, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, "HISTORY");
         myUserDefinedCommands = new ClearableEntriesBox(myRightVBox, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, "USER-DEFINED COMMANDS");
         myVariables = new ClearableEntriesBox(myRightVBox, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, "ENVIRONMENT VARIABLES");
-        setUpBottomButtons();
     }
 
 
@@ -277,13 +289,11 @@ public class Visualizer extends Application {
     }
 
     private void setUpBottomButtons() {
-        HBox bottomButtons = new HBox(SPACING);
         Button runButton = makeButton("Run", RUN_BUTTON_SHAPE);
         runButton.setOnAction(event -> runButtonEvent());
         Button clearButton = makeButton("Clear", CLEAR_COMMAND_BOX_SHAPE);
         clearButton.setOnAction(event -> myCommandBox.clearContents());
-        bottomButtons.getChildren().addAll(runButton, clearButton);
-        myRightVBox.getChildren().add(bottomButtons);
+        myCenterVBox.getChildren().addAll(runButton,clearButton);
     }
 
     private void step(){
