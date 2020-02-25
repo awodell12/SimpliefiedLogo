@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ObservableQueue extends ModifiableObservableListBase<String> {
 
-    private final List<String> delegate = new LinkedList<String>();
+    private final List<String> delegate = new LinkedList<>();
 
     @Override
     public String get(int index) {

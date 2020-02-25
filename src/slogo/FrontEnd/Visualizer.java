@@ -28,6 +28,8 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.xml.sax.SAXException;
+
 import javax.imageio.ImageIO;
 
 
@@ -40,9 +42,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     private static final double ASPECT_RATIO = (16.0/9.0);
     private static final double WIDTH = HEIGHT * ASPECT_RATIO;
     private static final Paint BACKGROUND = Color.WHITE;
-    private static final double MILLISECOND_DELAY = 1000;
     private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 800, 650, 125);
-    private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 650, 600);
+    private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 300*ASPECT_RATIO,300);
     private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 250, 125);
     private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 250, 125);
     private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 250, 125);
@@ -84,13 +85,11 @@ public class Visualizer extends Application implements FrontEndExternal{
     private ClearableEntriesBox myUserDefinedCommands;
     private ClearableEntriesBox myVariables;
     private TurtleView myTurtleView;
-    private ObservableList<String> myInstructionQueue;
+    private final ObservableList<String> myInstructionQueue;
     private Stage myStage;
-    private Group myRoot;
     private VBox myLeftVBox;
     private VBox myCenterVBox;
     private VBox myRightVBox;
-    private HBox myLayout;
     private Text myErrorMessage;
 
     /**
@@ -99,10 +98,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     public Visualizer(ListChangeListener<String> instructionQueueListener) {
         myInstructionQueue = new ObservableQueue();
         myInstructionQueue.addListener(instructionQueueListener);
-        //myStage = new Stage();
-        //Scene display = setUpDisplay();
-        //myStage.setScene(display);
-        //myStage.show();
     }
 
     @Override
@@ -112,7 +107,6 @@ public class Visualizer extends Application implements FrontEndExternal{
         myStage.setScene(display);
         myStage.show();
     }
-
 
     /**
      * Pops the first element of the instruction queue, which contains strings that are either scripts taken directly
@@ -127,7 +121,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
 
     /**
-     * Interpret result of CommandResults object, update everything that is updateable
+     * Interpret result of CommandResults object, update everything that is updatable
      * Relevant Features:
      * React to the text and update the model
      * See the results of the turtle executing commands displayed visually
@@ -161,6 +155,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         if(errorMessage != null) displayErrorMessage(errorMessage);
     }
 
+
   private Path makePath(Point2D startPos, Point2D turtlePos) {
     Path returnPath = new Path();
     LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY());
@@ -169,9 +164,11 @@ public class Visualizer extends Application implements FrontEndExternal{
     return returnPath;
   }
 
-  private Scene setUpDisplay() throws IOException{
-        myRoot = new Group();
-        myLayout = new HBox(SPACING * 2);
+
+    private Scene setUpDisplay() throws IOException{
+        Group myRoot = new Group();
+        HBox myLayout = new HBox(SPACING * 2);
+
         myLayout.setMaxSize(WIDTH, HEIGHT);
         myLayout.setMinSize(WIDTH,HEIGHT);
 
@@ -187,28 +184,26 @@ public class Visualizer extends Application implements FrontEndExternal{
         setUpLeftPane();
         setUpCenterPane();
 
-        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
+        /*KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
             try {
                 step();
-            /*} catch (IOException ex) {
+            } catch (IOException ex) {
                 System.out.println("Caught IO Exception");
-            } catch (SAXException ex) {
-                System.out.println("Caught SAXException");*/
             } catch (Exception ex) {
 
                 System.out.println("Caught Exception");
 
             }
-        });
+        });*/
         myLayout.getChildren().addAll(myLeftVBox,myCenterVBox,myRightVBox);
-        myLayout.setMargin(myLeftVBox, new Insets(SPACING, 0, 0, MARGIN));
-        myLayout.setMargin(myRightVBox, new Insets(SPACING,MARGIN,0,0));
+        HBox.setMargin(myLeftVBox, new Insets(SPACING, 0, 0, MARGIN));
+        HBox.setMargin(myRightVBox, new Insets(SPACING,MARGIN,0,0));
         myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
-        Timeline animation = new Timeline();
+        /*Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
-        animation.play();
+        animation.play();*/
         return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
@@ -218,16 +213,16 @@ public class Visualizer extends Application implements FrontEndExternal{
         setUpBottomButtons();
         myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
         int lastIndex = myCenterVBox.getChildren().size();
-        myCenterVBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
+        VBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
     }
 
     private void setUpLeftPane() {
         setUpMenus();
-        myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
+        myTurtleView = new TurtleView(myLeftVBox, TURTLE_VIEW_SHAPE.getWidth(), TURTLE_VIEW_SHAPE.getHeight());
         myErrorMessage = new Text("Error Message Goes Here");
         myErrorMessage.setFill(Color.RED);
         myLeftVBox.getChildren().add(myErrorMessage);
-        myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
+        myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE);
     }
 
     private void setUpRightPane() {
