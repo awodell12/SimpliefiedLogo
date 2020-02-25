@@ -11,6 +11,9 @@ public class SLogoTurtle implements Turtle {
     private boolean myVisible;
     private String myPenColor;
 
+    private static final double MAX_DEGREES = 360;
+    private static final double TO_RADIANS = Math.PI / 180;
+
     public SLogoTurtle(){
         myX = 0; myY = 0;
         myHeading = 0;
@@ -43,33 +46,31 @@ public class SLogoTurtle implements Turtle {
 
     @Override
     public double moveForward(double distance) {
-        myX += Math.cos(myHeading * Math.PI / 180) * distance;
-        myY += Math.sin(myHeading * Math.PI / 180) * distance;
-        return distance;
+        myX += Math.cos(myHeading * TO_RADIANS) * distance;
+        myY += Math.sin(myHeading * TO_RADIANS) * distance;
+        return Math.abs(distance);
     }
 
     @Override
     public double moveBack(double distance) {
-        myX -= Math.cos(myHeading * Math.PI / 180) * distance;
-        myY -= Math.sin(myHeading * Math.PI / 180) * distance;
-        return distance;
+        return this.moveForward(-distance);
     }
 
     @Override
     public double turn(double degrees) {
         double newHeading = myHeading + degrees;
-        newHeading = newHeading % 360;
+        newHeading = newHeading % MAX_DEGREES;
         if(newHeading < 0)
-            newHeading += 360;
+            newHeading += MAX_DEGREES;
         myHeading = newHeading;
         return Math.abs(degrees);
     }
 
     @Override
     public double setHeading(double direction) {
-        double normalizedDir = direction % 360;
+        double normalizedDir = direction % MAX_DEGREES;
         if(normalizedDir < 0)
-            normalizedDir += 360;
+            normalizedDir += MAX_DEGREES;
         double temp = myHeading;
         myHeading = normalizedDir;
         return Math.abs(temp - normalizedDir);
