@@ -5,6 +5,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.Path;
 import slogo.CommandResult;
 import slogo.FrontEnd.Visualizer;
+import java.util.List;
 
 import java.awt.*;
 
@@ -44,7 +45,7 @@ public interface FrontEndExternal {
      * @param turtleVisibility whether or not to show the turtle
      * @param resetTurtle whether or not the turtle should be returned to 0, 0
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, List startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage);
 }
