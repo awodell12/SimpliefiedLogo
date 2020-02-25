@@ -11,11 +11,12 @@ import javafx.scene.shape.Rectangle;
  */
 public class CommandBox extends HBox {
 
+    private static final int SPACING = 10;
     private final TextArea inputArea;
     private static final String prompt = "Enter commands here";
 
     public CommandBox(Rectangle commandBoxShape){
-        this.setSpacing(10);
+        this.setSpacing(SPACING);
         inputArea = new TextArea(prompt);
         inputArea.setOnMouseClicked(event -> removePrompt());
         inputArea.setPrefWidth(commandBoxShape.getWidth());

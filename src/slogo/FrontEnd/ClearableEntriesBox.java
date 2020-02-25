@@ -30,7 +30,7 @@ public class ClearableEntriesBox extends HBox {
         myTextFlow.setPrefWidth(shape.getWidth());
         myTextFlow.setPrefHeight(shape.getHeight());
         //myTextFlow.setMinSize(Control.USE_PREF_SIZE-1, Control.USE_PREF_SIZE-1);
-        myTextFlow.setMaxSize(Control.USE_PREF_SIZE + 1000, Control.USE_PREF_SIZE);
+        myTextFlow.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(myTextFlow);
         //scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);

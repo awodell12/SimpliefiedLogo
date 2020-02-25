@@ -1,21 +1,18 @@
 package slogo.FrontEnd;
 
-import java.awt.*;
 import java.io.File;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+//import javafx.animation.KeyFrame;
+//import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -35,8 +32,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
 
@@ -51,21 +46,23 @@ public class Visualizer extends Application implements FrontEndExternal{
     private static final double ASPECT_RATIO = (16.0/9.0);
     private static final double WIDTH = HEIGHT * ASPECT_RATIO;
     private static final Paint BACKGROUND = Color.WHITE;
-    private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 800, 650, 125);
-    private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 300*ASPECT_RATIO,300);
-    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 250, 125);
-    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 250, 125);
-    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 250, 125);
-    private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(300, 750, 60, 40);
-    private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(950, 100, 50, 50);
-    private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(900, 925, 75, 50);
-    private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(950, 400, 50, 50);
-    private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(950, 700, 50, 50);
-    private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(850, 25, 75, 50);
-    private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
+    private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(650, 125);
+    private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(300*ASPECT_RATIO,300);
+    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(250, 125);
+    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(250, 125);
+    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(250, 125);
+    private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(60, 40);
+    private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(50, 50);
+    private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(75, 50);
+    private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(50, 50);
+    private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(50, 50);
+    private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(75, 50);
+    private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(75, 50);
+    private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
     private static final double SPACING = 10;
     private static final double MARGIN = 25;
-    private static final double MILLISECOND_DELAY = 1000;
+    private static final double BOTTOM_INSET = 0.15;
+    //private static final double MILLISECOND_DELAY = 1000;
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
     private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass"},
             {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
@@ -190,34 +187,34 @@ public class Visualizer extends Application implements FrontEndExternal{
         myLayout.setMinSize(WIDTH,HEIGHT);
 
         myLeftVBox = new VBox(SPACING);
-        myLeftVBox.setMaxSize(WIDTH * 0.5, HEIGHT);
+        myLeftVBox.setMaxSize(WIDTH/2, HEIGHT);
         myLeftVBox.setMinSize(myLeftVBox.getMaxWidth(), myLeftVBox.getMaxHeight());
 
         myRightVBox = new VBox(SPACING);
-        myRightVBox.setMaxSize(WIDTH*0.33, HEIGHT);
+        myRightVBox.setMaxSize(WIDTH/3, HEIGHT);
         setUpRightPane();
 
         setUpLeftPane();
         setUpCenterPane();
 
-        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
+        /*KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
             try {
                 step();
-            } /*catch (IOException ex) {
+            } catch (IOException ex) {
                 System.out.println("Caught IO Exception");
-            } */catch (Exception ex) {
+            } catch (Exception ex) {
                 System.out.println("Caught Exception");
             }
-        });
+        });*/
         myLayout.getChildren().addAll(myLeftVBox,myCenterVBox,myRightVBox);
         HBox.setMargin(myLeftVBox, new Insets(SPACING, 0, 0, MARGIN));
         HBox.setMargin(myRightVBox, new Insets(SPACING,MARGIN,0,0));
         myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
-        Timeline animation = new Timeline();
+        /*Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
-        animation.play();
+        animation.play();*/
         return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
@@ -227,7 +224,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         setUpBottomButtons();
         myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
         int lastIndex = myCenterVBox.getChildren().size();
-        VBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
+        VBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * BOTTOM_INSET,0));
     }
 
     private void setUpLeftPane() {
@@ -320,9 +317,9 @@ public class Visualizer extends Application implements FrontEndExternal{
         myCenterVBox.getChildren().addAll(runButton,clearButton);
     }
 
-    private void step(){
+    /*private void step(){
 
-    }
+    }*/
 
     private void displayErrorMessage(String message){
         myErrorMessage.setText(message);
@@ -350,9 +347,9 @@ public class Visualizer extends Application implements FrontEndExternal{
         vBox.getChildren().add(menuBar);
         Menu menu = new Menu("Select Help Category");
         menuBar.getMenus().add(menu);
-        for(String helpCategory : HELP_CATEGORIES.keySet()){
-            MenuItem menuItem = new Menu(helpCategory);
-            menuItem.setOnAction(event -> changeHelpImage(HELP_CATEGORIES.get(helpCategory), vBox));
+        for(Map.Entry<String, String> helpCategory : HELP_CATEGORIES.entrySet()){
+            MenuItem menuItem = new Menu(helpCategory.getKey());
+            menuItem.setOnAction(event -> changeHelpImage(helpCategory.getValue(), vBox));
             menu.getItems().add(menuItem);
         }
         vBox.getChildren().add(new ImageView("slogo/FrontEnd/Resources/" + DEFAULT_HELP_CATEGORY_FILE + ".png"));
@@ -360,7 +357,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         scrollPane.setContent(vBox);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        stage.setScene(new Scene(scrollPane, 600, 600));
+        stage.setScene(new Scene(scrollPane, HELP_WINDOW_SHAPE.getWidth(), HELP_WINDOW_SHAPE.getHeight()));
         stage.show();
     }
 

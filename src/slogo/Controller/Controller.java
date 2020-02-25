@@ -13,7 +13,10 @@ import slogo.CommandResult;
 import slogo.FrontEnd.Visualizer;
 
 public class Controller extends Application{
-    private Visualizer myVisualizer;
+
+    private static Visualizer myVisualizer;
+    private static final String LANGUAGE_INSTRUCTION = "language:";
+    private static final int LI_LENGTH = LANGUAGE_INSTRUCTION.length();
 
     public static void main (String[] args) {
         launch(Controller.class, args);
@@ -36,8 +39,8 @@ public class Controller extends Application{
         ListChangeListener<String> instructionQueueListener = c -> {
             String input = myVisualizer.popInstructionQueue();
 
-            if(input.length() >= 9 && input.substring(0, 9).equals("language:")){
-                SLogoLanguageChanger languageChanger = new SLogoLanguageChanger(input.substring(10));
+            if(input.length() >= LI_LENGTH && input.substring(0, LI_LENGTH).equals(LANGUAGE_INSTRUCTION)){
+                SLogoLanguageChanger languageChanger = new SLogoLanguageChanger(input.substring(LI_LENGTH+1));
                 myModel.applyChanger(languageChanger);
             }
             else {
