@@ -21,4 +21,6 @@ public interface BackEndExternal {
    * were run.
    */
   List<CommandResult> parseScript(String script);
+
+  void applyChanger(Changer changer);
 }
