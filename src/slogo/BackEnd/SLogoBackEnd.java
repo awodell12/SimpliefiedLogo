@@ -37,20 +37,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     mySyntax = interpretPatterns("Syntax");
   }
 
-  /**
-   * Adds the given resource file to this language's recognized types
-   * Stolen from spike_parser
-   */
-  public void addPatterns (String syntax) {
-    ResourceBundle resources = ResourceBundle.getBundle(RESOURCES_PACKAGE + syntax);
-    for (String key : Collections.list(resources.getKeys())) {
-      String regex = resources.getString(key);
-//      mySymbols.add(new SimpleEntry<>(key,
-
-//      Pattern.compile(regex, Pattern.CASE_INSENSITIVE)));
-    }
-  }
-
   public List<Entry<String, Pattern>> interpretPatterns (String syntax) {
     List<Entry<String, Pattern>> patterns = new ArrayList<>();
     ResourceBundle resources = ResourceBundle.getBundle(RESOURCES_PACKAGE + syntax);
@@ -222,20 +208,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     else {
       return Double.parseDouble(token);
     }
-  }
-
-  public int handleUserCommandCreation(String[] tokenList) throws ParseException{
-    int programCounter = 0;
-    String cmdName = tokenList[programCounter];
-    int numVars = distanceToEndBracket(Arrays.copyOfRange(tokenList,programCounter+2,tokenList.length)) - 1;
-    List<String> toVars = new ArrayList<>();
-    for (programCounter = 2; programCounter < 2 + numVars; programCounter ++) {
-      toVars.add(tokenList[programCounter].substring(1));
-    }
-    programCounter += 2;
-    int numCommands = distanceToEndBracket(Arrays.copyOfRange(tokenList,programCounter,tokenList.length)) - 1;
-      setUserCommand(cmdName,toVars,Arrays.copyOfRange(tokenList,programCounter,programCounter + numCommands));
-    return programCounter + numCommands + 1;
   }
 
   private void printRemainingTokens(String[] scriptTokens, int i) {

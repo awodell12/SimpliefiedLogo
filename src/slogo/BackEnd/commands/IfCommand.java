@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
-import slogo.BackEnd.SLogoBackEnd;
 
 public class IfCommand implements AltCommand {
 
@@ -22,7 +22,7 @@ public class IfCommand implements AltCommand {
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-      SLogoBackEnd backEnd) throws ParseException {
+      BackEndInternal backEnd) throws ParseException {
     double returnVal = 0;
     List<CommandResult> results = new ArrayList<>();
     int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,0,tokens.length));

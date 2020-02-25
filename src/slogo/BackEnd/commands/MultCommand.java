@@ -2,8 +2,8 @@ package slogo.BackEnd.commands;
 
 import java.util.List;
 import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
-import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
 
 public class MultCommand implements AltCommand {
@@ -20,7 +20,7 @@ public class MultCommand implements AltCommand {
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-      SLogoBackEnd backEnd) throws ParseException {
+      BackEndInternal backEnd) throws ParseException {
     return List.of(new CommandResult(arguments.get(0) * arguments.get(1),0));
   }
 

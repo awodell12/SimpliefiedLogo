@@ -2,9 +2,9 @@ package slogo.BackEnd.commands;
 
 import java.util.List;
 import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
-import slogo.BackEnd.SLogoBackEnd;
 
 public class MakeCommand implements AltCommand {
 
@@ -20,7 +20,7 @@ public class MakeCommand implements AltCommand {
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-      SLogoBackEnd backEnd) throws ParseException {
+      BackEndInternal backEnd) throws ParseException {
     backEnd.setVariable(vars.get(0),arguments.get(0));
     return List.of(new CommandResult(arguments.get(0),0));
   }

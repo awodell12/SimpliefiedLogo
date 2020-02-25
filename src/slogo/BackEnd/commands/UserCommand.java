@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
-import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
 
 public class UserCommand implements AltCommand {
@@ -34,7 +34,7 @@ public class UserCommand implements AltCommand {
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-      SLogoBackEnd backEnd) throws ParseException {
+      BackEndInternal backEnd) throws ParseException {
     double returnVal;
     List<CommandResult> results = new ArrayList<>();
     for (int i = 0; i < arguments.size(); i++) {

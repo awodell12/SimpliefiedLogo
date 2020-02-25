@@ -1,6 +1,7 @@
 package slogo.BackEnd;
 import java.util.Collection;
 import java.util.List;
+import slogo.CommandResult;
 
 /**
  * Classes inside the view with access to the model may assume that it has these functions, which allow
@@ -62,4 +63,8 @@ public interface BackEndInternal {
   Collection<String> getUserCommandScript(String name);
 
   void setLanguage(String language);
-}
+
+  List<CommandResult> parseCommandsList(String[] tokenList);
+
+  int distanceToEndBracket(String[] tokenList);
+  }

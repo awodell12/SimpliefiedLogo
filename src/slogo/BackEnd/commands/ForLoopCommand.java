@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
-import slogo.BackEnd.SLogoBackEnd;
 
 public class ForLoopCommand implements AltCommand {
 
@@ -21,7 +21,7 @@ public class ForLoopCommand implements AltCommand {
   }
 
   @Override
-  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd)
+  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd)
       throws ParseException {
     System.out.println("Beginning FOR Loop");
     double start = arguments.get(0);
