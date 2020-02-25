@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.LineTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -145,12 +146,12 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param resetTurtle whether or not the turtle should be returned to 0, 0
      * @param errorMessage error message string, if any
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, Path path, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage){
         myTurtleView.setTurtleHeading(turtleRotate);
         myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
-        if(path != null) myTurtleView.addPath(path);
+        if(startPos != null) myTurtleView.addPath(makePath(startPos,turtlePos));
         if(variableName != null) addVariable(variableName, variableValue);
         if(udcName != null) addUserDefinedCommand(udcName, udcText);
         if(clearScreen) myTurtleView.clearPaths();
@@ -160,7 +161,15 @@ public class Visualizer extends Application implements FrontEndExternal{
         if(errorMessage != null) displayErrorMessage(errorMessage);
     }
 
-    private Scene setUpDisplay() throws IOException{
+  private Path makePath(Point2D startPos, Point2D turtlePos) {
+    Path returnPath = new Path();
+    LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY())
+    returnPath.getElements().add(line);
+
+    return returnPath;
+  }
+
+  private Scene setUpDisplay() throws IOException{
         myRoot = new Group();
         myLayout = new HBox(SPACING * 2);
         myLayout.setMaxSize(WIDTH, HEIGHT);
