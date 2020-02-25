@@ -25,9 +25,13 @@ public class TurtleView {
     private Rectangle myBackground;
     private boolean isPenUp = false;
     private boolean myTurtleVisibility = true;
-
+    private static final double TURTLE_SIZE = 50;
+    private final double myWidth;
+    private final double myHeight;
 
     public TurtleView(Pane layout, double width, double height){
+        myWidth = width;
+        myHeight = height;
         String myTurtleImage = "slogo/FrontEnd/Resources/turtle.png";
         myTurtle = new ImageView(myTurtleImage);
         myTurtle.setPreserveRatio(true);
@@ -65,8 +69,8 @@ public class TurtleView {
     };
 
     /**
-     *
-     * @param angle
+     * Rotate the turtle
+     * @param angle angle to rotate by
      */
     protected void setTurtleHeading(double angle){
         myTurtle.setRotate(myTurtle.getRotate() + angle);
