@@ -28,6 +28,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -127,7 +129,9 @@ public class Visualizer extends Application implements FrontEndExternal{
         return myInstructionQueue.remove(0);
     }
 
-    /**
+
+
+  /**
      * Interpret result of CommandResults object, update everything that is updatable
      * Relevant Features:
      * React to the text and update the model
@@ -138,7 +142,7 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param turtlePos new coordinates for turtle
      * @param variableName string name for variable to be created/overwritten
      * @param variableValue value for new variable
-     * @param path path object to draw
+     * @param startPos path object to draw
      * @param udcName name of the newly created user defined command
      * @param udcText the actual commands that entail the user defined command
      * @param clearScreen whether or not the turtle view should be cleared
@@ -146,12 +150,12 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param turtleVisibility whether or not to show the turtle
      * @param errorMessage error message string, if any
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, Path path, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, List startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, String errorMessage) {
         myTurtleView.setTurtleHeading(turtleRotate);
         myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
-        if(path != null) myTurtleView.addPath(path);
+        if(startPos != null) myTurtleView.addPath(makePath(startPos,turtlePos));
         if(variableName != null) addVariable(variableName, variableValue);
         if(udcName != null) addUserDefinedCommand(udcName, udcText);
         if(clearScreen) myTurtleView.clearPaths();
@@ -165,9 +169,22 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     }
 
+
+  private Path makePath(List startPos, Point2D turtlePos) {
+    Path returnPath = new Path();
+    MoveTo moveTo = new MoveTo((double)startPos.get(0),(double) startPos.get(1));
+    LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY());
+    returnPath.getElements().add(line);
+    returnPath.getElements().add(moveTo);
+
+    return returnPath;
+  }
+
+
     private Scene setUpDisplay() throws IOException{
         Group myRoot = new Group();
         HBox myLayout = new HBox(SPACING * 2);
+
         myLayout.setMaxSize(WIDTH, HEIGHT);
         myLayout.setMinSize(WIDTH,HEIGHT);
 

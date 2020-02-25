@@ -34,7 +34,7 @@ public class IfCommand implements AltCommand {
     else {
       System.out.println("IF evaluated to FALSE");
     }
-    results.add(new CommandResult(returnVal,listLength));
+    results.add(backEnd.makeCommandResult(returnVal,listLength));
     return results;
   }
 

@@ -24,7 +24,7 @@ public class LeftCommand implements AltCommand {
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
         backEnd.getTurtles().get(0).turn(-arguments.get(0));
         //System.out.println("Turning left by " + arguments.get(0) + " degrees.");
-        return List.of(new CommandResult(arguments.get(0),0));
+        return List.of(backEnd.makeCommandResult(arguments.get(0),0));
     }
 
     @Override

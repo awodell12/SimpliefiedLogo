@@ -21,7 +21,7 @@ public class MultCommand implements AltCommand {
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd) throws ParseException {
-    return List.of(new CommandResult(arguments.get(0) * arguments.get(1),0));
+    return List.of(backEnd.makeCommandResult(arguments.get(0) * arguments.get(1),0));
   }
 
   @Override

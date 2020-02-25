@@ -5,6 +5,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.Path;
 import slogo.CommandResult;
 import slogo.FrontEnd.Visualizer;
+import java.util.List;
 
 import java.awt.*;
 
@@ -36,14 +37,14 @@ public interface FrontEndExternal {
      * @param turtlePos new coordinates for turtle
      * @param variableName string name for variable to be created/overwritten
      * @param variableValue value for new variable
-     * @param path path object to draw
+     * @param startPos old coordinates of the turtle; start of path
      * @param udcName name of the newly created user defined command
      * @param udcText the actual commands that entail the user defined command
      * @param clearScreen whether or not the turtle view should be cleared
      * @param isPenUp whether or not the pen is up
      * @param turtleVisibility whether or not to show the turtle
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, Path path, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, List startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, String errorMessage);
 }

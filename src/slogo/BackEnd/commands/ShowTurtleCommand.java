@@ -24,7 +24,7 @@ public class ShowTurtleCommand implements AltCommand {
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
         int retVal = backEnd.getTurtles().get(0).setVisible(true);
         //System.out.println("Turtle is visible");
-        return List.of(new CommandResult(retVal,0));
+        return List.of(backEnd.makeCommandResult(retVal,0));
     }
 
     @Override

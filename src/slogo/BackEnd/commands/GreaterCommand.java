@@ -23,7 +23,7 @@ public class GreaterCommand implements AltCommand {
       BackEndInternal backEnd) throws ParseException {
     double retValue = 0;
     if (arguments.get(0) > arguments.get(1)) { retValue = 1; }
-    return List.of(new CommandResult(retValue,0));
+    return List.of(backEnd.makeCommandResult(retValue,0));
   }
 
   @Override

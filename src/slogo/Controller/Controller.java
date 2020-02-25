@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Point2D;
+import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 import slogo.BackEnd.SLogoBackEnd;
 import slogo.BackEnd.SLogoLanguageChanger;
@@ -34,6 +35,7 @@ public class Controller extends Application{
         SLogoBackEnd myModel = new SLogoBackEnd();
         ListChangeListener<String> instructionQueueListener = c -> {
             String input = myVisualizer.popInstructionQueue();
+
             if(input.length() >= 9 && input.substring(0, 9).equals("language:")){
                 SLogoLanguageChanger languageChanger = new SLogoLanguageChanger(input.substring(10));
                 myModel.applyChanger(languageChanger);
@@ -42,7 +44,7 @@ public class Controller extends Application{
                 ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModel.parseScript(input);
                 for (CommandResult result : resultList) {
                     myVisualizer.interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), result.getMyPosition().get(1)),
-                            null, result.getMyVariableName(), result.getMyVariableValue(), result.getMyUDCName(),
+                            result.getPathStart(), result.getMyVariableName(), result.getMyVariableValue(), result.getMyUDCName(),
                             result.getMyUDCText(), result.isMyScreenClear(), result.isMyPenUp(), result.isMyTurtleVisible(),
                             result.getErrorMessage());
                 }
@@ -51,4 +53,5 @@ public class Controller extends Application{
         myVisualizer = new Visualizer(instructionQueueListener);
         myVisualizer.start(primaryStage);
     }
+
 }
