@@ -139,7 +139,7 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param resetTurtle whether or not the turtle should be returned to 0, 0
      * @param errorMessage error message string, if any
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, Path path, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage){
         myTurtleView.setTurtleHeading(turtleRotate);
