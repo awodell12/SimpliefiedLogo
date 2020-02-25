@@ -121,7 +121,9 @@ public class Visualizer extends Application implements FrontEndExternal{
         return myInstructionQueue.remove(0);
     }
 
-    /**
+
+
+  /**
      * Interpret result of CommandResults object, update everything that is updatable
      * Relevant Features:
      * React to the text and update the model
@@ -141,7 +143,7 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param resetTurtle whether or not the turtle should be returned to 0, 0
      * @param errorMessage error message string, if any
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, List startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage){
         myTurtleView.setTurtleHeading(turtleRotate);
@@ -157,9 +159,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
 
 
-  private Path makePath(Point2D startPos, Point2D turtlePos) {
+  private Path makePath(List startPos, Point2D turtlePos) {
     Path returnPath = new Path();
-    MoveTo moveTo = new MoveTo(startPos.getX(),startPos.getY());
+    MoveTo moveTo = new MoveTo((double)startPos.get(0),(double) startPos.get(1));
     LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY());
     returnPath.getElements().add(line);
     returnPath.getElements().add(moveTo);
