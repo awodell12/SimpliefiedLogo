@@ -2,20 +2,54 @@ package slogo.Controller;
 
 import static javafx.application.Application.launch;
 
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Observable;
+
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
+import javafx.event.Event;
+import javafx.geometry.Point2D;
+import javafx.stage.Stage;
+import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
 import slogo.FrontEnd.Visualizer;
 
-public class Controller implements ModelListener {
-  private Visualizer myVisualizer;
-  @Override
-  public void handleModelUpdate(CommandResult update) {
+public class Controller extends Application{
+    private Visualizer myVisualizer;
 
-  }
+    public static void main (String[] args) {
+        launch(Controller.class, args);
+    }
 
-  public static void main (String[] args) {
-    Application.launch(Visualizer.class, args);
-  }
-
+    /**
+     * The main entry point for all JavaFX applications.
+     * The start method is called after the init method has returned,
+     * and after the system is ready for the application to begin running.
+     *
+     * @param primaryStage the primary stage for this application, onto which
+     *                     the application scene can be set.
+     *                     Applications may create other stages, if needed, but they will not be
+     *                     primary stages.
+     * @throws Exception if something goes wrong
+     */
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        SLogoBackEnd myModel = new SLogoBackEnd();
+        ListChangeListener<String> instructionQueueListener = c -> {
+            String input = myVisualizer.popInstructionQueue();
+            ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModel.parseScript(input);
+            for(CommandResult result : resultList){
+                myVisualizer.interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), result.getMyPosition().get(1)),
+                        null, result.getMyVariableName(), result.getMyVariableValue(), result.getMyUDCName(),
+                        result.getMyUDCText(), result.isMyScreenClear(), result.isMyPenUp(), result.isMyTurtleVisible(),
+                        result.isMyTurtleReset(), result.getErrorMessage());
+            }
+        };
+        myVisualizer = new Visualizer(instructionQueueListener);
+        myVisualizer.start(primaryStage);
+    }
 }

@@ -53,13 +53,13 @@ public class TurtleView {
     }
 
     /**
-     * Updates the position of the turtle in the Display to the desired set of coordinates.
+     * Updates the position of the turtle in the Display to the desired set of coordinates. Offsets so that 0, 0 is center of screen
      * @param x the new x coordinate for the turtle
      * @param y the new y coordinate for the turtle
      */
     protected void setTurtlePosition(double x, double y){
-        myTurtle.setX(x);
-        myTurtle.setY(y);
+        myTurtle.setX(x + myWidth/2 - TURTLE_SIZE/2);
+        myTurtle.setY(y + myHeight/2 - TURTLE_SIZE/2);
     };
 
     /**

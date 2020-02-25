@@ -5,8 +5,13 @@ import java.util.PriorityQueue;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ModifiableObservableListBase;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -74,7 +79,7 @@ public class Visualizer extends Application {
     private ClearableEntriesBox myUserDefinedCommands;
     private ClearableEntriesBox myVariables;
     private TurtleView myTurtleView;
-    private Queue<String> myInstructionQueue;
+    private ObservableList<String> myInstructionQueue;
     private Stage myStage;
     private Group myRoot;
     private VBox myLeftVBox;
@@ -86,7 +91,9 @@ public class Visualizer extends Application {
     /**
      * Constructor for the visualizer class, which manages the display components and state
      */
-    public Visualizer() throws IOException {
+    public Visualizer(ListChangeListener<String> instructionQueueListener) {
+        myInstructionQueue = new ObservableQueue();
+        myInstructionQueue.addListener(instructionQueueListener);
         //myStage = new Stage();
         //Scene display = setUpDisplay();
         //myStage.setScene(display);
@@ -95,7 +102,6 @@ public class Visualizer extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        myInstructionQueue = new PriorityQueue<String>();
         myStage = primaryStage;
         Scene display = setUpDisplay();
         myStage.setScene(display);
@@ -112,7 +118,7 @@ public class Visualizer extends Application {
      * @return the instruction string, uninterpreted
      */
     public String popInstructionQueue(){
-        return myInstructionQueue.poll();
+        return myInstructionQueue.remove(0);
     }
 
     /**
@@ -134,12 +140,12 @@ public class Visualizer extends Application {
      * @param turtleVisibility whether or not to show the turtle
      * @param resetTurtle whether or not the turtle should be returned to 0, 0
      */
-    public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, Path path, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage){
         myTurtleView.setTurtleHeading(turtleRotate);
-        myTurtleView.setTurtlePosition(turtlePos.x, turtlePos.y);
-        myTurtleView.addPath(path);
+        myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
+        if(path != null) myTurtleView.addPath(path);
         if(variableName != null) addVariable(variableName, variableValue);
         if(udcName != null) addUserDefinedCommand(udcName, udcText);
         if(clearScreen) myTurtleView.clearPaths();
@@ -150,8 +156,6 @@ public class Visualizer extends Application {
     }
 
     private Scene setUpDisplay() throws IOException{
-        myInstructionQueue = new PriorityQueue<>();
-
         myRoot = new Group();
         myLayout = new HBox(SPACING * 2);
         myLayout.setMaxSize(WIDTH, HEIGHT);
