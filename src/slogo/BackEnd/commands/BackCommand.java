@@ -3,6 +3,7 @@ package slogo.BackEnd.commands;
 import java.util.ArrayList;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.BackEndInternal;
 import slogo.CommandResult;
 import slogo.BackEnd.SLogoBackEnd;
 
@@ -22,7 +23,7 @@ public class BackCommand implements AltCommand {
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd) {
+    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
         backEnd.getTurtles().get(0).moveBack(arguments.get(0));
         //System.out.println("Moved forward by " + arguments.get(0));
         return List.of(new CommandResult(arguments.get(0),0));
