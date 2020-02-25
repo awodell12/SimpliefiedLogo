@@ -24,7 +24,7 @@ public class SetPosCommand implements AltCommand {
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
         double retVal = backEnd.getTurtles().get(0).setPos(arguments.get(0), arguments.get(1));
         //System.out.println("Turtle now at x=" + arguments.get(0) ", y=" + arguments.get(1));
-        return List.of(new CommandResult(retVal,0));
+        return List.of(backEnd.makeCommandResult(retVal,0));
     }
 
     @Override

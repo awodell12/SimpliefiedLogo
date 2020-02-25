@@ -32,7 +32,7 @@ public class RepeatCommand implements AltCommand {
       results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength)));
       returnVal = results.get(results.size()-1).getReturnVal();
     }
-    results.add(new CommandResult(returnVal,listLength+1));
+    results.add(backEnd.makeCommandResult(returnVal,listLength+1));
     return results;
   }
 
