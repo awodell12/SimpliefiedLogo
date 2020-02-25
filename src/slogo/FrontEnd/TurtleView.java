@@ -28,7 +28,7 @@ public class TurtleView {
 
 
     public TurtleView(Pane layout, double width, double height){
-        String myTurtleImage = "slogo/FrontEnd/Resources/turtle.jpg";
+        String myTurtleImage = "slogo/FrontEnd/Resources/turtle.png";
         myTurtle = new ImageView(myTurtleImage);
         myTurtle.setPreserveRatio(true);
         myTurtle.setFitWidth(50);
