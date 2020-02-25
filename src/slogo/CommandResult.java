@@ -1,6 +1,7 @@
 package slogo;
 
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CommandResult {
@@ -9,7 +10,7 @@ public class CommandResult {
   private String myErrorMessage;
 
   private double myRotation;
-  private Entry<Double, Double> myPosition;
+  private List<Double> myPosition;
   private String myVariableName;
   private double myVariableValue;
   private String myUDCName;
@@ -20,7 +21,7 @@ public class CommandResult {
   private boolean myTurtleReset;
   //TODO: how to pass in path(s)?
 
-  public CommandResult(double retVal, int tokensParsed, double heading, Entry<Double, Double> pos,
+  public CommandResult(double retVal, int tokensParsed, double heading, List<Double> pos,
                        String variableName, double variableVal, String udcName, String udcText,
                        boolean clearScreen, boolean penUp, boolean turtleVisible, boolean turtleReset) {
     returnVal = retVal;
@@ -37,6 +38,23 @@ public class CommandResult {
     myPenUp = penUp;
     myTurtleVisible = turtleVisible;
     myTurtleReset = turtleReset;
+  }
+
+  public CommandResult(double retVal, int tokensParsed){
+    returnVal = retVal;
+    myTokensParsed = tokensParsed;
+
+    myRotation = 0;
+    myPosition = new ArrayList<>();
+    myPosition.add(0.0); myPosition.add(0.0);
+    myVariableName = "varName";
+    myVariableValue = 0;
+    myUDCName = "udcName";
+    myUDCText = "udcText";
+    myScreenClear = false;
+    myPenUp = true;
+    myTurtleVisible = true;
+    myTurtleReset = false;
   }
 
 
