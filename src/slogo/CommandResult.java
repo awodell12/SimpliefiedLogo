@@ -11,6 +11,7 @@ public class CommandResult {
 
   private double myRotation;
   private List<Double> myPosition;
+
   private String myVariableName;
   private double myVariableValue;
   private String myUDCName;
@@ -74,5 +75,45 @@ public class CommandResult {
 
   public int getTokensParsed() {
     return myTokensParsed;
+  }
+
+  public double getMyRotation() {
+    return myRotation;
+  }
+
+  public List<Double> getMyPosition() {
+    return myPosition;
+  }
+
+  public String getMyVariableName() {
+    return myVariableName;
+  }
+
+  public double getMyVariableValue() {
+    return myVariableValue;
+  }
+
+  public String getMyUDCName() {
+    return myUDCName;
+  }
+
+  public String getMyUDCText() {
+    return myUDCText;
+  }
+
+  public boolean isMyScreenClear() {
+    return myScreenClear;
+  }
+
+  public boolean isMyPenUp() {
+    return myPenUp;
+  }
+
+  public boolean isMyTurtleVisible() {
+    return myTurtleVisible;
+  }
+
+  public boolean isMyTurtleReset() {
+    return myTurtleReset;
   }
 }
