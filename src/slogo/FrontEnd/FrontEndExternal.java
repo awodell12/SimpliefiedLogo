@@ -1,18 +1,19 @@
 package slogo.FrontEnd;
 
+import javafx.collections.ListChangeListener;
+import javafx.geometry.Point2D;
 import javafx.scene.shape.Path;
 import slogo.CommandResult;
 import slogo.FrontEnd.Visualizer;
 
 import java.awt.*;
 
-public interface VisualizerExternal {
+public interface FrontEndExternal {
 
-    /**
+     /**
      * Constructor for the visualizer class, which manages the display components and state
-     * @return a visualizer object
      */
-    public Visualizer Visualizer();
+     //public Visualizer(ListChangeListener<String> instructionQueueListener);
 
     /**
      * Pops the first element of the instruction queue, which contains strings that are either scripts taken directly
@@ -36,8 +37,14 @@ public interface VisualizerExternal {
      * @param variableName string name for variable to be created/overwritten
      * @param variableValue value for new variable
      * @param path path object to draw
+     * @param udcName name of the newly created user defined command
+     * @param udcText the actual commands that entail the user defined command
+     * @param clearScreen whether or not the turtle view should be cleared
+     * @param isPenUp whether or not the pen is up
+     * @param turtleVisibility whether or not to show the turtle
+     * @param resetTurtle whether or not the turtle should be returned to 0, 0
      */
-    public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
-                                int variableValue, String udcName, String udcText, boolean clearScreen,
-                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle);
+    public void interpretResult(double turtleRotate, Point2D turtlePos, Path path, String variableName,
+                                double variableValue, String udcName, String udcText, boolean clearScreen,
+                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage);
 }

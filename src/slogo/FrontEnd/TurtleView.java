@@ -60,6 +60,8 @@ public class TurtleView {
     protected void setTurtlePosition(double x, double y){
         myTurtle.setX(x + myWidth/2 - TURTLE_SIZE/2);
         myTurtle.setY(y + myHeight/2 - TURTLE_SIZE/2);
+        while(myTurtle.getX() > myWidth) myTurtle.setX(myTurtle.getX()-myWidth);
+        while(myTurtle.getY() > myHeight) myTurtle.setY(myTurtle.getY() - myHeight);
     };
 
     /**
