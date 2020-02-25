@@ -13,10 +13,10 @@ import javafx.scene.shape.Rectangle;
  * Turtle and its taken paths to be displayed to the user.
  */
 public class TurtleView {
-    private ImageView myTurtle;
-    private Group myGroup;
+    private final ImageView myTurtle;
+    private final Group myGroup;
     private Color myPenColor = Color.BLACK;
-    private Rectangle myBackground;
+    private final Rectangle myBackground;
     private boolean isPenUp = false;
     private boolean myTurtleVisibility = true;
     private static final double TURTLE_SIZE = 50;
@@ -40,8 +40,6 @@ public class TurtleView {
         myGroup.getChildren().add(myBackground);
         myGroup.getChildren().add(myTurtle);
         layout.getChildren().add(myGroup);
-        // add some listener/binding to canvas to update whenever the turtle moves?
-        //  myTurtle.imageProperty().addListener((observable, oldValue, newValue) -> myGroup.getGraphicsContext2D().drawImage(newValue));
     }
 
     /**
@@ -62,7 +60,7 @@ public class TurtleView {
         myTurtle.setY(y + myHeight/2 - TURTLE_SIZE/2);
         while(myTurtle.getX() > myWidth) myTurtle.setX(myTurtle.getX()-myWidth);
         while(myTurtle.getY() > myHeight) myTurtle.setY(myTurtle.getY() - myHeight);
-    };
+    }
 
     /**
      * Rotate the turtle
@@ -70,7 +68,7 @@ public class TurtleView {
      */
     protected void setTurtleHeading(double angle){
         myTurtle.setRotate(myTurtle.getRotate() + angle);
-    };
+    }
 
     /**
      * Change the background color of the turtleView section of the display to a desired color.
@@ -79,7 +77,7 @@ public class TurtleView {
      */
     protected void setBackGroundColor(Color color){
         myBackground.setFill(color);
-    };
+    }
 
     /**
      * moves the turtle back to home position
@@ -100,7 +98,7 @@ public class TurtleView {
             path.setFill(myPenColor);
             myGroup.getChildren().add(path);
         }
-    };
+    }
 
     /**
      * Removes all of the taken paths displayed on the screen by clearing the display and returns the turtle
@@ -111,7 +109,7 @@ public class TurtleView {
         if(numChildren >= 2) myGroup.getChildren().remove(1, numChildren);
         if(myTurtleVisibility) myGroup.getChildren().add(myTurtle);
         resetTurtle();
-    };
+    }
 
     /**
      * change the turtle image. Image is determined by the file chooser
