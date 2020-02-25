@@ -1,29 +1,38 @@
 package slogo.FrontEnd;
 
+import java.io.File;
+import java.util.PriorityQueue;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javax.swing.SizeRequirements;
-import org.xml.sax.SAXException;
-import slogo.CommandResult;
+import javax.imageio.ImageIO;
+
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Queue;
+import java.util.*;
 
 public class Visualizer extends Application {
     private static final double HEIGHT = 600;
@@ -33,10 +42,9 @@ public class Visualizer extends Application {
     private static final double MILLISECOND_DELAY = 1000;
     private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 800, 650, 125);
     private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 650, 600);
-    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 200, 250);
-    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 200, 250);
-    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 200, 200);
-    private static final Rectangle ERROR_MESSAGE_SHAPE = new Rectangle(100, 720, 650, 60);
+    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 250, 125);
+    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 250, 125);
+    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 250, 125);
     private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(300, 750, 60, 40);
     private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(950, 100, 50, 50);
     private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(900, 925, 75, 50);
@@ -45,10 +53,22 @@ public class Visualizer extends Application {
     private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(850, 25, 75, 50);
     private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
     private static final double SPACING = 10;
-  //TODO: add menu shapes and label shapes
+    private static final double MARGIN = 25;
+    private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
+    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass"},
+            {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
+            {"White", "Duke Blue", "Gray", "Red", "Azure", "LemonChiffon"}};
+    private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
+        put("Red", Color.RED);
+        put("White", Color.WHITE);
+        put("Gray", Color.GRAY);
+        put("Azure", Color.AZURE);
+        put("LemonChiffon", Color.LEMONCHIFFON);
+        put("Duke Blue", Color.ROYALBLUE);
+        put("Billion Dollar Grass", Color.LAWNGREEN);
+        put("Dark Salmon", Color.DARKSALMON);
+    }};
 
-    private Button myClearCommandBoxButton;
-    private Button myClearHistoryButton;
     private CommandBox myCommandBox;
     private ClearableEntriesBox myHistory;
     private ClearableEntriesBox myUserDefinedCommands;
@@ -57,11 +77,13 @@ public class Visualizer extends Application {
     private Queue<String> myInstructionQueue;
     private Stage myStage;
     private Group myRoot;
-  private VBox myLeftVBox;
-  private VBox myRightVBox;
-  private HBox myLayout;
+    private VBox myLeftVBox;
+    private VBox myCenterVBox;
+    private VBox myRightVBox;
+    private HBox myLayout;
+    private Text myErrorMessage;
 
-  /**
+    /**
      * Constructor for the visualizer class, which manages the display components and state
      */
     public Visualizer() throws IOException {
@@ -71,15 +93,17 @@ public class Visualizer extends Application {
         //myStage.show();
     }
 
-  @Override
-  public void start(Stage primaryStage) throws Exception {
-    myStage = primaryStage;
-    Scene display = setUpDisplay();
-    myStage.setScene(display);
-    myStage.show();
-  }
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        myInstructionQueue = new PriorityQueue<String>();
+        myStage = primaryStage;
+        Scene display = setUpDisplay();
+        myStage.setScene(display);
+        myStage.show();
+    }
 
-  /**
+
+    /**
      * Pops the first element of the instruction queue, which contains strings that are either scripts taken directly
      *      from the command box, or special instructions generated by buttons which need to interact with model
      * Relevant Features:
@@ -98,16 +122,40 @@ public class Visualizer extends Application {
      * See the results of the turtle executing commands displayed visually
      * See resulting errors in user friendly way
      * see user defined commands currently available
-     * @param result
+     * @param turtleRotate new angle to set turtle to
+     * @param turtlePos new coordinates for turtle
+     * @param variableName string name for variable to be created/overwritten
+     * @param variableValue value for new variable
+     * @param path path object to draw
+     * @param udcName name of the newly created user defined command
+     * @param udcText the actual commands that entail the user defined command
+     * @param clearScreen whether or not the turtle view should be cleared
+     * @param isPenUp whether or not the pen is up
+     * @param turtleVisibility whether or not to show the turtle
+     * @param resetTurtle whether or not the turtle should be returned to 0, 0
      */
-    public void interpretResult(CommandResult result){
-        // maybe make this take exact parameters
+    public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
+                                double variableValue, String udcName, String udcText, boolean clearScreen,
+                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage){
+        myTurtleView.setTurtleHeading(turtleRotate);
+        myTurtleView.setTurtlePosition(turtlePos.x, turtlePos.y);
+        myTurtleView.addPath(path);
+        if(variableName != null) addVariable(variableName, variableValue);
+        if(udcName != null) addUserDefinedCommand(udcName, udcText);
+        if(clearScreen) myTurtleView.clearPaths();
+        if(resetTurtle) myTurtleView.resetTurtle();
+        myTurtleView.setTurtleVisibility(turtleVisibility);
+        myTurtleView.setIsPenUp(isPenUp);
+        if(errorMessage != null) displayErrorMessage(errorMessage);
     }
 
     private Scene setUpDisplay() throws IOException{
+        myInstructionQueue = new PriorityQueue<>();
+
         myRoot = new Group();
-        myLayout = new HBox(20);
+        myLayout = new HBox(SPACING * 2);
         myLayout.setMaxSize(WIDTH, HEIGHT);
+        myLayout.setMinSize(WIDTH,HEIGHT);
 
 
         myLeftVBox = new VBox(SPACING);
@@ -115,10 +163,11 @@ public class Visualizer extends Application {
         myLeftVBox.setMinSize(myLeftVBox.getMaxWidth(), myLeftVBox.getMaxHeight());
 
         myRightVBox = new VBox(SPACING);
-        myRightVBox.setMaxSize(WIDTH*0.25, HEIGHT);
+        myRightVBox.setMaxSize(WIDTH*0.33, HEIGHT);
         setUpRightPane();
 
         setUpLeftPane();
+        setUpCenterPane();
 
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
             try {
@@ -133,9 +182,10 @@ public class Visualizer extends Application {
 
             }
         });
-        myLayout.getChildren().addAll(myLeftVBox,myRightVBox);
-        myLayout.setMargin(myLeftVBox, new Insets( SPACING, 0, 0, 50));
-        myLayout.setMargin(myRightVBox, new Insets(SPACING,50,0,0));
+        myLayout.getChildren().addAll(myLeftVBox,myCenterVBox,myRightVBox);
+        myLayout.setMargin(myLeftVBox, new Insets(SPACING, 0, 0, MARGIN));
+        myLayout.setMargin(myRightVBox, new Insets(SPACING,MARGIN,0,0));
+        myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
@@ -144,69 +194,126 @@ public class Visualizer extends Application {
         return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
+  private void setUpCenterPane() {
+      myCenterVBox = new VBox(SPACING);
+      myCenterVBox.setPrefHeight(HEIGHT);
+      setUpBottomButtons();
+      myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
+      int lastIndex = myCenterVBox.getChildren().size();
+      myCenterVBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
+
+  }
+
   private void setUpLeftPane() {
 
-    myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
-    myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
-  }
+        setUpMenus();
+        myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
+        myErrorMessage = new Text("Error Message Goes Here");
+        myErrorMessage.setFill(Color.RED);
+        myLeftVBox.getChildren().add(myErrorMessage);
+        myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
+    }
 
-  private void setUpRightPane() {
-    setUpTopButtons();
-    myHistory = new ClearableEntriesBox(myRightVBox, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE);
-    myUserDefinedCommands = new ClearableEntriesBox(myRightVBox, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE);
-    myVariables = new ClearableEntriesBox(myRightVBox, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE);
-    setUpBottomButtons();
-  }
+    private void setUpRightPane() {
+        setUpTopButtons();
+        myHistory = new ClearableEntriesBox(myRightVBox, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, "HISTORY");
+        myUserDefinedCommands = new ClearableEntriesBox(myRightVBox, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, "USER-DEFINED COMMANDS");
+        myVariables = new ClearableEntriesBox(myRightVBox, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, "ENVIRONMENT VARIABLES");
+    }
 
-  private void setUpTopButtons() {
 
-      HBox topButtons = new HBox(SPACING);
-    Button myHelpButton = new Button("Help", HELP_BUTTON_SHAPE);
-    myHelpButton.setOnAction(event -> displayHelp());
-    topButtons.getChildren().add(myHelpButton);
-    myRightVBox.getChildren().add(topButtons);
-  }
+    private void setUpTopButtons() {
 
-  private void setUpBottomButtons() {
-    HBox bottomButtons = new HBox(SPACING);
-    Button runButton = new Button("Run", RUN_BUTTON_SHAPE);
-    runButton.setOnAction(event -> runButtonEvent());
-    Button clearButton = new Button("Clear", CLEAR_COMMAND_BOX_SHAPE);
-    clearButton.setOnAction(event -> myCommandBox.clearContents());
-    bottomButtons.getChildren().addAll(runButton, clearButton);
-    myRightVBox.getChildren().add(bottomButtons);
-  }
+        HBox topButtons = new HBox(SPACING);
+        Button myHelpButton = makeButton("Help", HELP_BUTTON_SHAPE);
+        myHelpButton.setOnAction(event -> displayHelp());
+        Button mySetTurtleImageButton = makeButton("Set Turtle Image", SET_TURTLE_IMAGE_BUTTON_SHAPE);
+        mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
+        topButtons.getChildren().add(myHelpButton);
+        topButtons.getChildren().add(mySetTurtleImageButton);
+        myRightVBox.getChildren().add(topButtons);
+    }
 
-  private void step(){
+    static Button makeButton(String text, Rectangle shape){
+        Button button = new Button(text);
+        button.setLayoutY(shape.getY());
+        button.setLayoutX(shape.getX());
+        button.setMinSize(shape.getWidth(), shape.getHeight());
+        return button;
+    }
+
+
+    private void setUpMenus(){
+        MenuBar menuBar = new MenuBar();
+        myLeftVBox.getChildren().add(menuBar);
+        for(int i=0; i<MENU_NAMES.length; i++){
+            Menu menu = new Menu(MENU_NAMES[i]);
+            menuBar.getMenus().add(menu);
+            for(String entry : MENU_OPTIONS[i]){
+                MenuItem menuItem = new MenuItem(entry);
+                switch (i) {
+                    case 0:
+                        menuItem.setOnAction(event -> myTurtleView.setPenColor(COLOR_MAP.get(entry)));
+                        break;
+                    case 1:
+                        menuItem.setOnAction(event -> setLanguage(entry));
+                        break;
+                    case 2:
+                        menuItem.setOnAction(event -> myTurtleView.setBackGroundColor(COLOR_MAP.get(entry)));
+                        break;
+                }
+                menu.getItems().add(menuItem);
+            }
+        }
+    }
+
+    private void setLanguage(String language){
+        myInstructionQueue.add("language: " + language);
+    }
+
+    private void setTurtleImage() {
+        final FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showOpenDialog(myStage);
+        if(file != null) {
+            try {
+                BufferedImage buffImage = ImageIO.read(file);
+                WritableImage fximage = new WritableImage(buffImage.getWidth(), buffImage.getHeight());
+                Image image = SwingFXUtils.toFXImage(buffImage, fximage);
+                myTurtleView.setTurtleImage(image);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private void setUpBottomButtons() {
+        Button runButton = makeButton("Run", RUN_BUTTON_SHAPE);
+        runButton.setOnAction(event -> runButtonEvent());
+        Button clearButton = makeButton("Clear", CLEAR_COMMAND_BOX_SHAPE);
+        clearButton.setOnAction(event -> myCommandBox.clearContents());
+        myCenterVBox.getChildren().addAll(runButton,clearButton);
+    }
+
+    private void step(){
 
     }
 
-    // maybe make it a rect so it can also resize the turtle
-    private void updateTurtle(Point pos){
-
+    private void displayErrorMessage(String message){
+        myErrorMessage.setText(message);
     }
 
-    private void makeButtons(){
-        /*String[] buttonTexts = new String[]{"Run", "Help"};
-        Rectangle[] buttonShapes = new Rectangle[]{RUN_BUTTON_SHAPE, HELP_BUTTON_SHAPE};
-        EventHandler<ActionEvent>[] actions = new EventHandler<ActionEvent>[]{event -> myInstructionQueue.add(myCommandBox.getContents()),
-            event -> displayHelp()};
-        for(int i=0; i<buttonShapes.length; i++){
-            Button b = new Button(buttonTexts[i], buttonShapes[i]);
-            b.setOnAction(actions[i]);
-        }*/
-
-        //TODO: add other buttons
+    private void addVariable(String name, double value){
+        myVariables.addEntry(name + " : " + value, name);
     }
 
-    private void addVariable(String name, int value){
-
+    private void addUserDefinedCommand(String name, String command){
+        myUserDefinedCommands.addEntry(name + ":\n" + command, name);
     }
 
     private void runButtonEvent(){
-      String instruction = myCommandBox.getContents();
-      myInstructionQueue.add(instruction);
-      myHistory.addHistoryEntry(instruction);
+        String instruction = myCommandBox.getContents();
+        myInstructionQueue.add(instruction);
+        myHistory.addEntry(instruction, null);
     }
 
     private void displayHelp(){
