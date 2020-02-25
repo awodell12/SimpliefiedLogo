@@ -53,19 +53,21 @@ public class ClearableEntriesBox {
     /**
      * Takes in the latest user entry and stores it so it can be displayed. Deletes old entry if necessary
      * @param entry the string to be added to the displayed entries
-     * @param overwrite the name of the entry that needs to be overwritten (or null)
+     * @param name the name of the entry that needs to be overwritten (or null)
      */
-    public void addEntry(String entry, String overwrite){
+    public void addEntry(String entry, String name){
         Text newText = new Text(entry + "\n");
         myTextFlow.getChildren().add(newText);
-        if(overwrite != null){
+        if(name != null){
             for(int i=0; i<entryList.size(); i++){
-                if(overwrite.equals(entryList.get(i))){
-                    myTextFlow.getChildren().remove(i);
+                if(name.equals(entryList.get(i))){
+                    myTextFlow.getChildren().remove(i+1); // add 1 to account for description text
+                    entryList.remove(i);
                     break;
                 }
             }
+            entryList.add(name);
+            // note that we add name, not entry, because we want to store only the NAME not the full text entry
         }
-        entryList.add(entry);
     }
 }

@@ -11,12 +11,16 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -54,6 +58,13 @@ public class Visualizer extends Application {
     private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
     private static final double SPACING = 10;
     //TODO: add menu shapes and label shapes
+    private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
+    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "White", "Blue"}, {"English"}, {"White", "Blue"}};
+    private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
+        put("Red", Color.RED);
+        put("White", Color.WHITE);
+        put("Blue", Color.BLUE);
+    }};
 
     private Button myClearCommandBoxButton;
     private Button myClearHistoryButton;
@@ -61,7 +72,7 @@ public class Visualizer extends Application {
     private ClearableEntriesBox myHistory;
     private ClearableEntriesBox myUserDefinedCommands;
     private ClearableEntriesBox myVariables;
-    private Map<String, Integer> myVariableMap;
+    //private Map<String, Integer> myVariableMap;
     private TurtleView myTurtleView;
     private Queue<String> myInstructionQueue;
     private Stage myStage;
@@ -107,15 +118,29 @@ public class Visualizer extends Application {
      * See the results of the turtle executing commands displayed visually
      * See resulting errors in user friendly way
      * see user defined commands currently available
-     * @param result
+     * @param turtleRotate new angle to set turtle to
+     * @param turtlePos new coordinates for turtle
+     * @param variableName string name for variable to be created/overwritten
+     * @param variableValue value for new variable
+     * @param path path object to draw
      */
-    public void interpretResult(CommandResult result){
-        // maybe make this take exact parameters
+    public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
+                                int variableValue, String udcName, String udcText, boolean clearScreen,
+                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle){
+        myTurtleView.setTurtleHeading(turtleRotate);
+        myTurtleView.setTurtlePosition(turtlePos.x, turtlePos.y);
+        myTurtleView.addPath(path);
+        addVariable(variableName, variableValue);
+        addUserDefinedCommand(udcName, udcText);
+        if(clearScreen) myTurtleView.clearPaths();
+        if(resetTurtle) myTurtleView.resetTurtle();
+        myTurtleView.setTurtleVisibility(turtleVisibility);
+        myTurtleView.setIsPenUp(isPenUp);
     }
 
     private Scene setUpDisplay() throws IOException{
         myInstructionQueue = new PriorityQueue<>();
-        myVariableMap = new HashMap<>();
+        //myVariableMap = new HashMap<>();
 
         myRoot = new Group();
         myLayout = new HBox(20);
@@ -158,6 +183,7 @@ public class Visualizer extends Application {
 
     private void setUpLeftPane() {
 
+        setUpMenus();
         myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
         myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE, CLEAR_COMMAND_BOX_SHAPE);
     }
@@ -180,6 +206,31 @@ public class Visualizer extends Application {
         topButtons.getChildren().add(myHelpButton);
         topButtons.getChildren().add(mySetTurtleImageButton);
         myRightVBox.getChildren().add(topButtons);
+    }
+
+    private void setUpMenus(){
+        MenuBar menuBar = new MenuBar();
+        myLeftVBox.getChildren().add(menuBar);
+        for(int i=0; i<MENU_NAMES.length; i++){
+            Menu menu = new Menu(MENU_NAMES[i]);
+            menuBar.getMenus().add(menu);
+            for(String entry : MENU_OPTIONS[i]){
+                MenuItem menuItem = new MenuItem(entry);
+                switch (i) {
+                    case 0:
+                        menuItem.setOnAction(event -> myTurtleView.setPenColor(COLOR_MAP.get(entry)));
+                    case 1:
+                        menuItem.setOnAction(event -> setLanguage(entry));
+                    case 2:
+                        menuItem.setOnAction(event -> myTurtleView.setBackGroundColor(COLOR_MAP.get(entry)));
+                }
+                menu.getItems().add(menuItem);
+            }
+        }
+    }
+
+    private void setLanguage(String language){
+        myInstructionQueue.add("language: " + language);
     }
 
     private void setTurtleImage() {
@@ -230,22 +281,24 @@ public class Visualizer extends Application {
     }
 
     private void addVariable(String name, int value){
-        if(myVariableMap.containsKey(name)){
+        myVariables.addEntry(name + " : " + value, name);
+        /*if(myVariableMap.containsKey(name)){
             myVariables.addEntry(name + " : " + value, name);
         }
         else{
             myVariables.addEntry(name + " : " + value, null);
         }
-        myVariableMap.put(name, value);
+        myVariableMap.put(name, value);*/
+    }
+
+    private void addUserDefinedCommand(String name, String command){
+        myUserDefinedCommands.addEntry(name + ":\n" + command, name);
     }
 
     private void runButtonEvent(){
         String instruction = myCommandBox.getContents();
         myInstructionQueue.add(instruction);
         myHistory.addEntry(instruction, null);
-        addVariable("wow", 8);
-        addVariable("nice", 6);
-        addVariable("wow", 5);
     }
 
     private void displayHelp(){
