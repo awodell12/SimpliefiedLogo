@@ -2,6 +2,7 @@ package slogo.FrontEnd;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
@@ -28,13 +29,14 @@ public class ClearableEntriesBox {
     public ClearableEntriesBox(Pane layout, Rectangle shape, Rectangle clearButtonShape, String description){
         myTextFlow = new TextFlow();
         myTextFlow.setPrefWidth(shape.getWidth());
-        myTextFlow.setPrefHeight(shape.getHeight()/2);
+        myTextFlow.setPrefHeight(shape.getHeight());
         //myTextFlow.setMinSize(Control.USE_PREF_SIZE-1, Control.USE_PREF_SIZE-1);
-        myTextFlow.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+        myTextFlow.setMaxSize(Control.USE_PREF_SIZE + 1000, Control.USE_PREF_SIZE);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(myTextFlow);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        //scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
         Button clearButton = Visualizer.makeButton("Clear", clearButtonShape);
         clearButton.setOnAction(event -> clearEntryBox());
         HBox hbox = new HBox(SPACING);
