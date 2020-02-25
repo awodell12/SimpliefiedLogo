@@ -6,7 +6,6 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -20,9 +19,9 @@ import java.util.List;
  */
 public class ClearableEntriesBox {
 
-    private TextFlow myTextFlow;
-    private Text descriptionText;
-    private List<String> entryList;
+    private final TextFlow myTextFlow;
+    private final Text descriptionText;
+    private final List<String> entryList;
 
     private static final double SPACING = 10;
 
