@@ -1,6 +1,6 @@
 ## Names
 Samuel Thompson stt13
-Austin Odell
+Austin Odell awo6
 James Rumsey jpr31
 Cary Shindell css57
 ## Reviewing planning questions:

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface Command {
 
-  public abstract int getNumArgs();
+  int getNumArgs();
 
   /**
    * Carries out the command, changing the relevant data in the model according to the
@@ -20,5 +20,5 @@ public interface Command {
    * @return The effects on the model of this individual command, bundled into a CommandResult
    * instance.
    */
-  public CommandResult execute(List<Double> arguments);
+  CommandResult execute(List<Double> arguments);
 }

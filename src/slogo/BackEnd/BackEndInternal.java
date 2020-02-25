@@ -1,6 +1,7 @@
 package slogo.BackEnd;
-
 import java.util.Collection;
+import java.util.List;
+import slogo.CommandResult;
 
 /**
  * Classes inside the view with access to the model may assume that it has these functions, which allow
@@ -14,7 +15,7 @@ public interface BackEndInternal {
    * @param name The name of the variable, excluding the colon.
    * @param value The value to be stored in the variable.
    */
-  public void setVariable(String name, double value);
+  void setVariable(String name, double value);
 
   /**
    * Returns the value of a variable if it has been set, otherwise throws an error
@@ -23,13 +24,13 @@ public interface BackEndInternal {
    * @param name The name of the variable (excluding the colon) to look for and return
    *             the value of.
    */
-  public double getVariable(String name) throws ParseException;
+  double getVariable(String name) throws ParseException;
 
   /**
    * Removes all (variable-name,value) pairings previously set in the model. Should be hidden from
    * overzealous Compsci 201 students.
    */
-  public void clearVariables();
+  void clearVariables();
 
   /**
    * Adds a user-defined command (Which was defined using TO-END) to the list of user-defined
@@ -39,10 +40,10 @@ public interface BackEndInternal {
    * @param name The name to give the user-defined command to be used in the future.
    * @param parameters The local variables that are set by calls to the command and are used within
    *                   the command to execute it.
-   * @param script The contents of the command, which are parsed and executed whenever the
+   * @param commands The contents of the command, which are parsed and executed whenever the
    *               command is called.
    */
-  public void setUserCommand(String name, Collection<String> parameters, String script) throws ParseException;
+  void setUserCommand(String name, List<String> parameters, String[] commands) throws ParseException;
 
   /**
    * Returns a list of named arguments whose size is equal to the number of
@@ -50,7 +51,7 @@ public interface BackEndInternal {
    * @param name The name of the command to find arguments for.
    * @return The argument list of the command.
    */
-  public Collection<String> getUserCommandArgs(String name);
+  Collection<String> getUserCommandArgs(String name);
 
   /**
    * Returns the String contents of a user-defined command that were used to define the command
@@ -59,5 +60,35 @@ public interface BackEndInternal {
    * @return The code that makes up the command's definition, as a String, referencing its
    * named constants.
    */
-  public String getUserCommandScript(String name);
+  Collection<String> getUserCommandScript(String name);
+
+  /**
+   * @return A list of all Turtles in this instance of the model.
+   */
+  List<Turtle> getTurtles();
+
+  /**
+   * Set a new list of turtles.
+   * @param t A list of Turtles that will be tied to this model.
+   */
+  void setTurtles(List<Turtle> t);
+
+  /**
+   * Remove all turtles from the model.
+   */
+  void clearTurtles();
+
+  void setLanguage(String language);
+
+  List<CommandResult> parseCommandsList(String[] tokenList);
+
+  int distanceToEndBracket(String[] tokenList);
+
+  CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, String pathColor);
+
+  CommandResult makeCommandResult(double retVal, int tokensParsed, String varName,
+      double varValue);
+
+  CommandResult makeCommandResult(double retVal, int tokensParsed, String udcName, String udcScript);
 }
+
