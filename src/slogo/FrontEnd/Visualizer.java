@@ -1,15 +1,13 @@
 package slogo.FrontEnd;
 
 import java.io.File;
-import java.util.PriorityQueue;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ModifiableObservableListBase;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -20,6 +18,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -34,12 +33,11 @@ import javafx.util.Duration;
 import javax.imageio.ImageIO;
 
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
 
-public class Visualizer extends Application {
+public class Visualizer extends Application implements FrontEndExternal{
     private static final double HEIGHT = 600;
     private static final double ASPECT_RATIO = (16.0/9.0);
     private static final double WIDTH = HEIGHT * ASPECT_RATIO;
@@ -139,6 +137,7 @@ public class Visualizer extends Application {
      * @param isPenUp whether or not the pen is up
      * @param turtleVisibility whether or not to show the turtle
      * @param resetTurtle whether or not the turtle should be returned to 0, 0
+     * @param errorMessage error message string, if any
      */
     public void interpretResult(double turtleRotate, Point2D turtlePos, Path path, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
@@ -198,18 +197,16 @@ public class Visualizer extends Application {
         return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
-  private void setUpCenterPane() {
-      myCenterVBox = new VBox(SPACING);
-      myCenterVBox.setPrefHeight(HEIGHT);
-      setUpBottomButtons();
-      myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
-      int lastIndex = myCenterVBox.getChildren().size();
-      myCenterVBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
+    private void setUpCenterPane() {
+        myCenterVBox = new VBox(SPACING);
+        myCenterVBox.setPrefHeight(HEIGHT);
+        setUpBottomButtons();
+        myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
+        int lastIndex = myCenterVBox.getChildren().size();
+        myCenterVBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
+    }
 
-  }
-
-  private void setUpLeftPane() {
-
+    private void setUpLeftPane() {
         setUpMenus();
         myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
         myErrorMessage = new Text("Error Message Goes Here");
@@ -321,6 +318,10 @@ public class Visualizer extends Application {
     }
 
     private void displayHelp(){
-
+        Stage stage = new Stage();
+        stage.setTitle("Help Window");
+        ImageView helpImage = new ImageView("https://users.cs.duke.edu/~rcd/images/rcd.jpg");
+        stage.setScene(new Scene(new Group(helpImage), 450, 450));
+        stage.show();
     }
 }

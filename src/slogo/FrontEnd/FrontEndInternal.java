@@ -8,7 +8,7 @@ public interface FrontEndInternal {
    * Constructor for visualizer, which houses all of the display components together
    * @return new instance of Visualizer
    */
- Visualizer visualizer();
+   //Visualizer visualizer();
 
   /**
    * Constructor for a view panel that displays the turtle and the paths the turtle has taken
