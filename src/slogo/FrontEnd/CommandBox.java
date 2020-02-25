@@ -1,12 +1,6 @@
 package slogo.FrontEnd;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
@@ -17,13 +11,11 @@ import javafx.scene.shape.Rectangle;
  */
 public class CommandBox {
 
-    //private TextField inputField; // need a better data structure for this
-    private TextArea inputArea;
-    private HBox myHBox;
+    private final TextArea inputArea;
     private static final String prompt = "Enter commands here";
 
-    public CommandBox(Pane root, Rectangle commandBoxShape, Rectangle clearButtonShape){
-        myHBox = new HBox(10);
+    public CommandBox(Pane root, Rectangle commandBoxShape){
+        HBox myHBox = new HBox(10);
         inputArea = new TextArea(prompt);
         inputArea.setOnMouseClicked(event -> removePrompt());
         inputArea.setPrefWidth(commandBoxShape.getWidth());
@@ -45,7 +37,7 @@ public class CommandBox {
      * Clear whatever the user has entered into the CommandBox by resetting its contents to empty,
      * used when Clear button is pressed
      */
-    protected void clearContents(){inputArea.clear();};
+    protected void clearContents(){inputArea.clear();}
 
     private void removePrompt() {
         if(inputArea.getText().equals(prompt)){
