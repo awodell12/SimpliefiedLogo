@@ -1,20 +1,13 @@
 package slogo.Controller;
 
-import static javafx.application.Application.launch;
-
-import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Observable;
 
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
-import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.stage.Stage;
 import slogo.BackEnd.SLogoBackEnd;
+import slogo.BackEnd.SLogoLanguageChanger;
 import slogo.CommandResult;
 import slogo.FrontEnd.Visualizer;
 
@@ -41,12 +34,18 @@ public class Controller extends Application{
         SLogoBackEnd myModel = new SLogoBackEnd();
         ListChangeListener<String> instructionQueueListener = c -> {
             String input = myVisualizer.popInstructionQueue();
-            ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModel.parseScript(input);
-            for(CommandResult result : resultList){
-                myVisualizer.interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), result.getMyPosition().get(1)),
-                        null, result.getMyVariableName(), result.getMyVariableValue(), result.getMyUDCName(),
-                        result.getMyUDCText(), result.isMyScreenClear(), result.isMyPenUp(), result.isMyTurtleVisible(),
-                        result.isMyTurtleReset(), result.getErrorMessage());
+            if(input.length() >= 9 && input.substring(0, 9).equals("language:")){
+                SLogoLanguageChanger languageChanger = new SLogoLanguageChanger(input.substring(10));
+                myModel.applyChanger(languageChanger);
+            }
+            else {
+                ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModel.parseScript(input);
+                for (CommandResult result : resultList) {
+                    myVisualizer.interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), result.getMyPosition().get(1)),
+                            null, result.getMyVariableName(), result.getMyVariableValue(), result.getMyUDCName(),
+                            result.getMyUDCText(), result.isMyScreenClear(), result.isMyPenUp(), result.isMyTurtleVisible(),
+                            result.isMyTurtleReset(), result.getErrorMessage());
+                }
             }
         };
         myVisualizer = new Visualizer(instructionQueueListener);
