@@ -1,7 +1,10 @@
 package slogo.FrontEnd;
 
+import javafx.scene.shape.Path;
 import slogo.CommandResult;
 import slogo.FrontEnd.Visualizer;
+
+import java.awt.*;
 
 public interface VisualizerExternal {
 
@@ -28,7 +31,13 @@ public interface VisualizerExternal {
      * See the results of the turtle executing commands displayed visually
      * See resulting errors in user friendly way
      * see user defined commands currently available
-     * @param result
+     * @param turtleRotate new angle to set turtle to
+     * @param turtlePos new coordinates for turtle
+     * @param variableName string name for variable to be created/overwritten
+     * @param variableValue value for new variable
+     * @param path path object to draw
      */
-    public void interpretResult(CommandResult result);
+    public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
+                                int variableValue, String udcName, String udcText, boolean clearScreen,
+                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle);
 }

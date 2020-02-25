@@ -125,7 +125,7 @@ public class Visualizer extends Application {
      * @param path path object to draw
      */
     public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
-                                int variableValue, String udcName, String udcText, boolean clearScreen,
+                                double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, boolean resetTurtle){
         myTurtleView.setTurtleHeading(turtleRotate);
         myTurtleView.setTurtlePosition(turtlePos.x, turtlePos.y);
@@ -280,7 +280,7 @@ public class Visualizer extends Application {
         //TODO: add other buttons
     }
 
-    private void addVariable(String name, int value){
+    private void addVariable(String name, double value){
         myVariables.addEntry(name + " : " + value, name);
         /*if(myVariableMap.containsKey(name)){
             myVariables.addEntry(name + " : " + value, name);
