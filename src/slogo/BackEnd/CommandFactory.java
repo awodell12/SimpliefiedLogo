@@ -3,7 +3,28 @@ package slogo.BackEnd;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import slogo.BackEnd.commands.*;
+import slogo.BackEnd.commands.BackCommand;
+import slogo.BackEnd.commands.ClearScreenCommand;
+import slogo.BackEnd.commands.DoTimesCommand;
+import slogo.BackEnd.commands.ForLoopCommand;
+import slogo.BackEnd.commands.ForwardCommand;
+import slogo.BackEnd.commands.GoHomeCommand;
+import slogo.BackEnd.commands.GreaterCommand;
+import slogo.BackEnd.commands.HideTurtleCommand;
+import slogo.BackEnd.commands.IfCommand;
+import slogo.BackEnd.commands.IfElseCommand;
+import slogo.BackEnd.commands.LeftCommand;
+import slogo.BackEnd.commands.MakeCommand;
+import slogo.BackEnd.commands.MultCommand;
+import slogo.BackEnd.commands.PenDownCommand;
+import slogo.BackEnd.commands.PenUpCommand;
+import slogo.BackEnd.commands.RepeatCommand;
+import slogo.BackEnd.commands.RightCommand;
+import slogo.BackEnd.commands.SetHeadingCommand;
+import slogo.BackEnd.commands.SetPosCommand;
+import slogo.BackEnd.commands.ShowTurtleCommand;
+import slogo.BackEnd.commands.SumCommand;
+import slogo.BackEnd.commands.ToCommand;
 
 public class CommandFactory {
   private static final Map<String, AltCommand> myCommands;
@@ -32,10 +53,6 @@ public class CommandFactory {
     newMap.put("GreaterThan",new GreaterCommand());
     newMap.put("MakeUserInstruction",new ToCommand());
     myCommands = Collections.unmodifiableMap(newMap);
-  }
-
-
-  public CommandFactory() {
   }
 
   public static AltCommand makeCommand(String type) throws ParseException {

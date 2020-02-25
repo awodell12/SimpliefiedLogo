@@ -1,17 +1,17 @@
 package slogo.BackEnd;
 
 public class ParseException extends Exception {
-  private String myMessage;
+  private final String myMessage;
 
   public ParseException(String msg) {
     myMessage = msg;
   }
 
-  public String getMessage() {
-    return myMessage;
-  }
-
   public ParseException() {
     myMessage = "Error in parse.";
+  }
+
+  public String getMessage() {
+    return myMessage;
   }
 }

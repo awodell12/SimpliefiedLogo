@@ -10,14 +10,17 @@ import slogo.CommandResult;
 
 public class ForLoopCommand implements AltCommand {
 
+  public static final int NUM_ARGS = 3;
+  public static final int NUM_VARS = 1;
+
   @Override
   public int getNumArgs() {
-    return 3;
+    return NUM_ARGS;
   }
 
   @Override
   public int getNumVars() {
-    return 1;
+    return NUM_VARS;
   }
 
   @Override
