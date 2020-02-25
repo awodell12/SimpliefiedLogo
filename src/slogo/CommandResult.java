@@ -57,7 +57,7 @@ public class CommandResult {
     myUDCName = "udcName";
     myUDCText = "udcText";
     myScreenClear = false;
-    myPenUp = true;
+    myPenUp = false;
     myTurtleVisible = true;
     myTurtleReset = false;
   }
