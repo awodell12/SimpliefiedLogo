@@ -22,7 +22,10 @@ public class SLogoTurtle implements Turtle {
         myPenColor = "000000";
     }
 
-    //TODO: add new constructors besides default
+    public SLogoTurtle(double x, double y, double heading){
+        myX = x; myY = y;
+        myHeading = heading;
+    }
 
     @Override
     public double getX() { return myX; }
