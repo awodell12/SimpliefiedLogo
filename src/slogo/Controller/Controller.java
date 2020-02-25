@@ -13,6 +13,7 @@ import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.geometry.Point2D;
+import javafx.scene.shape.Path;
 import javafx.stage.Stage;
 import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
@@ -44,7 +45,7 @@ public class Controller extends Application{
             ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModel.parseScript(input);
             for(CommandResult result : resultList){
                 myVisualizer.interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), result.getMyPosition().get(1)),
-                        null, result.getMyVariableName(), result.getMyVariableValue(), result.getMyUDCName(),
+                    new Point2D(0,0), result.getMyVariableName(), result.getMyVariableValue(), result.getMyUDCName(),
                         result.getMyUDCText(), result.isMyScreenClear(), result.isMyPenUp(), result.isMyTurtleVisible(),
                         result.isMyTurtleReset(), result.getErrorMessage());
             }
@@ -52,4 +53,5 @@ public class Controller extends Application{
         myVisualizer = new Visualizer(instructionQueueListener);
         myVisualizer.start(primaryStage);
     }
+
 }
