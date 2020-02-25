@@ -39,9 +39,6 @@ public class CommandResult {
     myTurtleReset = turtleReset;
   }
 
-  public void setRotation(){
-
-  }
 
   public void setErrorMessage(String msg) {
     myErrorMessage = msg;
