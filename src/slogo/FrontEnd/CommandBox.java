@@ -20,10 +20,12 @@ public class CommandBox {
     //private TextField inputField; // need a better data structure for this
     private TextArea inputArea;
     private HBox myHBox;
+    private static final String prompt = "Enter commands here";
 
     public CommandBox(Pane root, Rectangle commandBoxShape, Rectangle clearButtonShape){
         myHBox = new HBox(10);
-        inputArea = new TextArea("Enter commands here");
+        inputArea = new TextArea(prompt);
+        inputArea.setOnMouseClicked(event -> removePrompt());
         inputArea.setPrefWidth(commandBoxShape.getWidth());
         inputArea.maxHeight(commandBoxShape.getHeight());
         myHBox.getChildren().add(inputArea);
@@ -35,7 +37,7 @@ public class CommandBox {
      * This method is used to access what the user has entered into the "Command Line" area
      * @return a String containing whatever the user had entered
      */
-    public String getContents(){
+    protected String getContents(){
         return inputArea.getText();
     }
 
@@ -43,7 +45,12 @@ public class CommandBox {
      * Clear whatever the user has entered into the CommandBox by resetting its contents to empty,
      * used when Clear button is pressed
      */
-    public void clearContents(){inputArea.clear();};
+    protected void clearContents(){inputArea.clear();};
 
+    private void removePrompt() {
+        if(inputArea.getText().equals(prompt)){
+            inputArea.clear();
+        }
+    }
 
 }

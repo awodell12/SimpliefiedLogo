@@ -31,10 +31,10 @@ public class TurtleView {
         String myTurtleImage = "slogo/FrontEnd/Resources/turtle.png";
         myTurtle = new ImageView(myTurtleImage);
         myTurtle.setPreserveRatio(true);
-        myTurtle.setFitWidth(50);
         myTurtle.setCache(true);
-        myTurtle.setFitWidth(width);
-        myTurtle.setFitHeight(height);
+        myTurtle.setFitWidth(TURTLE_SIZE);
+        myTurtle.setFitHeight(TURTLE_SIZE);
+        resetTurtle();
         myBackground = new Rectangle(width, height);
         myBackground.setFill(Color.WHITE);
         myBackground.setStyle("-fx-border-color: black");
@@ -50,7 +50,7 @@ public class TurtleView {
      * set the pen color (color of paths)
      * @param color color to set to
      */
-    public void setPenColor(Color color){
+    protected void setPenColor(Color color){
         myPenColor = color;
     }
 
@@ -59,7 +59,7 @@ public class TurtleView {
      * @param x the new x coordinate for the turtle
      * @param y the new y coordinate for the turtle
      */
-    void setTurtlePosition(double x, double y){
+    protected void setTurtlePosition(double x, double y){
         myTurtle.setX(x);
         myTurtle.setY(y);
     };
@@ -68,7 +68,7 @@ public class TurtleView {
      *
      * @param angle
      */
-    void setTurtleHeading(double angle){
+    protected void setTurtleHeading(double angle){
         myTurtle.setRotate(myTurtle.getRotate() + angle);
     };
 
@@ -77,16 +77,16 @@ public class TurtleView {
      * Will be controlled through a lambda from a drop-down menu
      * @param color the desired color for the background
      */
-    public void setBackGroundColor(Color color){
+    protected void setBackGroundColor(Color color){
         myBackground.setFill(color);
     };
 
     /**
      * moves the turtle back to home position
      */
-    public void resetTurtle(){
-        myTurtle.setY(0);
-        myTurtle.setX(0);
+    protected void resetTurtle(){
+        myTurtle.setY(myHeight/2 - TURTLE_SIZE/2);
+        myTurtle.setX(myWidth/2 - TURTLE_SIZE/2);
         myTurtle.setRotate(0);
     }
 
@@ -95,7 +95,7 @@ public class TurtleView {
      * specified by the Path object
      * @param path the path the turtle took from its previous location to its current
      */
-    public void addPath(Path path){
+    protected void addPath(Path path){
         if(!isPenUp) {
             path.setFill(myPenColor);
             myGroup.getChildren().add(path);
@@ -106,7 +106,7 @@ public class TurtleView {
      * Removes all of the taken paths displayed on the screen by clearing the display and returns the turtle
      * back to its starting position
      */
-    public void clearPaths(){
+    protected void clearPaths(){
         int numChildren = myGroup.getChildren().size();
         if(numChildren >= 2) myGroup.getChildren().remove(1, numChildren);
         if(myTurtleVisibility) myGroup.getChildren().add(myTurtle);
@@ -117,11 +117,11 @@ public class TurtleView {
      * change the turtle image. Image is determined by the file chooser
      * @param newTurtleImage image object to set the turtle image to
      */
-    public void setTurtleImage(Image newTurtleImage){
+    protected void setTurtleImage(Image newTurtleImage){
         myTurtle.setImage(newTurtleImage);
     }
 
-    public void setTurtleVisibility(boolean turtleVisibility) {
+    protected void setTurtleVisibility(boolean turtleVisibility) {
         if(turtleVisibility && !myTurtleVisibility){
             myGroup.getChildren().add(myTurtle);
         }
@@ -135,7 +135,7 @@ public class TurtleView {
      * set the pen status (up/down)
      * @param up true if the pen is up
      */
-    public void setIsPenUp(boolean up){
+    protected void setIsPenUp(boolean up){
         isPenUp = up;
     }
 }
