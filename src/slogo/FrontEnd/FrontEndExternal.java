@@ -36,7 +36,7 @@ public interface FrontEndExternal {
      * @param turtlePos new coordinates for turtle
      * @param variableName string name for variable to be created/overwritten
      * @param variableValue value for new variable
-     * @param path path object to draw
+     * @param startPos old coordinates of the turtle; start of path
      * @param udcName name of the newly created user defined command
      * @param udcText the actual commands that entail the user defined command
      * @param clearScreen whether or not the turtle view should be cleared
@@ -44,7 +44,7 @@ public interface FrontEndExternal {
      * @param turtleVisibility whether or not to show the turtle
      * @param resetTurtle whether or not the turtle should be returned to 0, 0
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, Path path, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage);
 }
