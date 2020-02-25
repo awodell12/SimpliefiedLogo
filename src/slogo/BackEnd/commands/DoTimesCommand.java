@@ -35,7 +35,7 @@ public class DoTimesCommand implements AltCommand {
       returnVal = results.get(results.size()-1).getReturnVal();
     }
     System.out.println("Ending DOTIMES Loop.");
-    results.add(new CommandResult(returnVal, listLength+2));
+    results.add(backEnd.makeCommandResult(returnVal, listLength+2));
     //results.add(make)
     return results;
   }

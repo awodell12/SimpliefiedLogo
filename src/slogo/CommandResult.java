@@ -21,7 +21,8 @@ public class CommandResult {
   private boolean myPenUp;
   private boolean myTurtleVisible;
   private boolean myTurtleReset;
-  //TODO: how to pass in path(s)?
+  private List<Double> myPathStart;
+  private String myPathColor;
 
   public CommandResult(double retVal, int tokensParsed, int turtleID, double heading, List<Double> pos, List<Double> pathStart, String pathColor,
                        String variableName, double variableVal, String udcName, String udcText,
@@ -40,6 +41,8 @@ public class CommandResult {
     myPenUp = penUp;
     myTurtleVisible = turtleVisible;
     myTurtleReset = turtleReset;
+    myPathStart = pathStart;
+    myPathColor = pathColor;
   }
 
   public CommandResult(double retVal, int tokensParsed){
@@ -81,6 +84,10 @@ public class CommandResult {
 
   public List<Double> getMyPosition() {
     return myPosition;
+  }
+
+  public List<Double> getPathStart(){
+      return myPathStart;
   }
 
   public String getMyVariableName() {
