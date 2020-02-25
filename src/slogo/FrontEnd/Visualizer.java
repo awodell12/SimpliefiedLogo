@@ -44,6 +44,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 public class Visualizer extends Application implements FrontEndExternal{
     private static final double HEIGHT = 600;
@@ -150,7 +151,7 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param turtleVisibility whether or not to show the turtle
      * @param errorMessage error message string, if any
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, List startPos, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, List<Double> startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, String errorMessage) {
         myTurtleView.setTurtleHeading(turtleRotate);
@@ -170,7 +171,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
 
 
-  private Path makePath(List startPos, Point2D turtlePos) {
+  private Path makePath(List<Double> startPos, Point2D turtlePos) {
     Path returnPath = new Path();
     MoveTo moveTo = new MoveTo((double)startPos.get(0),(double) startPos.get(1));
     LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY());

@@ -44,7 +44,7 @@ public interface FrontEndExternal {
      * @param isPenUp whether or not the pen is up
      * @param turtleVisibility whether or not to show the turtle
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, List startPos, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, List<Double> startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, String errorMessage);
 }
