@@ -44,7 +44,7 @@ public class Controller extends Application{
                     myVisualizer.interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), result.getMyPosition().get(1)),
                             null, result.getMyVariableName(), result.getMyVariableValue(), result.getMyUDCName(),
                             result.getMyUDCText(), result.isMyScreenClear(), result.isMyPenUp(), result.isMyTurtleVisible(),
-                            result.isMyTurtleReset(), result.getErrorMessage());
+                            result.getErrorMessage());
                 }
             }
         };

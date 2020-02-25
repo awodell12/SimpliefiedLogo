@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * This class is used to manage the display elements of the history, variables, and user defined commands
  */
-public class ClearableEntriesBox {
+public class ClearableEntriesBox extends HBox {
 
     private final TextFlow myTextFlow;
     private final Text descriptionText;
@@ -25,7 +25,7 @@ public class ClearableEntriesBox {
 
     private static final double SPACING = 10;
 
-    public ClearableEntriesBox(Pane layout, Rectangle shape, Rectangle clearButtonShape, String description){
+    public ClearableEntriesBox(Rectangle shape, Rectangle clearButtonShape, String description){
         myTextFlow = new TextFlow();
         myTextFlow.setPrefWidth(shape.getWidth());
         myTextFlow.setPrefHeight(shape.getHeight());
@@ -38,9 +38,8 @@ public class ClearableEntriesBox {
         scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
         Button clearButton = Visualizer.makeButton("Clear", clearButtonShape);
         clearButton.setOnAction(event -> clearEntryBox());
-        HBox hbox = new HBox(SPACING);
-        hbox.getChildren().addAll(scrollPane,clearButton);
-        layout.getChildren().add(hbox);
+        this.setSpacing(SPACING);
+        this.getChildren().addAll(scrollPane, clearButton);
         descriptionText = new Text(description + "\n");
         descriptionText.setUnderline(true);
         descriptionText.setFill(Color.BLUE);
@@ -76,6 +75,7 @@ public class ClearableEntriesBox {
             entryList.add(name);
             // note that we add name, not entry, because we want to store only the NAME not the full text entry
         }
-
+        //myTextFlow.fireEvent(new ActionEvent());
+        //myTextFlow.fireEvent(new Event(MouseEvent.MOUSE_CLICKED));
     }
 }
