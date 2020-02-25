@@ -90,5 +90,7 @@ public interface BackEndInternal {
       double varValue);
 
   CommandResult makeCommandResult(double retVal, int tokensParsed, String udcName, String udcScript);
+
+  CommandResult makeCommandResult(double retVal, int tokensParsed);
 }
 

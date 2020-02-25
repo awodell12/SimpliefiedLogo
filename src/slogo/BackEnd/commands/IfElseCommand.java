@@ -31,14 +31,13 @@ public class IfElseCommand implements AltCommand {
     if (arguments.get(0) != 0) {
       System.out.println("IF evaluated to TRUE");
       results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,firstListLength));
-      returnVal = results.get(results.size()-1).getReturnVal();
     }
     else {
       System.out.println("IF evaluated to FALSE");
       results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1));
-      returnVal = results.get(results.size()-1).getReturnVal();
     }
-    results.add(new CommandResult(returnVal,firstListLength+secondListLength+2));
+    returnVal = results.get(results.size()-1).getReturnVal();
+    results.add(backEnd.makeCommandResult(returnVal,firstListLength+secondListLength+2));
     return results;
   }
 

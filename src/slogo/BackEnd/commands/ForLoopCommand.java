@@ -43,7 +43,7 @@ public class ForLoopCommand implements AltCommand {
       results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)));
       returnVal = results.get(results.size()-1).getReturnVal();    }
     System.out.println("Ending FOR Loop.");
-    results.add(new CommandResult(returnVal,listLength+2));
+    results.add(backEnd.makeCommandResult(returnVal,listLength+2));
     return results;
   }
 

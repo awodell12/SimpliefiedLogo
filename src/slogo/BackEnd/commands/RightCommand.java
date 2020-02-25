@@ -26,7 +26,7 @@ public class RightCommand implements AltCommand {
       throws ParseException {
     backEnd.getTurtles().get(0).turn(arguments.get(0));
     //System.out.println("Turning right by " + arguments.get(0) + " degrees.");
-    return List.of(new CommandResult(arguments.get(0),0));
+    return List.of(backEnd.makeCommandResult(arguments.get(0),0));
   }
 
   @Override

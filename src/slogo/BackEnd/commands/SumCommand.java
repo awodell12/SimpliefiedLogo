@@ -22,7 +22,7 @@ public class SumCommand implements AltCommand {
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd) throws ParseException {
     System.out.println("Executed sum of " + arguments.get(0) + " and " + arguments.get(1));
-    return List.of(new CommandResult(arguments.get(0)+arguments.get(1),0));
+    return List.of(backEnd.makeCommandResult(arguments.get(0)+arguments.get(1),0));
   }
 
   @Override
