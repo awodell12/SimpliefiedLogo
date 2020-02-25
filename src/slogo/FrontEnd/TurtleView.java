@@ -12,9 +12,8 @@ import javafx.scene.shape.Rectangle;
  * The TurtleView class encapsulated the view of the turtle and allows for the current state of the
  * Turtle and its taken paths to be displayed to the user.
  */
-public class TurtleView {
+public class TurtleView extends Group{
     private final ImageView myTurtle;
-    private final Group myGroup;
     private Color myPenColor = Color.BLACK;
     private final Rectangle myBackground;
     private boolean isPenUp = false;
@@ -23,7 +22,7 @@ public class TurtleView {
     private final double myWidth;
     private final double myHeight;
 
-    public TurtleView(Pane layout, double width, double height){
+    public TurtleView(double width, double height){
         myWidth = width;
         myHeight = height;
         String myTurtleImage = "slogo/FrontEnd/Resources/turtle.png";
@@ -36,10 +35,9 @@ public class TurtleView {
         myBackground = new Rectangle(width, height);
         myBackground.setFill(Color.WHITE);
         myBackground.setStyle("-fx-border-color: black");
-        myGroup = new Group();
-        myGroup.getChildren().add(myBackground);
-        myGroup.getChildren().add(myTurtle);
-        layout.getChildren().add(myGroup);
+        //TODO: fix background border (it worked before extending Group)
+        this.getChildren().add(myBackground);
+        this.getChildren().add(myTurtle);
     }
 
     /**
@@ -67,7 +65,7 @@ public class TurtleView {
      * @param angle angle to rotate by
      */
     protected void setTurtleHeading(double angle){
-        myTurtle.setRotate(myTurtle.getRotate() + angle);
+        myTurtle.setRotate(angle);
     }
 
     /**
@@ -80,15 +78,6 @@ public class TurtleView {
     }
 
     /**
-     * moves the turtle back to home position
-     */
-    protected void resetTurtle(){
-        myTurtle.setY(myHeight/2 - TURTLE_SIZE/2);
-        myTurtle.setX(myWidth/2 - TURTLE_SIZE/2);
-        myTurtle.setRotate(0);
-    }
-
-    /**
      * This method tells the TurtleView it must add a new path to the display by drawing it, in the color
      * specified by the Path object
      * @param path the path the turtle took from its previous location to its current
@@ -96,7 +85,7 @@ public class TurtleView {
     protected void addPath(Path path){
         if(!isPenUp) {
             path.setFill(myPenColor);
-            myGroup.getChildren().add(path);
+            this.getChildren().add(path);
         }
     }
 
@@ -105,9 +94,9 @@ public class TurtleView {
      * back to its starting position
      */
     protected void clearPaths(){
-        int numChildren = myGroup.getChildren().size();
-        if(numChildren >= 2) myGroup.getChildren().remove(1, numChildren);
-        if(myTurtleVisibility) myGroup.getChildren().add(myTurtle);
+        int numChildren = this.getChildren().size();
+        if(numChildren >= 2) this.getChildren().remove(1, numChildren);
+        if(myTurtleVisibility) this.getChildren().add(myTurtle);
         resetTurtle();
     }
 
@@ -121,10 +110,10 @@ public class TurtleView {
 
     protected void setTurtleVisibility(boolean turtleVisibility) {
         if(turtleVisibility && !myTurtleVisibility){
-            myGroup.getChildren().add(myTurtle);
+            this.getChildren().add(myTurtle);
         }
         else if(!turtleVisibility && myTurtleVisibility){
-            myGroup.getChildren().remove(myTurtle);
+            this.getChildren().remove(myTurtle);
         }
         myTurtleVisibility = turtleVisibility;
     }
@@ -135,5 +124,14 @@ public class TurtleView {
      */
     protected void setIsPenUp(boolean up){
         isPenUp = up;
+    }
+
+    /**
+     * moves the turtle back to home position
+     */
+    private void resetTurtle(){
+        myTurtle.setY(myHeight/2 - TURTLE_SIZE/2);
+        myTurtle.setX(myWidth/2 - TURTLE_SIZE/2);
+        myTurtle.setRotate(0);
     }
 }

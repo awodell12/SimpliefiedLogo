@@ -43,9 +43,8 @@ public interface FrontEndExternal {
      * @param clearScreen whether or not the turtle view should be cleared
      * @param isPenUp whether or not the pen is up
      * @param turtleVisibility whether or not to show the turtle
-     * @param resetTurtle whether or not the turtle should be returned to 0, 0
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, List startPos, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, List<Double> startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
-                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage);
+                                boolean isPenUp, boolean turtleVisibility, String errorMessage);
 }

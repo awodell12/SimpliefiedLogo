@@ -9,20 +9,20 @@ import javafx.scene.shape.Rectangle;
  * This class is used to manage the text box where the user can enter in their Slogo commands
  * It is able to extract a String of what is in the box to pass to the Back End when the Run button is pressed
  */
-public class CommandBox {
+public class CommandBox extends HBox {
 
+    private static final int SPACING = 10;
     private final TextArea inputArea;
     private static final String prompt = "Enter commands here";
 
-    public CommandBox(Pane root, Rectangle commandBoxShape){
-        HBox myHBox = new HBox(10);
+    public CommandBox(Rectangle commandBoxShape){
+        this.setSpacing(SPACING);
         inputArea = new TextArea(prompt);
         inputArea.setOnMouseClicked(event -> removePrompt());
         inputArea.setPrefWidth(commandBoxShape.getWidth());
         inputArea.maxHeight(commandBoxShape.getHeight());
-        myHBox.getChildren().add(inputArea);
-        myHBox.setStyle("-fx-border-color: black");
-        root.getChildren().add(myHBox);
+        this.getChildren().add(inputArea);
+        this.setStyle("-fx-border-color: black");
     }
 
     /**

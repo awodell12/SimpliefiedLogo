@@ -2,8 +2,8 @@ package slogo.FrontEnd;
 
 import java.io.File;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+//import javafx.animation.KeyFrame;
+//import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -13,7 +13,11 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -28,8 +32,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
 
@@ -37,26 +39,30 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 public class Visualizer extends Application implements FrontEndExternal{
     private static final double HEIGHT = 600;
     private static final double ASPECT_RATIO = (16.0/9.0);
     private static final double WIDTH = HEIGHT * ASPECT_RATIO;
     private static final Paint BACKGROUND = Color.WHITE;
-    private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 800, 650, 125);
-    private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 300*ASPECT_RATIO,300);
-    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 250, 125);
-    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 250, 125);
-    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 250, 125);
-    private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(300, 750, 60, 40);
-    private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(950, 100, 50, 50);
-    private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(900, 925, 75, 50);
-    private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(950, 400, 50, 50);
-    private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(950, 700, 50, 50);
-    private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(850, 25, 75, 50);
-    private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
+    private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(650, 125);
+    private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(300*ASPECT_RATIO,300);
+    private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(250, 125);
+    private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(250, 125);
+    private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(250, 125);
+    private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(60, 40);
+    private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(50, 50);
+    private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(75, 50);
+    private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(50, 50);
+    private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(50, 50);
+    private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(75, 50);
+    private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(75, 50);
+    private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
     private static final double SPACING = 10;
     private static final double MARGIN = 25;
+    private static final double BOTTOM_INSET = 0.15;
+    //private static final double MILLISECOND_DELAY = 1000;
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
     private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass"},
             {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
@@ -140,26 +146,29 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param clearScreen whether or not the turtle view should be cleared
      * @param isPenUp whether or not the pen is up
      * @param turtleVisibility whether or not to show the turtle
-     * @param resetTurtle whether or not the turtle should be returned to 0, 0
      * @param errorMessage error message string, if any
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, List startPos, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, List<Double> startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
-                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage){
+                                boolean isPenUp, boolean turtleVisibility, String errorMessage) {
         myTurtleView.setTurtleHeading(turtleRotate);
         myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
         if(startPos != null) myTurtleView.addPath(makePath(startPos,turtlePos));
         if(variableName != null) addVariable(variableName, variableValue);
         if(udcName != null) addUserDefinedCommand(udcName, udcText);
         if(clearScreen) myTurtleView.clearPaths();
-        if(resetTurtle) myTurtleView.resetTurtle();
+        //if(resetTurtle) myTurtleView.resetTurtle();
         myTurtleView.setTurtleVisibility(turtleVisibility);
         myTurtleView.setIsPenUp(isPenUp);
         if(errorMessage != null) displayErrorMessage(errorMessage);
+        // the following is a hotfix so that clearable entry boxes don't have delayed updates
+        myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
+        myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
+
     }
 
 
-  private Path makePath(List startPos, Point2D turtlePos) {
+  private Path makePath(List<Double> startPos, Point2D turtlePos) {
     Path returnPath = new Path();
     MoveTo moveTo = new MoveTo((double)startPos.get(0),(double) startPos.get(1));
     LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY());
@@ -177,13 +186,12 @@ public class Visualizer extends Application implements FrontEndExternal{
         myLayout.setMaxSize(WIDTH, HEIGHT);
         myLayout.setMinSize(WIDTH,HEIGHT);
 
-
         myLeftVBox = new VBox(SPACING);
-        myLeftVBox.setMaxSize(WIDTH * 0.5, HEIGHT);
+        myLeftVBox.setMaxSize(WIDTH/2, HEIGHT);
         myLeftVBox.setMinSize(myLeftVBox.getMaxWidth(), myLeftVBox.getMaxHeight());
 
         myRightVBox = new VBox(SPACING);
-        myRightVBox.setMaxSize(WIDTH*0.33, HEIGHT);
+        myRightVBox.setMaxSize(WIDTH/3, HEIGHT);
         setUpRightPane();
 
         setUpLeftPane();
@@ -195,9 +203,7 @@ public class Visualizer extends Application implements FrontEndExternal{
             } catch (IOException ex) {
                 System.out.println("Caught IO Exception");
             } catch (Exception ex) {
-
                 System.out.println("Caught Exception");
-
             }
         });*/
         myLayout.getChildren().addAll(myLeftVBox,myCenterVBox,myRightVBox);
@@ -218,23 +224,24 @@ public class Visualizer extends Application implements FrontEndExternal{
         setUpBottomButtons();
         myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
         int lastIndex = myCenterVBox.getChildren().size();
-        VBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
+        VBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * BOTTOM_INSET,0));
     }
 
     private void setUpLeftPane() {
         setUpMenus();
-        myTurtleView = new TurtleView(myLeftVBox, TURTLE_VIEW_SHAPE.getWidth(), TURTLE_VIEW_SHAPE.getHeight());
+        myTurtleView = new TurtleView(TURTLE_VIEW_SHAPE.getWidth(), TURTLE_VIEW_SHAPE.getHeight());
         myErrorMessage = new Text("Error Message Goes Here");
         myErrorMessage.setFill(Color.RED);
-        myLeftVBox.getChildren().add(myErrorMessage);
-        myCommandBox = new CommandBox(myLeftVBox, COMMAND_BOX_SHAPE);
+        myCommandBox = new CommandBox(COMMAND_BOX_SHAPE);
+        myLeftVBox.getChildren().addAll(myTurtleView, myErrorMessage, myCommandBox);
     }
 
     private void setUpRightPane() {
         setUpTopButtons();
-        myHistory = new ClearableEntriesBox(myRightVBox, HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, "HISTORY");
-        myUserDefinedCommands = new ClearableEntriesBox(myRightVBox, UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, "USER-DEFINED COMMANDS");
-        myVariables = new ClearableEntriesBox(myRightVBox, VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, "ENVIRONMENT VARIABLES");
+        myHistory = new ClearableEntriesBox(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, "HISTORY");
+        myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, "USER-DEFINED COMMANDS");
+        myVariables = new ClearableEntriesBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, "ENVIRONMENT VARIABLES");
+        myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
     }
 
 
@@ -297,7 +304,7 @@ public class Visualizer extends Application implements FrontEndExternal{
                 Image image = SwingFXUtils.toFXImage(buffImage, fximage);
                 myTurtleView.setTurtleImage(image);
             } catch (IOException ex) {
-                ex.printStackTrace();
+                System.out.println("Couldn't load turtle image");
             }
         }
     }
@@ -310,9 +317,9 @@ public class Visualizer extends Application implements FrontEndExternal{
         myCenterVBox.getChildren().addAll(runButton,clearButton);
     }
 
-    private void step(){
+    /*private void step(){
 
-    }
+    }*/
 
     private void displayErrorMessage(String message){
         myErrorMessage.setText(message);
@@ -340,9 +347,9 @@ public class Visualizer extends Application implements FrontEndExternal{
         vBox.getChildren().add(menuBar);
         Menu menu = new Menu("Select Help Category");
         menuBar.getMenus().add(menu);
-        for(String helpCategory : HELP_CATEGORIES.keySet()){
-            MenuItem menuItem = new Menu(helpCategory);
-            menuItem.setOnAction(event -> changeHelpImage(HELP_CATEGORIES.get(helpCategory), vBox));
+        for(Map.Entry<String, String> helpCategory : HELP_CATEGORIES.entrySet()){
+            MenuItem menuItem = new Menu(helpCategory.getKey());
+            menuItem.setOnAction(event -> changeHelpImage(helpCategory.getValue(), vBox));
             menu.getItems().add(menuItem);
         }
         vBox.getChildren().add(new ImageView("slogo/FrontEnd/Resources/" + DEFAULT_HELP_CATEGORY_FILE + ".png"));
@@ -350,7 +357,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         scrollPane.setContent(vBox);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        stage.setScene(new Scene(scrollPane, 600, 600));
+        stage.setScene(new Scene(scrollPane, HELP_WINDOW_SHAPE.getWidth(), HELP_WINDOW_SHAPE.getHeight()));
         stage.show();
     }
 
