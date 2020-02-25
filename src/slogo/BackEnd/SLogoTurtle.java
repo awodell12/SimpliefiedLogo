@@ -49,8 +49,8 @@ public class SLogoTurtle implements Turtle {
 
     @Override
     public double moveForward(double distance) {
-        myX += Math.cos(myHeading * TO_RADIANS) * distance;
-        myY += Math.sin(myHeading * TO_RADIANS) * distance;
+        myX += Math.sin(myHeading * TO_RADIANS) * distance;
+        myY += Math.cos(myHeading * TO_RADIANS) * distance;
         return Math.abs(distance);
     }
 

@@ -25,7 +25,8 @@ public class RightCommand implements AltCommand {
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, BackEndInternal backEnd)
       throws ParseException {
     backEnd.getTurtles().get(0).turn(arguments.get(0));
-    //System.out.println("Turning right by " + arguments.get(0) + " degrees.");
+    System.out.println("Turning right by " + arguments.get(0) + " degrees.");
+    System.out.println("Heading is now " + backEnd.getTurtles().get(0).getHeading() + " degrees.");
     return List.of(backEnd.makeCommandResult(arguments.get(0),0));
   }
 
