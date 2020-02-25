@@ -85,6 +85,10 @@ public class CommandResult {
     return myPosition;
   }
 
+  public List<Double> getPathStart(){
+      return myPathStart;
+  }
+
   public String getMyVariableName() {
     return myVariableName;
   }
