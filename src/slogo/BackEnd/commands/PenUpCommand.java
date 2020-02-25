@@ -1,11 +1,9 @@
 package slogo.BackEnd.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
 import slogo.BackEnd.BackEndInternal;
 import slogo.CommandResult;
-import slogo.BackEnd.SLogoBackEnd;
 
 public class PenUpCommand implements AltCommand {
 
