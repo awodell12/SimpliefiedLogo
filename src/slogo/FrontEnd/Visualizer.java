@@ -124,19 +124,26 @@ public class Visualizer extends Application {
      * @param variableName string name for variable to be created/overwritten
      * @param variableValue value for new variable
      * @param path path object to draw
+     * @param udcName name of the newly created user defined command
+     * @param udcText the actual commands that entail the user defined command
+     * @param clearScreen whether or not the turtle view should be cleared
+     * @param isPenUp whether or not the pen is up
+     * @param turtleVisibility whether or not to show the turtle
+     * @param resetTurtle whether or not the turtle should be returned to 0, 0
      */
     public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
-                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle){
+                                boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage){
         myTurtleView.setTurtleHeading(turtleRotate);
         myTurtleView.setTurtlePosition(turtlePos.x, turtlePos.y);
         myTurtleView.addPath(path);
-        addVariable(variableName, variableValue);
-        addUserDefinedCommand(udcName, udcText);
+        if(variableName != null) addVariable(variableName, variableValue);
+        if(udcName != null) addUserDefinedCommand(udcName, udcText);
         if(clearScreen) myTurtleView.clearPaths();
         if(resetTurtle) myTurtleView.resetTurtle();
         myTurtleView.setTurtleVisibility(turtleVisibility);
         myTurtleView.setIsPenUp(isPenUp);
+        if(errorMessage != null) displayErrorMessage(errorMessage);
     }
 
     private Scene setUpDisplay() throws IOException{
