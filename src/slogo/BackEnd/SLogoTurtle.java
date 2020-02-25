@@ -80,6 +80,16 @@ public class SLogoTurtle implements Turtle {
     }
 
     @Override
+    public double moveTowards(double x, double y){
+        double newDir = 0;
+
+
+        double temp = myHeading;
+        myHeading = newDir;
+        return Math.abs(temp - newDir);
+    }
+
+    @Override
     public double getHeading() { return myHeading; }
 
     @Override

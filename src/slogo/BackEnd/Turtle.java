@@ -58,6 +58,13 @@ public interface Turtle {
    */
   public double setHeading(double direction);
 
+  /**
+   * Sets the turtle to point in the direction of the given point.
+   * @param x The x-coordinate of the point to face
+   * @param y The y-coordinate of the point to face
+   * @return
+   */
+  public double moveTowards(double x, double y);
 
   /**
    * @return The direction the turtle is facing, in degrees clockwise from directly up/north.
