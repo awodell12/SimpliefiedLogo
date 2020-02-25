@@ -1,20 +1,21 @@
 package slogo.FrontEnd;
 
 import java.io.File;
-import java.util.PriorityQueue;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -29,12 +30,11 @@ import javafx.util.Duration;
 import javax.imageio.ImageIO;
 
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
 
-public class Visualizer extends Application {
+public class Visualizer extends Application implements FrontEndExternal{
     private static final double HEIGHT = 600;
     private static final double ASPECT_RATIO = (16.0/9.0);
     private static final double WIDTH = HEIGHT * ASPECT_RATIO;
@@ -68,13 +68,22 @@ public class Visualizer extends Application {
         put("Billion Dollar Grass", Color.LAWNGREEN);
         put("Dark Salmon", Color.DARKSALMON);
     }};
+    private static final Map<String, String> HELP_CATEGORIES = new HashMap<>(){{
+        put("Basic Syntax", "Basic_Syntax");
+        put("Turtle Commands", "Turtle_Commands");
+        put("Turtle Queries", "Turtle_Queries");
+        put("Math Operations", "Math");
+        put("Boolean Operations", "Booleans");
+        put("Variables, Control Structures, and User-Defined Commands", "Variables_Control_UDC");
+    }};
+    private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
 
     private CommandBox myCommandBox;
     private ClearableEntriesBox myHistory;
     private ClearableEntriesBox myUserDefinedCommands;
     private ClearableEntriesBox myVariables;
     private TurtleView myTurtleView;
-    private Queue<String> myInstructionQueue;
+    private ObservableList<String> myInstructionQueue;
     private Stage myStage;
     private Group myRoot;
     private VBox myLeftVBox;
@@ -86,7 +95,9 @@ public class Visualizer extends Application {
     /**
      * Constructor for the visualizer class, which manages the display components and state
      */
-    public Visualizer() throws IOException {
+    public Visualizer(ListChangeListener<String> instructionQueueListener) {
+        myInstructionQueue = new ObservableQueue();
+        myInstructionQueue.addListener(instructionQueueListener);
         //myStage = new Stage();
         //Scene display = setUpDisplay();
         //myStage.setScene(display);
@@ -95,7 +106,6 @@ public class Visualizer extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        myInstructionQueue = new PriorityQueue<String>();
         myStage = primaryStage;
         Scene display = setUpDisplay();
         myStage.setScene(display);
@@ -112,7 +122,7 @@ public class Visualizer extends Application {
      * @return the instruction string, uninterpreted
      */
     public String popInstructionQueue(){
-        return myInstructionQueue.poll();
+        return myInstructionQueue.remove(0);
     }
 
     /**
@@ -133,13 +143,14 @@ public class Visualizer extends Application {
      * @param isPenUp whether or not the pen is up
      * @param turtleVisibility whether or not to show the turtle
      * @param resetTurtle whether or not the turtle should be returned to 0, 0
+     * @param errorMessage error message string, if any
      */
-    public void interpretResult(double turtleRotate, Point turtlePos, Path path, String variableName,
+    public void interpretResult(double turtleRotate, Point2D turtlePos, Path path, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, boolean resetTurtle, String errorMessage){
         myTurtleView.setTurtleHeading(turtleRotate);
-        myTurtleView.setTurtlePosition(turtlePos.x, turtlePos.y);
-        myTurtleView.addPath(path);
+        myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
+        if(path != null) myTurtleView.addPath(path);
         if(variableName != null) addVariable(variableName, variableValue);
         if(udcName != null) addUserDefinedCommand(udcName, udcText);
         if(clearScreen) myTurtleView.clearPaths();
@@ -150,8 +161,6 @@ public class Visualizer extends Application {
     }
 
     private Scene setUpDisplay() throws IOException{
-        myInstructionQueue = new PriorityQueue<>();
-
         myRoot = new Group();
         myLayout = new HBox(SPACING * 2);
         myLayout.setMaxSize(WIDTH, HEIGHT);
@@ -194,18 +203,16 @@ public class Visualizer extends Application {
         return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
-  private void setUpCenterPane() {
-      myCenterVBox = new VBox(SPACING);
-      myCenterVBox.setPrefHeight(HEIGHT);
-      setUpBottomButtons();
-      myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
-      int lastIndex = myCenterVBox.getChildren().size();
-      myCenterVBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
+    private void setUpCenterPane() {
+        myCenterVBox = new VBox(SPACING);
+        myCenterVBox.setPrefHeight(HEIGHT);
+        setUpBottomButtons();
+        myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
+        int lastIndex = myCenterVBox.getChildren().size();
+        myCenterVBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * 0.15,0));
+    }
 
-  }
-
-  private void setUpLeftPane() {
-
+    private void setUpLeftPane() {
         setUpMenus();
         myTurtleView = new TurtleView(myLeftVBox,300*ASPECT_RATIO,300);
         myErrorMessage = new Text("Error Message Goes Here");
@@ -317,6 +324,29 @@ public class Visualizer extends Application {
     }
 
     private void displayHelp(){
+        Stage stage = new Stage();
+        stage.setTitle("Help Window");
+        VBox vBox = new VBox(SPACING);
+        MenuBar menuBar = new MenuBar();
+        vBox.getChildren().add(menuBar);
+        Menu menu = new Menu("Select Help Category");
+        menuBar.getMenus().add(menu);
+        for(String helpCategory : HELP_CATEGORIES.keySet()){
+            MenuItem menuItem = new Menu(helpCategory);
+            menuItem.setOnAction(event -> changeHelpImage(HELP_CATEGORIES.get(helpCategory), vBox));
+            menu.getItems().add(menuItem);
+        }
+        vBox.getChildren().add(new ImageView("slogo/FrontEnd/Resources/" + DEFAULT_HELP_CATEGORY_FILE + ".png"));
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(vBox);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        stage.setScene(new Scene(scrollPane, 600, 600));
+        stage.show();
+    }
 
+    private void changeHelpImage(String imageName, VBox vBox){
+        vBox.getChildren().remove(1);
+        vBox.getChildren().add(new ImageView("slogo/FrontEnd/Resources/" + imageName + ".png"));
     }
 }
