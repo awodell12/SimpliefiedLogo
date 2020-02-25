@@ -6,10 +6,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -33,7 +30,6 @@ import javax.imageio.ImageIO;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -44,11 +40,10 @@ public class Visualizer extends Application {
     private static final Paint BACKGROUND = Color.WHITE;
     private static final double MILLISECOND_DELAY = 1000;
     private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(50, 800, 650, 125);
-    private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 650, 600);
+    //private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(50, 100, 650, 600);
     private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(750, 100, 250, 250);
     private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(750, 400, 250, 250);
     private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(750, 700, 250, 200);
-    private static final Rectangle ERROR_MESSAGE_SHAPE = new Rectangle(100, 720, 650, 60);
     private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(300, 750, 60, 40);
     private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(950, 100, 50, 50);
     private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(900, 925, 75, 50);
@@ -57,22 +52,25 @@ public class Visualizer extends Application {
     private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(850, 25, 75, 50);
     private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(750, 25, 75, 50);
     private static final double SPACING = 10;
-    //TODO: add menu shapes and label shapes
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
-    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "White", "Blue"}, {"English"}, {"White", "Blue"}};
+    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass"},
+            {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
+            {"White", "Duke Blue", "Gray", "Red", "Azure", "LemonChiffon"}};
     private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
         put("Red", Color.RED);
         put("White", Color.WHITE);
-        put("Blue", Color.BLUE);
+        put("Gray", Color.GRAY);
+        put("Azure", Color.AZURE);
+        put("LemonChiffon", Color.LEMONCHIFFON);
+        put("Duke Blue", Color.ROYALBLUE);
+        put("Billion Dollar Grass", Color.LAWNGREEN);
+        put("Dark Salmon", Color.DARKSALMON);
     }};
 
-    private Button myClearCommandBoxButton;
-    private Button myClearHistoryButton;
     private CommandBox myCommandBox;
     private ClearableEntriesBox myHistory;
     private ClearableEntriesBox myUserDefinedCommands;
     private ClearableEntriesBox myVariables;
-    //private Map<String, Integer> myVariableMap;
     private TurtleView myTurtleView;
     private Queue<String> myInstructionQueue;
     private Stage myStage;
@@ -92,14 +90,14 @@ public class Visualizer extends Application {
         //myStage.show();
     }
 
-  @Override
-  public void start(Stage primaryStage) throws Exception {
-      myInstructionQueue = new PriorityQueue<String>();
-    myStage = primaryStage;
-    Scene display = setUpDisplay();
-    myStage.setScene(display);
-    myStage.show();
-  }
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        myInstructionQueue = new PriorityQueue<String>();
+        myStage = primaryStage;
+        Scene display = setUpDisplay();
+        myStage.setScene(display);
+        myStage.show();
+    }
 
 
     /**
@@ -150,7 +148,6 @@ public class Visualizer extends Application {
 
     private Scene setUpDisplay() throws IOException{
         myInstructionQueue = new PriorityQueue<>();
-        //myVariableMap = new HashMap<>();
 
         myRoot = new Group();
         myLayout = new HBox(SPACING * 2);
@@ -290,24 +287,12 @@ public class Visualizer extends Application {
 
     }
 
-    // maybe make it a rect so it can also resize the turtle
-    private void updateTurtle(Point pos){
-
-    }
-
     private void displayErrorMessage(String message){
-      myErrorMessage.setText(message);
+        myErrorMessage.setText(message);
     }
 
     private void addVariable(String name, double value){
         myVariables.addEntry(name + " : " + value, name);
-        /*if(myVariableMap.containsKey(name)){
-            myVariables.addEntry(name + " : " + value, name);
-        }
-        else{
-            myVariables.addEntry(name + " : " + value, null);
-        }
-        myVariableMap.put(name, value);*/
     }
 
     private void addUserDefinedCommand(String name, String command){
