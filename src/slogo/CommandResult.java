@@ -21,7 +21,7 @@ public class CommandResult {
   private boolean myTurtleReset;
   //TODO: how to pass in path(s)?
 
-  public CommandResult(double retVal, int tokensParsed, double heading, List<Double> pos,
+  public CommandResult(double retVal, int tokensParsed, int turtleID, double heading, List<Double> pos, List<Double> pathStart, String pathColor,
                        String variableName, double variableVal, String udcName, String udcText,
                        boolean clearScreen, boolean penUp, boolean turtleVisible, boolean turtleReset) {
     returnVal = retVal;

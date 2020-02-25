@@ -1,5 +1,7 @@
 package slogo.BackEnd;
 
+import java.util.List;
+
 public class SLogoTurtle implements Turtle {
 
     private double myX;
@@ -7,12 +9,14 @@ public class SLogoTurtle implements Turtle {
     private double myHeading;
     private boolean myPenUp;
     private boolean myVisible;
+    private String myPenColor;
 
     public SLogoTurtle(){
         myX = 0; myY = 0;
         myHeading = 0;
         myPenUp = true;
         myVisible = true;
+        myPenColor = "000000";
     }
 
     //TODO: add new constructors besides default
@@ -22,6 +26,13 @@ public class SLogoTurtle implements Turtle {
 
     @Override
     public double getY() { return myY; }
+
+    /**
+     * @return Current position as a list containing x then y
+     */
+    public List<Double> getPosition() {
+        return List.of(myX,myY);
+    }
 
     @Override
     public double setPos(double x, double y) {

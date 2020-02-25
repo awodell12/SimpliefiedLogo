@@ -1,5 +1,7 @@
 package slogo.BackEnd;
 
+import java.util.List;
+
 /**
  * The methods that allow interacting with the turtle and causing it
  * to execute its behavior. Allows multiple turtles.
@@ -16,12 +18,15 @@ public interface Turtle {
    */
   public double getY();
 
-  /**
-   * Set the X and Y position of the turtle. (0,0) is the center (depending on how the view draws
-   * things)
-   * @param x The new X position of the turtle
-   * @param y The new Y position of the turtle
-   */
+  public List<Double> getPosition();
+
+
+    /**
+     * Set the X and Y position of the turtle. (0,0) is the center (depending on how the view draws
+     * things)
+     * @param x The new X position of the turtle
+     * @param y The new Y position of the turtle
+     */
   public double setPos(double x, double y);
 
   /**
