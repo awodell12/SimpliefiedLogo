@@ -67,7 +67,7 @@ public class TurtleView {
      * @param angle angle to rotate by
      */
     protected void setTurtleHeading(double angle){
-        myTurtle.setRotate(myTurtle.getRotate() + angle);
+        myTurtle.setRotate(angle);
     }
 
     /**
