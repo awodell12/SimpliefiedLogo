@@ -25,14 +25,10 @@ public class TurtleView {
     private Rectangle myBackground;
     private boolean isPenUp = false;
     private boolean myTurtleVisibility = true;
-    private final double myWidth;
-    private final double myHeight;
-    private static final double TURTLE_SIZE = 50;
-    
-    protected TurtleView(Pane layout, double width, double height){
-        myWidth = width;
-        myHeight = height;
-        String myTurtleImage = "slogo/FrontEnd/Resources/turtle.jpg";
+
+
+    public TurtleView(Pane layout, double width, double height){
+        String myTurtleImage = "slogo/FrontEnd/Resources/turtle.png";
         myTurtle = new ImageView(myTurtleImage);
         myTurtle.setPreserveRatio(true);
         myTurtle.setCache(true);
