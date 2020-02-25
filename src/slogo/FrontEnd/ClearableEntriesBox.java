@@ -2,6 +2,7 @@ package slogo.FrontEnd;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.layout.HBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -55,6 +56,9 @@ public class ClearableEntriesBox {
      * @param entry the string to be added to the displayed entries
      * @param name the name of the entry that needs to be overwritten (or null)
      */
+
+
+
     public void addEntry(String entry, String name){
         Text newText = new Text(entry + "\n");
         myTextFlow.getChildren().add(newText);
@@ -69,5 +73,6 @@ public class ClearableEntriesBox {
             entryList.add(name);
             // note that we add name, not entry, because we want to store only the NAME not the full text entry
         }
+
     }
 }

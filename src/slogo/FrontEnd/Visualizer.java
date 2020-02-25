@@ -1,5 +1,7 @@
 package slogo.FrontEnd;
 
+import java.io.File;
+import java.util.PriorityQueue;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -25,11 +27,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import javax.imageio.ImageIO;
-import javax.swing.SizeRequirements;
-import org.xml.sax.SAXException;
-import slogo.CommandResult;
+
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -91,13 +90,15 @@ public class Visualizer extends Application {
         //myStage.show();
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        myStage = primaryStage;
-        Scene display = setUpDisplay();
-        myStage.setScene(display);
-        myStage.show();
-    }
+  @Override
+  public void start(Stage primaryStage) throws Exception {
+      myInstructionQueue = new PriorityQueue<String>();
+    myStage = primaryStage;
+    Scene display = setUpDisplay();
+    myStage.setScene(display);
+    myStage.show();
+  }
+
 
     /**
      * Pops the first element of the instruction queue, which contains strings that are either scripts taken directly
@@ -143,8 +144,9 @@ public class Visualizer extends Application {
         //myVariableMap = new HashMap<>();
 
         myRoot = new Group();
-        myLayout = new HBox(20);
+        myLayout = new HBox(SPACING * 2);
         myLayout.setMaxSize(WIDTH, HEIGHT);
+        myLayout.setMinSize(WIDTH,HEIGHT);
 
 
         myLeftVBox = new VBox(SPACING);
@@ -171,8 +173,9 @@ public class Visualizer extends Application {
             }
         });
         myLayout.getChildren().addAll(myLeftVBox,myRightVBox);
-        myLayout.setMargin(myLeftVBox, new Insets( SPACING, 0, 0, 50));
-        myLayout.setMargin(myRightVBox, new Insets(SPACING,50,0,0));
+        myLayout.setMargin(myLeftVBox, new Insets( SPACING, 25, 0, 50));
+        myLayout.setMargin(myRightVBox, new Insets(SPACING,50,0,25));
+        myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
@@ -196,6 +199,7 @@ public class Visualizer extends Application {
         setUpBottomButtons();
     }
 
+
     private void setUpTopButtons() {
 
         HBox topButtons = new HBox(SPACING);
@@ -207,6 +211,7 @@ public class Visualizer extends Application {
         topButtons.getChildren().add(mySetTurtleImageButton);
         myRightVBox.getChildren().add(topButtons);
     }
+
 
     private void setUpMenus(){
         MenuBar menuBar = new MenuBar();

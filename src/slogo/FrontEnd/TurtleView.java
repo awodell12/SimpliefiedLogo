@@ -26,6 +26,7 @@ public class TurtleView {
     private boolean isPenUp = false;
     private boolean myTurtleVisibility = true;
 
+
     public TurtleView(Pane layout, double width, double height){
         String myTurtleImage = "slogo/FrontEnd/Resources/turtle.jpg";
         myTurtle = new ImageView(myTurtleImage);
@@ -36,6 +37,7 @@ public class TurtleView {
         myTurtle.setFitHeight(height);
         myBackground = new Rectangle(width, height);
         myBackground.setFill(Color.WHITE);
+        myBackground.setStyle("-fx-border-color: black");
         myGroup = new Group();
         myGroup.getChildren().add(myBackground);
         myGroup.getChildren().add(myTurtle);
