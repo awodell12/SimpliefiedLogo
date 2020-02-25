@@ -26,13 +26,14 @@ public class ClearableEntriesBox {
     public ClearableEntriesBox(Pane layout, Rectangle shape, Rectangle clearButtonShape, String description){
         myTextFlow = new TextFlow();
         myTextFlow.setPrefWidth(shape.getWidth());
+        myTextFlow.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
         myTextFlow.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(myTextFlow);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         layout.getChildren().add(scrollPane);
-        Button clearButton = new Button("Clear", clearButtonShape);
+        Button clearButton = Visualizer.makeButton("Clear", clearButtonShape);
         clearButton.setOnAction(event -> clearEntryBox());
         layout.getChildren().add(clearButton);
         descriptionText = new Text(description + "\n");
@@ -45,7 +46,7 @@ public class ClearableEntriesBox {
     /**
      * Removes all entries from the box and its display
      */
-    public void clearEntryBox(){
+    protected void clearEntryBox(){
         myTextFlow.getChildren().clear();
         myTextFlow.getChildren().add(descriptionText);
         entryList.clear();
@@ -56,10 +57,7 @@ public class ClearableEntriesBox {
      * @param entry the string to be added to the displayed entries
      * @param name the name of the entry that needs to be overwritten (or null)
      */
-
-
-
-    public void addEntry(String entry, String name){
+    protected void addEntry(String entry, String name){
         Text newText = new Text(entry + "\n");
         myTextFlow.getChildren().add(newText);
         if(name != null){

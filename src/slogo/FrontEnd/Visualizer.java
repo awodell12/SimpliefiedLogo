@@ -203,13 +203,21 @@ public class Visualizer extends Application {
     private void setUpTopButtons() {
 
         HBox topButtons = new HBox(SPACING);
-        Button myHelpButton = new Button("Help", HELP_BUTTON_SHAPE);
+        Button myHelpButton = makeButton("Help", HELP_BUTTON_SHAPE);
         myHelpButton.setOnAction(event -> displayHelp());
-        Button mySetTurtleImageButton = new Button("Set Turtle Image", SET_TURTLE_IMAGE_BUTTON_SHAPE);
+        Button mySetTurtleImageButton = makeButton("Set Turtle Image", SET_TURTLE_IMAGE_BUTTON_SHAPE);
         mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
         topButtons.getChildren().add(myHelpButton);
         topButtons.getChildren().add(mySetTurtleImageButton);
         myRightVBox.getChildren().add(topButtons);
+    }
+
+    static Button makeButton(String text, Rectangle shape){
+        Button button = new Button(text);
+        button.setLayoutY(shape.getY());
+        button.setLayoutX(shape.getX());
+        button.setMinSize(shape.getWidth(), shape.getHeight());
+        return button;
     }
 
 
@@ -224,10 +232,13 @@ public class Visualizer extends Application {
                 switch (i) {
                     case 0:
                         menuItem.setOnAction(event -> myTurtleView.setPenColor(COLOR_MAP.get(entry)));
+                        break;
                     case 1:
                         menuItem.setOnAction(event -> setLanguage(entry));
+                        break;
                     case 2:
                         menuItem.setOnAction(event -> myTurtleView.setBackGroundColor(COLOR_MAP.get(entry)));
+                        break;
                 }
                 menu.getItems().add(menuItem);
             }
@@ -255,9 +266,9 @@ public class Visualizer extends Application {
 
     private void setUpBottomButtons() {
         HBox bottomButtons = new HBox(SPACING);
-        Button runButton = new Button("Run", RUN_BUTTON_SHAPE);
+        Button runButton = makeButton("Run", RUN_BUTTON_SHAPE);
         runButton.setOnAction(event -> runButtonEvent());
-        Button clearButton = new Button("Clear", CLEAR_COMMAND_BOX_SHAPE);
+        Button clearButton = makeButton("Clear", CLEAR_COMMAND_BOX_SHAPE);
         clearButton.setOnAction(event -> myCommandBox.clearContents());
         bottomButtons.getChildren().addAll(runButton, clearButton);
         myRightVBox.getChildren().add(bottomButtons);
@@ -278,7 +289,7 @@ public class Visualizer extends Application {
         EventHandler<ActionEvent>[] actions = new EventHandler<ActionEvent>[]{event -> myInstructionQueue.add(myCommandBox.getContents()),
             event -> displayHelp()};
         for(int i=0; i<buttonShapes.length; i++){
-            Button b = new Button(buttonTexts[i], buttonShapes[i]);
+            Button b = makeButton(buttonTexts[i], buttonShapes[i]);
             b.setOnAction(actions[i]);
         }*/
 
