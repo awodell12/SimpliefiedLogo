@@ -20,11 +20,11 @@ import slogo.CommandResult;
  */
 public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
-
   private static final String RESOURCES_PACKAGE = "resources/languages/";
   public static final String COMMENT_LINE = "(^#(?s).*|\\s+)";
   public static final String NEWLINE = "\\n+";
-  private List<Entry<String, Pattern>> mySymbols;
+  private List<Entry<String, Pattern>> myLanguage;
+  private List<Entry<String, Pattern>> mySyntax;
   private Map<String, Double> myVariables;
   // TODO: make VariableMap
   private Map<String, AltCommand> myUserCommands;
@@ -33,25 +33,28 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<Turtle> myTurtles;
 
   public SLogoBackEnd() {
-    mySymbols = new ArrayList<>();
+    myLanguage = new ArrayList<>();
     myVariables = new HashMap<>();
     myUserCommands = new HashMap<>();
+<<<<<<< HEAD
     myTurtles = new ArrayList<>();
     myTurtles.add(new SLogoTurtle());
+=======
+    myLanguage = interpretPatterns("English");
+    mySyntax = interpretPatterns("Syntax");
+>>>>>>> Sam_ParserAndCommands
   }
 
-  /**
-   * Adds the given resource file to this language's recognized types
-   * Stolen from spike_parser
-   */
-  public void addPatterns (String syntax) {
+  public List<Entry<String, Pattern>> interpretPatterns (String syntax) {
+    List<Entry<String, Pattern>> patterns = new ArrayList<>();
     ResourceBundle resources = ResourceBundle.getBundle(RESOURCES_PACKAGE + syntax);
     for (String key : Collections.list(resources.getKeys())) {
       String regex = resources.getString(key);
-      mySymbols.add(new SimpleEntry<>(key,
+      patterns.add(new SimpleEntry<>(key,
 
-      Pattern.compile(regex, Pattern.CASE_INSENSITIVE)));
+          Pattern.compile(regex, Pattern.CASE_INSENSITIVE)));
     }
+    return patterns;
   }
 
   /**
@@ -59,7 +62,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
    */
   public String getSymbol (String text) {
     final String ERROR = "NO MATCH";
-    for (Entry<String, Pattern> e : mySymbols) {
+    for (Entry<String, Pattern> e : myLanguage) {
+      if (match(text, e.getValue())) {
+        return e.getKey();
+      }
+    }
+    for (Entry<String, Pattern> e : mySyntax) {
       if (match(text, e.getValue())) {
         return e.getKey();
       }
@@ -67,7 +75,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     // FIXME: perhaps throw an exception instead
     return ERROR;
   }
-
 
   // Returns true if the given text matches the given regular expression pattern
   private boolean match (String text, Pattern regex) {
@@ -79,13 +86,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   public List<CommandResult> parseScript(String script) {
     String[] scriptTokens = getTokenList(script).toArray(new String[0]);
     List<CommandResult> results = parseCommandsList(scriptTokens);
-    System.out.println("results.size() = " + results.size());
-    CommandResult result = results.get(results.size()-1);
-    if (!result.getErrorMessage().equals("")) {
-      System.out.println(result.getErrorMessage());
-    }
-    System.out.println("--------------------------------");
-    return null;
+    return results;
+  }
+
+  @Override
+  public void applyChanger(Changer changer) {
+    changer.doChanges(this);
   }
 
   private List<String> getTokenList(String script) {
@@ -104,7 +110,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     List<CommandResult> results = new ArrayList<>();
     int numTokens = tokenList.length;
     int programCounter = 0;
-    CommandResult result = null;
+    CommandResult result;
     while (programCounter < tokenList.length) {
       try {
         AltCommand command = identifyCommand(tokenList[programCounter]);
@@ -118,8 +124,11 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         return results;
       }
     }
-    result = results.get(results.size()-1);
-    results.add(new CommandResult(result.getReturnVal(),programCounter));
+    double retVal = 0;
+    if (results.size() > 0) {
+      retVal = results.get(results.size()-1).getReturnVal();
+    }
+    results.add(new CommandResult(retVal,programCounter));
     return results;
   }
 
@@ -207,20 +216,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     else {
       return Double.parseDouble(token);
     }
-  }
-
-  public int handleUserCommandCreation(String[] tokenList) throws ParseException{
-    int programCounter = 0;
-    String cmdName = tokenList[programCounter];
-    int numVars = distanceToEndBracket(Arrays.copyOfRange(tokenList,programCounter+2,tokenList.length)) - 1;
-    List<String> toVars = new ArrayList<>();
-    for (programCounter = 2; programCounter < 2 + numVars; programCounter ++) {
-      toVars.add(tokenList[programCounter].substring(1));
-    }
-    programCounter += 2;
-    int numCommands = distanceToEndBracket(Arrays.copyOfRange(tokenList,programCounter,tokenList.length)) - 1;
-      setUserCommand(cmdName,toVars,Arrays.copyOfRange(tokenList,programCounter,programCounter + numCommands));
-    return programCounter + numCommands + 1;
   }
 
   private void printRemainingTokens(String[] scriptTokens, int i) {
@@ -321,6 +316,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return null;
   }
 
+<<<<<<< HEAD
   @Override
   public List<Turtle> getTurtles(){ return myTurtles; }
 
@@ -329,4 +325,14 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public void clearTurtles(){ myTurtles.clear(); }
+=======
+  public void setLanguage(String language) {
+    ResourceBundle resources = ResourceBundle.getBundle(RESOURCES_PACKAGE + language);
+    myLanguage = interpretPatterns(language);
+  }
+
+  private CommandResult makeCommandResult(double retVal) {
+    return null;
+  }
+>>>>>>> Sam_ParserAndCommands
 }

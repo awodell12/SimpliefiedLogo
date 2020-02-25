@@ -22,7 +22,7 @@ public interface AltCommand {
    * instance.
    */
 
-  List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, SLogoBackEnd backEnd)
+  List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, BackEndInternal backEnd)
       throws ParseException;
 
   List<String> findVars(String[] tokenList);

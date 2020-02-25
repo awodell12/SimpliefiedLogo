@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
-import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
 
 public class RepeatCommand implements AltCommand {
@@ -21,7 +21,7 @@ public class RepeatCommand implements AltCommand {
   }
 
   @Override
-  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd)
+  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd)
       throws ParseException {
     double numLoops = arguments.get(0);
     double returnVal = 0;

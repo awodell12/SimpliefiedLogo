@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
-import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
 
 public class DoTimesCommand implements AltCommand {
@@ -21,7 +21,7 @@ public class DoTimesCommand implements AltCommand {
   }
 
   @Override
-  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, SLogoBackEnd backEnd)
+  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd)
       throws ParseException {
     System.out.println("Beginning DOTIMES Loop.");
     double limit = arguments.get(0);
