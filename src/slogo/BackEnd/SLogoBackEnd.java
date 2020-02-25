@@ -58,7 +58,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
    * Returns language's type associated with the given text if one exists
    */
   public String getSymbol(String text) {
-    final String ERROR = "NO MATCH";
     for (Entry<String, Pattern> e : myLanguage) {
       if (match(text, e.getValue())) {
         return e.getKey();
@@ -70,7 +69,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       }
     }
     // FIXME: perhaps throw an exception instead
-    return ERROR;
+    return "NO MATCH";
   }
 
   // Returns true if the given text matches the given regular expression pattern
@@ -82,8 +81,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   @Override
   public List<CommandResult> parseScript(String script) {
     String[] scriptTokens = getTokenList(script).toArray(new String[0]);
-    List<CommandResult> results = parseCommandsList(scriptTokens);
-    return results;
+    return parseCommandsList(scriptTokens);
   }
 
   @Override
@@ -116,17 +114,15 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         results.addAll(listResult);
         programCounter += results.get(results.size() - 1).getTokensParsed() + 1;
       } catch (ParseException e) {
-        result = new CommandResult(0.0, 0);
-        result.setErrorMessage(e.getMessage());
-        results.add(result);
+        results.add(makeErrorCommandResult(0.0,0,e.getMessage()));
         return results;
       }
     }
     double retVal = 0;
-    if (results.size() > 0) {
+    if (!results.isEmpty()) {
       retVal = results.get(results.size() - 1).getReturnVal();
     }
-    results.add(new CommandResult(retVal, programCounter));
+    results.add(makeCommandResult(retVal, programCounter));
     return results;
   }
 
@@ -170,7 +166,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         Arrays.copyOfRange(tokenList, programCounter, tokenList.length),
         this));
     CommandResult lastResult = results.get(results.size() - 1);
-    results.add(new CommandResult(lastResult.getReturnVal(),
+    results.add(makeCommandResult(lastResult.getReturnVal(),
         lastResult.getTokensParsed() + programCounter));
     return results;
   }
@@ -226,11 +222,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     }
     System.out.println();
   }
-
-  private boolean isCommand(String identity) {
-    return (true);
-  }
-
   private boolean isValue(String identity) {
     return identity.equals("Constant") || identity.equals("Variable");
   }
@@ -245,15 +236,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   private boolean isClosedBracket(String identity) {
     return identity.equals("ListEnd");
-  }
-
-  private boolean isControl(String identity) {
-    return (identity.equals("Repeat") || identity.equals("For") || identity.equals("MakeVariable")
-        || identity.equals("If") || identity.equals("IfElse"));
-  }
-
-  private boolean isForLoop(String identity) {
-    return (identity.equals("For"));
   }
 
   public static int distanceToEndBracketStatic(String[] tokenList) {
@@ -317,12 +299,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public List<Turtle> getTurtles() {
-    return myTurtles;
+    return new ArrayList<>(myTurtles);
   }
 
   @Override
   public void setTurtles(List<Turtle> t) {
-    myTurtles = t;
+    myTurtles = new ArrayList<>(t);
   }
 
   @Override
@@ -392,6 +374,48 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         0,
         udcName,
         udcScript,
+        false,
+        myTurtles.get(0).getPenUp(),
+        myTurtles.get(0).getVisible(),
+        false
+    );
+  }
+  public CommandResult makeErrorCommandResult(double retVal, int tokensParsed, String errorMessage) {
+    CommandResult ret = new CommandResult(
+        retVal,
+        tokensParsed,
+        0,
+        myTurtles.get(0).getHeading(),
+        List.of(myTurtles.get(0).getX(),
+            myTurtles.get(0).getY()),
+        null,
+        null,
+        null,
+        0,
+        null,
+        null,
+        false,
+        myTurtles.get(0).getPenUp(),
+        myTurtles.get(0).getVisible(),
+        false
+    );
+    ret.setErrorMessage(errorMessage);
+    return ret;
+  }
+  public CommandResult makeCommandResult(double retVal, int tokensParsed) {
+    return new CommandResult(
+        retVal,
+        tokensParsed,
+        0,
+        myTurtles.get(0).getHeading(),
+        List.of(myTurtles.get(0).getX(),
+            myTurtles.get(0).getY()),
+        null,
+        null,
+        null,
+        0,
+        null,
+        null,
         false,
         myTurtles.get(0).getPenUp(),
         myTurtles.get(0).getVisible(),
