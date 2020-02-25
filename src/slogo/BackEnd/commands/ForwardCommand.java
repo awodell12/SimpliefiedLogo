@@ -27,6 +27,7 @@ public class ForwardCommand implements AltCommand {
     List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
     backEnd.getTurtles().get(0).moveForward(arguments.get(0));
     System.out.println("Moved forward by " + arguments.get(0));
+    System.out.println("Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
     return List.of(backEnd.makeCommandResult(arguments.get(0),0,prevPos,"000000"));
   }
 
