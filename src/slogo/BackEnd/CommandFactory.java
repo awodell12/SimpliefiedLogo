@@ -43,7 +43,10 @@ public class CommandFactory {
     newMap.put("Power", new PowerCommand());
     newMap.put("Pi", new PiCommand());
     newMap.put("GreaterThan",new GreaterCommand());
-    newMap.put("MakeUserInstruction",new ToCommand());
+    newMap.put("LessThan", new LessCommand());
+    newMap.put("MakeUserInstruction", new ToCommand());
+    newMap.put("Equal", new EqualCommand());
+    newMap.put("NotEqual", new NotEqualCommand());
     myCommands = Collections.unmodifiableMap(newMap);
   }
 

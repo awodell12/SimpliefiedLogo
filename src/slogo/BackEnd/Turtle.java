@@ -58,6 +58,7 @@ public interface Turtle {
    */
   public double setHeading(double direction);
 
+
   /**
    * @return The direction the turtle is facing, in degrees clockwise from directly up/north.
    */
