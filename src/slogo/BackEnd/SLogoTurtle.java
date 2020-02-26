@@ -13,6 +13,8 @@ public class SLogoTurtle implements Turtle {
 
     private static final double MAX_DEGREES = 360;
     private static final double TO_RADIANS = Math.PI / 180;
+    private static final double TO_DEGREES = 180 / Math.PI;
+    private static final double OFFSET = 180;
 
     public SLogoTurtle(){
     }
@@ -76,9 +78,15 @@ public class SLogoTurtle implements Turtle {
 
     @Override
     public double moveTowards(double x, double y){
-        double newDir = 0;
+        double deltaX = x - myX;
+        double deltaY = y - myY;
 
+        double offset = 0;
+        if(deltaX < 0){ offset = OFFSET; }
 
+        double newDir = OFFSET/2 - Math.atan(deltaY/deltaX) * TO_DEGREES + offset;
+        if(newDir < 0)
+            newDir = MAX_DEGREES + newDir;
         double temp = myHeading;
         myHeading = newDir;
         return Math.abs(temp - newDir);

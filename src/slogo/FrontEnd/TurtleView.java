@@ -1,5 +1,6 @@
 package slogo.FrontEnd;
 
+import java.util.ResourceBundle;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -14,6 +15,8 @@ import java.util.List;
  * Turtle and its taken paths to be displayed to the user.
  */
 public class TurtleView extends Group{
+    private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
+    private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
     private final ImageView myTurtle;
     private Color myPenColor = Color.BLACK;
     private final Rectangle myBackground;
