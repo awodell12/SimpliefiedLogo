@@ -276,15 +276,14 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     private void setUpRightPane() {
         setUpTopButtons();
-        myHistory = new ClearableEntriesBox(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("UDCLabel"));
-        myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
+        myHistory = new ClearableEntriesBox(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
+        myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("UDCLabel"));
         myVariables = new ClearableEntriesBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
         myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
     }
 
 
     private void setUpTopButtons() {
-
         HBox topButtons = new HBox(SPACING);
         Button myHelpButton = makeButton(myResources.getString("HelpButton"), HELP_BUTTON_SHAPE);
         myHelpButton.setOnAction(event -> displayHelp());
