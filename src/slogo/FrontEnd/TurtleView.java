@@ -40,8 +40,9 @@ public class TurtleView extends Group{
         resetTurtle();
         myBackground = new Rectangle(width, height);
         myBackground.setFill(Color.WHITE);
+        myBackground.setStroke(Color.BLACK);
+        myBackground.setStrokeType(StrokeType.OUTSIDE);
         myBackground.setStyle("-fx-border-color: black");
-        //TODO: fix background border (it may have worked before extending Group??)
         this.getChildren().add(myBackground);
         this.getChildren().add(myTurtle);
     }
