@@ -63,12 +63,14 @@ public class TurtleView extends Group{
      * @param y the new y coordinate for the turtle
      */
     protected void setTurtlePosition(double x, double y){
-        myTurtle.setX(x + xOffset);
-        myTurtle.setY(y + yOffset);
-        while(myTurtle.getX() > myWidth) myTurtle.setX(myTurtle.getX()-myWidth);
-        while(myTurtle.getY() > myHeight) myTurtle.setY(myTurtle.getY() - myHeight);
-        while(myTurtle.getX() < 0) myTurtle.setX(myTurtle.getX()+myWidth);
-        while(myTurtle.getY() < 0) myTurtle.setY(myTurtle.getY()+myHeight);
+        x = x + xOffset;
+        y = y + yOffset;
+        while(x > myWidth) x -= myWidth;
+        while(y > myHeight) y -= myHeight;
+        while(x < 0) x += myWidth;
+        while(y < 0) y += myHeight;
+        myTurtle.setX(x);
+        myTurtle.setY(y);
     }
 
     /**
