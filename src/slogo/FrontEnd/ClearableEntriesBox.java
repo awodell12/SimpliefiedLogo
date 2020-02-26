@@ -1,5 +1,6 @@
 package slogo.FrontEnd;
 
+import java.util.ResourceBundle;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -19,6 +20,9 @@ import java.util.List;
  */
 public class ClearableEntriesBox extends HBox {
 
+  private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
+  private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+
     private final TextFlow myTextFlow;
     private final Text descriptionText;
     private final List<String> entryList;
@@ -36,7 +40,7 @@ public class ClearableEntriesBox extends HBox {
         //scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-        Button clearButton = Visualizer.makeButton("Clear", clearButtonShape);
+        Button clearButton = Visualizer.makeButton(myResources.getString("ClearButton"), clearButtonShape);
         clearButton.setOnAction(event -> clearEntryBox());
         this.setSpacing(SPACING);
         this.getChildren().addAll(scrollPane, clearButton);
@@ -75,7 +79,6 @@ public class ClearableEntriesBox extends HBox {
             entryList.add(name);
             // note that we add name, not entry, because we want to store only the NAME not the full text entry
         }
-        //myTextFlow.fireEvent(new ActionEvent());
-        //myTextFlow.fireEvent(new Event(MouseEvent.MOUSE_CLICKED));
+
     }
 }

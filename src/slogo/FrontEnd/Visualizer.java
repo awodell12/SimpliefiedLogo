@@ -89,7 +89,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         put("Boolean Operations", "Booleans");
         put("Variables, Control Structures, and User-Defined Commands", "Variables_Control_UDC");
     }};
-    private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
+    private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax"; 
 
 
     private CommandBox myCommandBox;
