@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.BackEnd.SLogoBackEnd;
 import slogo.CommandResult;
 
-public class ToCommand implements AltCommand {
+public class ToCommand implements Command {
 
   @Override
   public int getNumArgs() {

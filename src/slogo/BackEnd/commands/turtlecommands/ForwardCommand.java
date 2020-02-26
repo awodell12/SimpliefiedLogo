@@ -1,12 +1,12 @@
 package slogo.BackEnd.commands.turtlecommands;
 
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
 
-public class ForwardCommand implements AltCommand {
+public class ForwardCommand implements Command {
 
   public static final int NUM_ARGS = 1;
   public static final String COMMAND_NAME = "Forward";

@@ -1,12 +1,11 @@
 package slogo.BackEnd.commands.turtlecommands;
 
 import java.util.List;
-import slogo.BackEnd.AltCommand;
-import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.Command;
+import slogo.BackEnd.BackEndInternal;
 import slogo.CommandResult;
 
-public class HideTurtleCommand implements AltCommand {
+public class HideTurtleCommand implements Command {
 
     public static final int NUM_ARGS = 0;
     public static final String COMMAND_NAME = "HideTurtle";

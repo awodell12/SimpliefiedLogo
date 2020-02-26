@@ -3,12 +3,12 @@ package slogo.BackEnd.commands.controlandvariables;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
 
-public class UserCommand implements AltCommand {
+public class UserCommand implements Command {
 
   private List<String> myArguments;
   private Collection<String> myInstructions;

@@ -1,12 +1,12 @@
 package slogo.BackEnd.commands.booleancommands;
 
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
 
-public class GreaterCommand implements AltCommand {
+public class GreaterCommand implements Command {
 
   @Override
   public int getNumArgs() {

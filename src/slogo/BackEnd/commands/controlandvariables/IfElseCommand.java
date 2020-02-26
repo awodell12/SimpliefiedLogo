@@ -2,12 +2,12 @@ package slogo.BackEnd.commands.controlandvariables;
 
 import java.util.Arrays;
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
 
-public class IfElseCommand implements AltCommand {
+public class IfElseCommand implements Command {
 
   @Override
   public int getNumArgs() {

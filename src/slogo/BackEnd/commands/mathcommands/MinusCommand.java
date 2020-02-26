@@ -1,12 +1,12 @@
 package slogo.BackEnd.commands.mathcommands;
 
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
 
-public class MinusCommand implements AltCommand {
+public class MinusCommand implements Command {
 
     @Override
     public int getNumArgs() {

@@ -1,11 +1,11 @@
 package slogo.BackEnd.commands.turtlecommands;
 
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.CommandResult;
 
-public class SetHeadingCommand implements AltCommand {
+public class SetHeadingCommand implements Command {
 
     public static final int NUM_ARGS = 1;
     public static final String COMMAND_NAME = "SetHeading";

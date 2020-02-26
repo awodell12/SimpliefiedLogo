@@ -10,9 +10,9 @@ import slogo.BackEnd.commands.turtlecommands.*;
 import slogo.BackEnd.commands.turtlequeries.*;
 
 public class CommandFactory {
-  private static final Map<String, AltCommand> myCommands;
+  private static final Map<String, Command> myCommands;
   static {
-    Map<String, AltCommand> newMap = new HashMap<>();
+    Map<String, Command> newMap = new HashMap<>();
     newMap.put("Forward", new ForwardCommand());
     newMap.put("Backward", new BackCommand());
     newMap.put("Right", new RightCommand());
@@ -62,7 +62,7 @@ public class CommandFactory {
     myCommands = Collections.unmodifiableMap(newMap);
   }
 
-  public static AltCommand makeCommand(String type) throws ParseException {
+  public static Command makeCommand(String type) throws ParseException {
     if (myCommands.containsKey(type)) {
       return myCommands.get(type);
     }

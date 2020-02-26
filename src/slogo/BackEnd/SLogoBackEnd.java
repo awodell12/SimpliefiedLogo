@@ -27,7 +27,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<Entry<String, Pattern>> mySyntax;
   private Map<String, Double> myVariables;
   // TODO: make VariableMap
-  private Map<String, AltCommand> myUserCommands;
+  private Map<String, Command> myUserCommands;
   // TODO: make UserCommand Map
   public static final String WHITESPACE = "\\s+";
   private List<Turtle> myTurtles;
@@ -108,7 +108,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     CommandResult result;
     while (programCounter < tokenList.length) {
       try {
-        AltCommand command = identifyCommand(tokenList[programCounter]);
+        Command command = identifyCommand(tokenList[programCounter]);
         List<CommandResult> listResult = parseCommand(command,
             Arrays.copyOfRange(tokenList, programCounter + 1, numTokens));
         results.addAll(listResult);
@@ -126,7 +126,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return results;
   }
 
-  private AltCommand identifyCommand(String rawToken) throws ParseException {
+  private Command identifyCommand(String rawToken) throws ParseException {
     if (isValue(getSymbol(rawToken))) {
       throw new ParseException("Don't know what to do with " + rawToken);
     }
@@ -140,7 +140,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     }
   }
 
-  private List<CommandResult> parseCommand(AltCommand command, String[] tokenList)
+  private List<CommandResult> parseCommand(Command command, String[] tokenList)
       throws ParseException {
     //'fd 50' expects to start at PC = 1, where '50' is.
     Stack<Double> commandValues = new Stack<>();
@@ -157,8 +157,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     throw new ParseException("Unexpected end of instructions.");
   }
 
-  private List<CommandResult> executeCurrentCommand(AltCommand command, String[] tokenList,
-      Stack<Double> commandValues, List<String> variableNames, int programCounter)
+  private List<CommandResult> executeCurrentCommand(Command command, String[] tokenList,
+                                                    Stack<Double> commandValues, List<String> variableNames, int programCounter)
       throws ParseException {
     List<Double> argList = getArgsFromStack(commandValues, command.getNumArgs());
     List<CommandResult> results = null;
@@ -172,8 +172,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   //TODO: This method might be better replaced by changing the default behavior
-  //TODO: of AltCommand.findVars().
-  private List<String> getCommandVars(AltCommand command, String[] tokenList) {
+  //TODO: of Command.findVars().
+  private List<String> getCommandVars(Command command, String[] tokenList) {
     if (command.getNumVars() > 0) {
       return (command.findVars(tokenList));
     }

@@ -3,12 +3,12 @@ package slogo.BackEnd.commands.mathcommands;
 import java.util.List;
 import java.util.Random;
 
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
 
-public class RandomCommand implements AltCommand {
+public class RandomCommand implements Command {
 
     @Override
     public int getNumArgs() {

@@ -1,11 +1,11 @@
 package slogo.BackEnd.commands.turtlecommands;
 
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.CommandResult;
 
-public class PenUpCommand implements AltCommand {
+public class PenUpCommand implements Command {
 
     public static final int NUM_ARGS = 0;
     public static final String COMMAND_NAME = "PenUp";

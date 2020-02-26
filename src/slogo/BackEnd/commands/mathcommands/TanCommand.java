@@ -1,14 +1,13 @@
 package slogo.BackEnd.commands.mathcommands;
 
 import java.util.List;
-import java.util.Random;
 
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
 
-public class TanCommand implements AltCommand {
+public class TanCommand implements Command {
 
     @Override
     public int getNumArgs() {

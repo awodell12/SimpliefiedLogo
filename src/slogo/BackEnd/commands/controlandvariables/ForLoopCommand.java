@@ -3,12 +3,12 @@ package slogo.BackEnd.commands.controlandvariables;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
 
-public class ForLoopCommand implements AltCommand {
+public class ForLoopCommand implements Command {
 
   public static final int NUM_ARGS = 3;
   public static final int NUM_VARS = 1;

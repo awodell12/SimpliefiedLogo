@@ -3,12 +3,12 @@ package slogo.BackEnd.commands.controlandvariables;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.BackEnd.ParseException;
 import slogo.CommandResult;
 
-public class DoTimesCommand implements AltCommand {
+public class DoTimesCommand implements Command {
 
   @Override
   public int getNumArgs() {

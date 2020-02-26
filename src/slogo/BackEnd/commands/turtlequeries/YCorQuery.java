@@ -1,11 +1,11 @@
 package slogo.BackEnd.commands.turtlequeries;
 
 import java.util.List;
-import slogo.BackEnd.AltCommand;
+import slogo.BackEnd.Command;
 import slogo.BackEnd.BackEndInternal;
 import slogo.CommandResult;
 
-public class YCorQuery implements AltCommand {
+public class YCorQuery implements Command {
 
     public static final int NUM_ARGS = 0;
     public static final int NUM_VARS = 0;
