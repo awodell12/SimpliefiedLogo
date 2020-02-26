@@ -13,6 +13,8 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -42,7 +44,9 @@ import java.util.*;
 import java.util.List;
 
 public class Visualizer extends Application implements FrontEndExternal{
-    private static final double HEIGHT = 600;
+    private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
+    private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+    private static final double HEIGHT = Integer.parseInt(myResources.getString("WindowHeight"));
     private static final double ASPECT_RATIO = (16.0/9.0);
     private static final double WIDTH = HEIGHT * ASPECT_RATIO;
     private static final Paint BACKGROUND = Color.WHITE;
@@ -85,7 +89,8 @@ public class Visualizer extends Application implements FrontEndExternal{
         put("Boolean Operations", "Booleans");
         put("Variables, Control Structures, and User-Defined Commands", "Variables_Control_UDC");
     }};
-    private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
+    private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax"; 
+
 
     private CommandBox myCommandBox;
     private ClearableEntriesBox myHistory;
@@ -98,6 +103,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     private VBox myCenterVBox;
     private VBox myRightVBox;
     private Text myErrorMessage;
+
 
     /**
      * Constructor for the visualizer class, which manages the display components and state
@@ -184,24 +190,12 @@ public class Visualizer extends Application implements FrontEndExternal{
         setUpLeftPane();
         setUpCenterPane();
 
-        /*KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
-            try {
-                step();
-            } catch (IOException ex) {
-                System.out.println("Caught IO Exception");
-            } catch (Exception ex) {
-                System.out.println("Caught Exception");
-            }
-        });*/
+
         myLayout.getChildren().addAll(myLeftVBox,myCenterVBox,myRightVBox);
         HBox.setMargin(myLeftVBox, new Insets(SPACING, 0, 0, MARGIN));
         HBox.setMargin(myRightVBox, new Insets(SPACING,MARGIN,0,0));
         myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
-        /*Timeline animation = new Timeline();
-        animation.setCycleCount(Timeline.INDEFINITE);
-        animation.getKeyFrames().add(frame);
-        animation.play();*/
         return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
@@ -217,7 +211,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     private void setUpLeftPane() {
         setUpMenus();
         myTurtleView = new TurtleView(TURTLE_VIEW_SHAPE.getWidth(), TURTLE_VIEW_SHAPE.getHeight());
-        myErrorMessage = new Text("Error Message Goes Here");
+        myErrorMessage = new Text(myResources.getString("DefaultErrorMessage"));
         myErrorMessage.setFill(Color.RED);
         myCommandBox = new CommandBox(COMMAND_BOX_SHAPE);
         myLeftVBox.getChildren().addAll(myTurtleView, myErrorMessage, myCommandBox);
@@ -225,9 +219,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     private void setUpRightPane() {
         setUpTopButtons();
-        myHistory = new ClearableEntriesBox(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, "HISTORY");
-        myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, "USER-DEFINED COMMANDS");
-        myVariables = new ClearableEntriesBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, "ENVIRONMENT VARIABLES");
+        myHistory = new ClearableEntriesBox(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("UDCLabel"));
+        myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
+        myVariables = new ClearableEntriesBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
         myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
     }
 
@@ -235,9 +229,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     private void setUpTopButtons() {
 
         HBox topButtons = new HBox(SPACING);
-        Button myHelpButton = makeButton("Help", HELP_BUTTON_SHAPE);
+        Button myHelpButton = makeButton(myResources.getString("HelpButton"), HELP_BUTTON_SHAPE);
         myHelpButton.setOnAction(event -> displayHelp());
-        Button mySetTurtleImageButton = makeButton("Set Turtle Image", SET_TURTLE_IMAGE_BUTTON_SHAPE);
+        Button mySetTurtleImageButton = makeButton(myResources.getString("SetTurtle"), SET_TURTLE_IMAGE_BUTTON_SHAPE);
         mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
         topButtons.getChildren().add(myHelpButton);
         topButtons.getChildren().add(mySetTurtleImageButton);
@@ -290,16 +284,23 @@ public class Visualizer extends Application implements FrontEndExternal{
                 WritableImage fximage = new WritableImage(buffImage.getWidth(), buffImage.getHeight());
                 Image image = SwingFXUtils.toFXImage(buffImage, fximage);
                 myTurtleView.setTurtleImage(image);
-            } catch (IOException ex) {
-                System.out.println("Couldn't load turtle image");
+            } catch (IOException | NullPointerException ex) {
+                showError(myResources.getString("LoadTurtle"));
             }
         }
     }
 
-    private void setUpBottomButtons() {
-        Button runButton = makeButton("Run", RUN_BUTTON_SHAPE);
+  private void showError (String message) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(myResources.getString("IOError"));
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
+
+  private void setUpBottomButtons() {
+        Button runButton = makeButton(myResources.getString("RunButton"), RUN_BUTTON_SHAPE);
         runButton.setOnAction(event -> runButtonEvent());
-        Button clearButton = makeButton("Clear", CLEAR_COMMAND_BOX_SHAPE);
+        Button clearButton = makeButton(myResources.getString("ClearButton"), CLEAR_COMMAND_BOX_SHAPE);
         clearButton.setOnAction(event -> myCommandBox.clearContents());
         myCenterVBox.getChildren().addAll(runButton,clearButton);
     }
@@ -328,11 +329,11 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     private void displayHelp(){
         Stage stage = new Stage();
-        stage.setTitle("Help Window");
+        stage.setTitle(myResources.getString("HelpWindowTitle"));
         VBox vBox = new VBox(SPACING);
         MenuBar menuBar = new MenuBar();
         vBox.getChildren().add(menuBar);
-        Menu menu = new Menu("Select Help Category");
+        Menu menu = new Menu(myResources.getString("HelpMenu"));
         menuBar.getMenus().add(menu);
         for(Map.Entry<String, String> helpCategory : HELP_CATEGORIES.entrySet()){
             MenuItem menuItem = new Menu(helpCategory.getKey());
