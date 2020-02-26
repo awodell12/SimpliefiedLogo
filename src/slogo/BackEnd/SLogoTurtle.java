@@ -4,22 +4,17 @@ import java.util.List;
 
 public class SLogoTurtle implements Turtle {
 
-    private double myX;
-    private double myY;
-    private double myHeading;
-    private boolean myPenUp;
-    private boolean myVisible;
-    private String myPenColor;
+    private double myX = 0;
+    private double myY = 0;
+    private double myHeading = 0;
+    private boolean myPenUp = false;
+    private boolean myVisible = true;
+    private String myPenColor = "000000";
 
     private static final double MAX_DEGREES = 360;
     private static final double TO_RADIANS = Math.PI / 180;
 
     public SLogoTurtle(){
-        myX = 0; myY = 0;
-        myHeading = 0;
-        myPenUp = true;
-        myVisible = true;
-        myPenColor = "000000";
     }
 
     public SLogoTurtle(double x, double y, double heading){
