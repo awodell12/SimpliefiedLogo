@@ -47,6 +47,7 @@ public class CommandFactory {
     newMap.put("MakeUserInstruction", new ToCommand());
     newMap.put("Equal", new EqualCommand());
     newMap.put("NotEqual", new NotEqualCommand());
+    newMap.put("SetTowards", new TowardCommand());
     myCommands = Collections.unmodifiableMap(newMap);
   }
 
