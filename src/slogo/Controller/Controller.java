@@ -46,10 +46,7 @@ public class Controller extends Application{
             else {
                 ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModel.parseScript(input);
                 for (CommandResult result : resultList) {
-                    myVisualizer.interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), result.getMyPosition().get(1)),
-                            result.getPathStart(), result.getMyVariableName(), result.getMyVariableValue(), result.getMyUDCName(),
-                            result.getMyUDCText(), result.isMyScreenClear(), result.isMyPenUp(), result.isMyTurtleVisible(),
-                            result.getErrorMessage());
+                    myVisualizer.processResult(result);
                 }
             }
         };

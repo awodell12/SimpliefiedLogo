@@ -27,24 +27,8 @@ public interface FrontEndExternal {
     public String popInstructionQueue();
 
     /**
-     * Interpret result of CommandResults object, update everything that is updateable
-     * Relevant Features:
-     * React to the text and update the model
-     * See the results of the turtle executing commands displayed visually
-     * See resulting errors in user friendly way
-     * see user defined commands currently available
-     * @param turtleRotate new angle to set turtle to
-     * @param turtlePos new coordinates for turtle
-     * @param variableName string name for variable to be created/overwritten
-     * @param variableValue value for new variable
-     * @param startPos old coordinates of the turtle; start of path
-     * @param udcName name of the newly created user defined command
-     * @param udcText the actual commands that entail the user defined command
-     * @param clearScreen whether or not the turtle view should be cleared
-     * @param isPenUp whether or not the pen is up
-     * @param turtleVisibility whether or not to show the turtle
+     * Takes in a command result for the visualizer to process (after all other queued command results finish)
+     * @param result a commandresult from controller, OR null if this is called by the step function
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, List<Double> startPos, String variableName,
-                                double variableValue, String udcName, String udcText, boolean clearScreen,
-                                boolean isPenUp, boolean turtleVisibility, String errorMessage);
+    public void processResult(CommandResult result);
 }
