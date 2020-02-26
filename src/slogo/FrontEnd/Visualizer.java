@@ -153,7 +153,7 @@ public class Visualizer extends Application implements FrontEndExternal{
                                 boolean isPenUp, boolean turtleVisibility, String errorMessage) {
         myTurtleView.setTurtleHeading(turtleRotate);
         myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
-        if(startPos != null) myTurtleView.addPath(makePath(startPos,turtlePos));
+        if(startPos != null) myTurtleView.addPath(startPos,turtlePos);
         if(variableName != null) addVariable(variableName, variableValue);
         if(udcName != null) addUserDefinedCommand(udcName, udcText);
         if(clearScreen) myTurtleView.clearPaths();
@@ -164,20 +164,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         // the following is a hotfix so that clearable entry boxes don't have delayed updates
         myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
         myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
-
     }
-
-
-  private Path makePath(List<Double> startPos, Point2D turtlePos) {
-    Path returnPath = new Path();
-    MoveTo moveTo = new MoveTo((double)startPos.get(0),(double) startPos.get(1));
-    LineTo line = new LineTo(turtlePos.getX(), turtlePos.getY());
-    returnPath.getElements().add(line);
-    returnPath.getElements().add(moveTo);
-
-    return returnPath;
-  }
-
 
     private Scene setUpDisplay() throws IOException{
         Group myRoot = new Group();

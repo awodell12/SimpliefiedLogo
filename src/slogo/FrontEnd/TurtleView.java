@@ -1,12 +1,17 @@
 package slogo.FrontEnd;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
+
+import java.util.List;
 
 /**
  * The TurtleView class encapsulated the view of the turtle and allows for the current state of the
@@ -21,10 +26,14 @@ public class TurtleView extends Group{
     private static final double TURTLE_SIZE = 50;
     private final double myWidth;
     private final double myHeight;
+    private final double xOffset;
+    private final double yOffset;
 
     public TurtleView(double width, double height){
         myWidth = width;
         myHeight = height;
+        xOffset = myWidth/2 - TURTLE_SIZE/2;
+        yOffset = myHeight/2 - TURTLE_SIZE/2;
         String myTurtleImage = "slogo/FrontEnd/Resources/turtle.png";
         myTurtle = new ImageView(myTurtleImage);
         myTurtle.setPreserveRatio(true);
@@ -35,7 +44,7 @@ public class TurtleView extends Group{
         myBackground = new Rectangle(width, height);
         myBackground.setFill(Color.WHITE);
         myBackground.setStyle("-fx-border-color: black");
-        //TODO: fix background border (it worked before extending Group)
+        //TODO: fix background border (it may have worked before extending Group??)
         this.getChildren().add(myBackground);
         this.getChildren().add(myTurtle);
     }
@@ -54,10 +63,14 @@ public class TurtleView extends Group{
      * @param y the new y coordinate for the turtle
      */
     protected void setTurtlePosition(double x, double y){
-        myTurtle.setX(x + myWidth/2 - TURTLE_SIZE/2);
-        myTurtle.setY(y + myHeight/2 - TURTLE_SIZE/2);
-        while(myTurtle.getX() > myWidth) myTurtle.setX(myTurtle.getX()-myWidth);
-        while(myTurtle.getY() > myHeight) myTurtle.setY(myTurtle.getY() - myHeight);
+        x = x + xOffset;
+        y = y + yOffset;
+        while(x > myWidth) x -= myWidth;
+        while(y > myHeight) y -= myHeight;
+        while(x < 0) x += myWidth;
+        while(y < 0) y += myHeight;
+        myTurtle.setX(x);
+        myTurtle.setY(y);
     }
 
     /**
@@ -80,10 +93,18 @@ public class TurtleView extends Group{
     /**
      * This method tells the TurtleView it must add a new path to the display by drawing it, in the color
      * specified by the Path object
-     * @param path the path the turtle took from its previous location to its current
+     * @param startPos the turtle previous location
+     * @param turtlePos the turtle current position
      */
-    protected void addPath(Path path){
+    protected void addPath(List<Double> startPos, Point2D turtlePos){
         if(!isPenUp) {
+            Path path = new Path();
+            double turtleX = turtlePos.getX();
+            double turtleY = turtlePos.getY();
+            MoveTo moveTo = new MoveTo(turtleX + myWidth/2, turtleY + myHeight/2);
+            LineTo line = new LineTo(startPos.get(0) + myWidth/2, startPos.get(1) + myHeight/2);
+            path.getElements().add(moveTo);
+            path.getElements().add(line);
             path.setFill(myPenColor);
             this.getChildren().add(path);
         }
@@ -130,8 +151,8 @@ public class TurtleView extends Group{
      * moves the turtle back to home position
      */
     private void resetTurtle(){
-        myTurtle.setY(myHeight/2 - TURTLE_SIZE/2);
-        myTurtle.setX(myWidth/2 - TURTLE_SIZE/2);
+        myTurtle.setY(yOffset);
+        myTurtle.setX(xOffset);
         myTurtle.setRotate(0);
     }
 }
