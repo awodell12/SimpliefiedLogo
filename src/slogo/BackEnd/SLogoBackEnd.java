@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.regex.Pattern;
-import slogo.BackEnd.commands.UserCommand;
+import slogo.BackEnd.commands.controlandvariables.UserCommand;
 import slogo.CommandResult;
 
 /**

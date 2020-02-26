@@ -4,7 +4,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import slogo.BackEnd.commands.*;
+import slogo.BackEnd.commands.booleancommands.*;
+import slogo.BackEnd.commands.controlandvariables.*;
+import slogo.BackEnd.commands.mathcommands.*;
+import slogo.BackEnd.commands.turtlecommands.*;
 
 public class CommandFactory {
   private static final Map<String, AltCommand> myCommands;
@@ -48,6 +51,7 @@ public class CommandFactory {
     newMap.put("Equal", new EqualCommand());
     newMap.put("NotEqual", new NotEqualCommand());
     newMap.put("SetTowards", new TowardCommand());
+    newMap.put("Or", new OrCommand());
     myCommands = Collections.unmodifiableMap(newMap);
   }
 
