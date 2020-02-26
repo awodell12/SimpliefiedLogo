@@ -7,8 +7,9 @@ import slogo.CommandResult;
 
 public class SetPosCommand implements Command {
 
-    public static final int NUM_ARGS = 2;
-    public static final String COMMAND_NAME = "SetPosition";
+    private static final int NUM_ARGS = 2;
+    private static final int NUM_VARS = 0;
+
 
     @Override
     public int getNumArgs() {
@@ -17,7 +18,7 @@ public class SetPosCommand implements Command {
 
     @Override
     public int getNumVars() {
-        return 0;
+        return NUM_VARS;
     }
 
     @Override

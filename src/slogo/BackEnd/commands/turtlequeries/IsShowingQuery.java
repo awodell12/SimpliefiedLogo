@@ -7,9 +7,8 @@ import slogo.CommandResult;
 
 public class IsShowingQuery implements Command {
 
-    public static final int NUM_ARGS = 0;
-    public static final int NUM_VARS = 0;
-    public static final String COMMAND_NAME = "IsShowing";
+    private static final int NUM_ARGS = 0;
+    private static final int NUM_VARS = 0;
 
     @Override
     public int getNumArgs() {
@@ -33,8 +32,4 @@ public class IsShowingQuery implements Command {
         return null;
     }
 
-    @Override
-    public String toString() {
-        return COMMAND_NAME;
-    }
 }

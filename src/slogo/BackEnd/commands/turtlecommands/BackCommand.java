@@ -7,8 +7,8 @@ import slogo.CommandResult;
 
 public class BackCommand implements Command {
 
-    public static final int NUM_ARGS = 1;
-    public static final String COMMAND_NAME = "Forward";
+    private static final int NUM_ARGS = 1;
+    private static final String COMMAND_NAME = "Forward";
 
     @Override
     public int getNumArgs() {

@@ -7,8 +7,9 @@ import slogo.CommandResult;
 
 public class SetHeadingCommand implements Command {
 
-    public static final int NUM_ARGS = 1;
-    public static final String COMMAND_NAME = "SetHeading";
+    private static final int NUM_ARGS = 1;
+    private static final int NUM_VARS = 0;
+
 
     @Override
     public int getNumArgs() {
@@ -17,7 +18,7 @@ public class SetHeadingCommand implements Command {
 
     @Override
     public int getNumVars() {
-        return 0;
+        return NUM_VARS;
     }
 
     @Override

@@ -7,9 +7,8 @@ import slogo.CommandResult;
 
 public class XCorQuery implements Command {
 
-    public static final int NUM_ARGS = 0;
-    public static final int NUM_VARS = 0;
-    public static final String COMMAND_NAME = "XCoordinate";
+    private static final int NUM_ARGS = 0;
+    private static final int NUM_VARS = 0;
 
     @Override
     public int getNumArgs() {
@@ -31,8 +30,4 @@ public class XCorQuery implements Command {
         return null;
     }
 
-    @Override
-    public String toString() {
-        return COMMAND_NAME;
-    }
 }

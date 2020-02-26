@@ -8,14 +8,16 @@ import slogo.CommandResult;
 
 public class MinusCommand implements Command {
 
+    private static final int NUM_ARGS = 1;
+    private static final int NUM_VARS = 0;
     @Override
     public int getNumArgs() {
-        return 1;
+        return NUM_ARGS;
     }
 
     @Override
     public int getNumVars() {
-        return 0;
+        return NUM_VARS;
     }
 
     @Override

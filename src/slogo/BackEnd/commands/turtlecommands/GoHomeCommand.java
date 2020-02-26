@@ -7,8 +7,8 @@ import slogo.CommandResult;
 
 public class GoHomeCommand implements Command {
 
-    public static final int NUM_ARGS = 0;
-    public static final String COMMAND_NAME = "Home";
+    private static final int NUM_ARGS = 0;
+    private static final int NUM_VARS = 0;
 
     @Override
     public int getNumArgs() {
@@ -17,7 +17,7 @@ public class GoHomeCommand implements Command {
 
     @Override
     public int getNumVars() {
-        return 0;
+        return NUM_VARS;
     }
 
     @Override

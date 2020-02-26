@@ -7,8 +7,8 @@ import slogo.CommandResult;
 
 public class ClearScreenCommand implements Command {
 
-    public static final int NUM_ARGS = 0;
-    public static final String COMMAND_NAME = "ClearScreen";
+    private static final int NUM_ARGS = 0;
+    private static final int NUM_VARS = 0;
 
     @Override
     public int getNumArgs() {

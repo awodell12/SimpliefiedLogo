@@ -8,17 +8,17 @@ import slogo.CommandResult;
 
 public class ForwardCommand implements Command {
 
-  public static final int NUM_ARGS = 1;
-  public static final String COMMAND_NAME = "Forward";
+  private static final int NUM_ARGS = 1;
+  private static final int NUM_VARS = 0;
 
   @Override
   public int getNumArgs() {
-    return 1;
+    return NUM_ARGS;
   }
 
   @Override
   public int getNumVars() {
-    return 0;
+    return NUM_VARS;
   }
 
   @Override
@@ -36,8 +36,4 @@ public class ForwardCommand implements Command {
     return null;
   }
 
-  @Override
-  public String toString() {
-    return COMMAND_NAME;
-  }
 }
