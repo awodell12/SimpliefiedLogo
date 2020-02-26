@@ -4,6 +4,8 @@ import java.io.File;
 
 //import javafx.animation.KeyFrame;
 //import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -34,6 +36,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import slogo.CommandResult;
 
 import javax.imageio.ImageIO;
 
@@ -66,7 +70,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     private static final double SPACING = 10;
     private static final double MARGIN = 25;
     private static final double BOTTOM_INSET = 0.15;
-    //private static final double MILLISECOND_DELAY = 1000;
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
     private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass"},
             {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
@@ -89,8 +92,11 @@ public class Visualizer extends Application implements FrontEndExternal{
         put("Boolean Operations", "Booleans");
         put("Variables, Control Structures, and User-Defined Commands", "Variables_Control_UDC");
     }};
-    private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax"; 
-
+    
+    private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
+    private static final double FPS = 24;
+    private static final double MILLISECOND_DELAY = 1000/FPS;
+    private static final double SIGNIFICANT_DIFFERENCE = 0.001;
 
     private CommandBox myCommandBox;
     private ClearableEntriesBox myHistory;
@@ -103,6 +109,13 @@ public class Visualizer extends Application implements FrontEndExternal{
     private VBox myCenterVBox;
     private VBox myRightVBox;
     private Text myErrorMessage;
+    private Point2D myDesiredTurtlePosition;
+    private Point2D myCurrentTurtlePosition = new Point2D(0, 0);
+    private double xIncrement;
+    private double yIncrement;
+    private Point2D myStartPos = null;
+    private boolean isReady = true;
+    private final Queue<CommandResult> resultQueue = new LinkedList<>();
 
 
     /**
@@ -133,9 +146,36 @@ public class Visualizer extends Application implements FrontEndExternal{
         return myInstructionQueue.remove(0);
     }
 
+    /**
+     * Takes in a command result for the visualizer to process (after all other queued command results finish)
+     * @param result a commandresult from controller, OR null if this is called by the step function
+     */
+    public void processResult(CommandResult result){
+        if(!isReady){
+            if(result != null) resultQueue.add(result);
+        }
+        else{
+            isReady = false;
+            if(result == null){
+                result = resultQueue.poll();
+            }
+            assert result != null; // intellij wants us to do this but it's not really necessary
+            dissectCommand(result);
+        }
+    }
 
+    private void dissectCommand(CommandResult result) {
+        Point2D startPos = null;
+        if(result.getPathStart() != null){
+            startPos = new Point2D(result.getPathStart().get(0), -result.getPathStart().get(1));
+        }
+        interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), -result.getMyPosition().get(1)),
+                startPos, result.getMyVariableName(),
+                result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
+                result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage());
+    }
 
-  /**
+    /**
      * Interpret result of CommandResults object, update everything that is updatable
      * Relevant Features:
      * React to the text and update the model
@@ -146,7 +186,7 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param turtlePos new coordinates for turtle
      * @param variableName string name for variable to be created/overwritten
      * @param variableValue value for new variable
-     * @param startPos path object to draw
+     * @param startPos start of path to draw
      * @param udcName name of the newly created user defined command
      * @param udcText the actual commands that entail the user defined command
      * @param clearScreen whether or not the turtle view should be cleared
@@ -154,19 +194,22 @@ public class Visualizer extends Application implements FrontEndExternal{
      * @param turtleVisibility whether or not to show the turtle
      * @param errorMessage error message string, if any
      */
-    public void interpretResult(double turtleRotate, Point2D turtlePos, List<Double> startPos, String variableName,
+    private void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, String errorMessage) {
         myTurtleView.setTurtleHeading(turtleRotate);
         myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
-        if(startPos != null) myTurtleView.addPath(startPos,turtlePos);
+        myDesiredTurtlePosition = turtlePos;
+        xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
+        yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
+        myStartPos = startPos;
         if(variableName != null) addVariable(variableName, variableValue);
         if(udcName != null) addUserDefinedCommand(udcName, udcText);
         if(clearScreen) myTurtleView.clearPaths();
         //if(resetTurtle) myTurtleView.resetTurtle();
         myTurtleView.setTurtleVisibility(turtleVisibility);
         myTurtleView.setIsPenUp(isPenUp);
-        if(errorMessage != null) displayErrorMessage(errorMessage);
+        displayErrorMessage(errorMessage);
         // the following is a hotfix so that clearable entry boxes don't have delayed updates
         myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
         myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
@@ -190,12 +233,26 @@ public class Visualizer extends Application implements FrontEndExternal{
         setUpLeftPane();
         setUpCenterPane();
 
+        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
+            try {
+                step();
+            } /*catch (IOException ex) {
+                System.out.println("Caught IO Exception");
+            } */catch (Exception ex) {
+                System.out.println("Caught Exception");
+                //ex.printStackTrace();
+            }
+        });
 
         myLayout.getChildren().addAll(myLeftVBox,myCenterVBox,myRightVBox);
         HBox.setMargin(myLeftVBox, new Insets(SPACING, 0, 0, MARGIN));
         HBox.setMargin(myRightVBox, new Insets(SPACING,MARGIN,0,0));
         myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
+        Timeline animation = new Timeline();
+        animation.setCycleCount(Timeline.INDEFINITE);
+        animation.getKeyFrames().add(frame);
+        animation.play();
         return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
     }
 
@@ -305,9 +362,23 @@ public class Visualizer extends Application implements FrontEndExternal{
         myCenterVBox.getChildren().addAll(runButton,clearButton);
     }
 
-    /*private void step(){
-
-    }*/
+    private void step(){
+        if(myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX()-myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||
+                Math.abs(myCurrentTurtlePosition.getY()-myDesiredTurtlePosition.getY()) >= SIGNIFICANT_DIFFERENCE)){
+            myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX()+xIncrement, myCurrentTurtlePosition.getY()+yIncrement);
+            myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY());
+            if(myStartPos != null){
+                myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
+                myStartPos = myCurrentTurtlePosition;
+            }
+        }
+        else if(!isReady){
+            isReady = true;
+            if(resultQueue.size() > 0){
+                processResult(null);
+            }
+        }
+    }
 
     private void displayErrorMessage(String message){
         myErrorMessage.setText(message);

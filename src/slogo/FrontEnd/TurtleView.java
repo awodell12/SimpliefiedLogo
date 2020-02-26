@@ -5,12 +5,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 
 import java.util.List;
 
@@ -27,14 +23,15 @@ public class TurtleView extends Group{
     private boolean isPenUp = false;
     private boolean myTurtleVisibility = true;
     private static final double TURTLE_SIZE = 50;
+    private static final double SIGNIFICANT_DIFFERENCE = 0.001;
     private final double myWidth;
     private final double myHeight;
     private final double xOffset;
     private final double yOffset;
 
     public TurtleView(double width, double height){
-        myWidth = width;
-        myHeight = height;
+        myWidth = width - TURTLE_SIZE;
+        myHeight = height - TURTLE_SIZE;
         xOffset = myWidth/2 - TURTLE_SIZE/2;
         yOffset = myHeight/2 - TURTLE_SIZE/2;
         String myTurtleImage = "slogo/FrontEnd/Resources/turtle.png";
@@ -46,8 +43,9 @@ public class TurtleView extends Group{
         resetTurtle();
         myBackground = new Rectangle(width, height);
         myBackground.setFill(Color.WHITE);
+        myBackground.setStroke(Color.BLACK);
+        myBackground.setStrokeType(StrokeType.OUTSIDE);
         myBackground.setStyle("-fx-border-color: black");
-        //TODO: fix background border (it may have worked before extending Group??)
         this.getChildren().add(myBackground);
         this.getChildren().add(myTurtle);
     }
@@ -56,9 +54,7 @@ public class TurtleView extends Group{
      * set the pen color (color of paths)
      * @param color color to set to
      */
-    protected void setPenColor(Color color){
-        myPenColor = color;
-    }
+    protected void setPenColor(Color color){ myPenColor = color; }
 
     /**
      * Updates the position of the turtle in the Display to the desired set of coordinates. Offsets so that 0, 0 is center of screen
@@ -66,14 +62,8 @@ public class TurtleView extends Group{
      * @param y the new y coordinate for the turtle
      */
     protected void setTurtlePosition(double x, double y){
-        x = x + xOffset;
-        y = y + yOffset;
-        while(x > myWidth) x -= myWidth;
-        while(y > myHeight) y -= myHeight;
-        while(x < 0) x += myWidth;
-        while(y < 0) y += myHeight;
-        myTurtle.setX(x);
-        myTurtle.setY(y);
+        myTurtle.setX(boundX(x));
+        myTurtle.setY(boundY(y));
     }
 
     /**
@@ -99,16 +89,21 @@ public class TurtleView extends Group{
      * @param startPos the turtle previous location
      * @param turtlePos the turtle current position
      */
-    protected void addPath(List<Double> startPos, Point2D turtlePos){
+    protected void addPath(Point2D startPos, Point2D turtlePos){
         if(!isPenUp) {
             Path path = new Path();
-            double turtleX = turtlePos.getX();
-            double turtleY = turtlePos.getY();
-            MoveTo moveTo = new MoveTo(turtleX + myWidth/2, turtleY + myHeight/2);
-            LineTo line = new LineTo(startPos.get(0) + myWidth/2, startPos.get(1) + myHeight/2);
+            double turtleX = boundX(turtlePos.getX()) + TURTLE_SIZE/2;
+            double turtleY = boundY(turtlePos.getY()) + TURTLE_SIZE/2;
+            double startX = boundX(startPos.getX())+TURTLE_SIZE/2;
+            double startY = boundY(startPos.getY())+TURTLE_SIZE/2;
+            if(!almostEqual(turtleX-startX, turtlePos.getX()-startPos.getX()) || !almostEqual(turtleY-startY, turtlePos.getY()-startPos.getY())){
+                return; // don't draw the path if the turtle is wrapping around in this step
+            }
+            MoveTo moveTo = new MoveTo(turtleX , turtleY);
+            LineTo line = new LineTo(startX, startY);
             path.getElements().add(moveTo);
             path.getElements().add(line);
-            path.setFill(myPenColor);
+            path.setStroke(myPenColor);
             this.getChildren().add(path);
         }
     }
@@ -157,5 +152,23 @@ public class TurtleView extends Group{
         myTurtle.setY(yOffset);
         myTurtle.setX(xOffset);
         myTurtle.setRotate(0);
+    }
+
+    private double boundX(double x){
+        x = x + xOffset;
+        while(x > myWidth) x -= myWidth;
+        while(x < 0) x += myWidth;
+        return x;
+    }
+
+    private double boundY(double y){
+        y = y + yOffset;
+        while(y > myHeight) y -= myHeight;
+        while(y < 0) y += myHeight;
+        return y;
+    }
+
+    private boolean almostEqual(double a, double b){
+        return Math.abs(a-b) <= SIGNIFICANT_DIFFERENCE;
     }
 }
