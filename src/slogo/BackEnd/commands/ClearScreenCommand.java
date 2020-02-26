@@ -24,6 +24,7 @@ public class ClearScreenCommand implements AltCommand {
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
         List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
         double retVal = backEnd.getTurtles().get(0).setPos(0, 0);
+        backEnd.getTurtles().get(0).setHeading(0);
         System.out.println("Went home, cleared paths \n " +
                 "Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
         CommandResult clearResult = new CommandResult(
