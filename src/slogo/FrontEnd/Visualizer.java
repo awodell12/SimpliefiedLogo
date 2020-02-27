@@ -22,6 +22,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -71,7 +72,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     private static final double MARGIN = 25;
     private static final double BOTTOM_INSET = 0.15;
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
-    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass"},
+    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass", "Black"},
             {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
             {"White", "Duke Blue", "Gray", "Red", "Azure", "LemonChiffon"}};
     private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
@@ -83,6 +84,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         put("Duke Blue", Color.ROYALBLUE);
         put("Billion Dollar Grass", Color.LAWNGREEN);
         put("Dark Salmon", Color.DARKSALMON);
+        put("Black", Color.BLACK);
     }};
     private static final Map<String, String> HELP_CATEGORIES = new HashMap<>(){{
         put("Basic Syntax", "Basic_Syntax");
@@ -131,6 +133,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         myStage = primaryStage;
         Scene display = setUpDisplay();
         myStage.setScene(display);
+        myStage.setTitle(myResources.getString("AppTitle"));
         myStage.show();
     }
 
@@ -198,7 +201,7 @@ public class Visualizer extends Application implements FrontEndExternal{
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, String errorMessage) {
         myTurtleView.setTurtleHeading(turtleRotate);
-        myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
+        //myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
         myDesiredTurtlePosition = turtlePos;
         xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
         yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
@@ -355,8 +358,10 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setUpBottomButtons() {
         Button runButton = makeButton(myResources.getString("RunButton"), RUN_BUTTON_SHAPE);
+        runButton.setTooltip(new Tooltip(myResources.getString("RunHover")));
         runButton.setOnAction(event -> runButtonEvent());
         Button clearButton = makeButton(myResources.getString("ClearButton"), CLEAR_COMMAND_BOX_SHAPE);
+        clearButton.setTooltip(new Tooltip(myResources.getString("ClearHover")));
         clearButton.setOnAction(event -> myCommandBox.clearContents());
         myCenterVBox.getChildren().addAll(runButton,clearButton);
     }
