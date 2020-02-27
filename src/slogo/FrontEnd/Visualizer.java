@@ -321,9 +321,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     private void setUpTopButtons() {
         HBox topButtons = new HBox(SPACING);
-        Button myHelpButton = makeButton("helpButton", HELP_BUTTON_SHAPE, this.getClass());
+        Button myHelpButton = makeButton("displayHelp", HELP_BUTTON_SHAPE, this.getClass());
         myHelpButton.setOnAction(event -> displayHelp());
-        Button mySetTurtleImageButton = makeButton("setTurtle", SET_TURTLE_IMAGE_BUTTON_SHAPE, this.getClass());
+        Button mySetTurtleImageButton = makeButton("setTurtleImage", SET_TURTLE_IMAGE_BUTTON_SHAPE, this.getClass());
         mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
         topButtons.getChildren().add(myHelpButton);
         topButtons.getChildren().add(mySetTurtleImageButton);
@@ -331,10 +331,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
 
     protected static Button makeButton(String text, Rectangle shape, Class<?> clazz){
-      String methodName = myResources.getString(text);
       Method method = null;
       try {
-        method = clazz.getDeclaredMethod(methodName);
+        method = clazz.getDeclaredMethod(text);
       }
       catch (NoSuchMethodException e) {
         showError(e.getMessage());
@@ -367,7 +366,7 @@ public class Visualizer extends Application implements FrontEndExternal{
             menuBar.getMenus().add(menu);
             for(String entry : MENU_OPTIONS[i]){
                 MenuItem menuItem = new MenuItem(entry);
-                String methodName = myResources.getString(entry);
+                String methodName = myResources.getString(MENU_NAMES[i]);
                 try {
                     Method method = this.getClass().getDeclaredMethod(methodName);
                     menuItem.setOnAction(event -> {
