@@ -71,7 +71,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     private static final double MARGIN = 25;
     private static final double BOTTOM_INSET = 0.15;
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
-    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass"},
+    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass", "Black"},
             {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
             {"White", "Duke Blue", "Gray", "Red", "Azure", "LemonChiffon"}};
     private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
@@ -83,6 +83,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         put("Duke Blue", Color.ROYALBLUE);
         put("Billion Dollar Grass", Color.LAWNGREEN);
         put("Dark Salmon", Color.DARKSALMON);
+        put("Black", Color.BLACK);
     }};
     private static final Map<String, String> HELP_CATEGORIES = new HashMap<>(){{
         put("Basic Syntax", "Basic_Syntax");
