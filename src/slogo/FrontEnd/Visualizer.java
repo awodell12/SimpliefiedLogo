@@ -2,6 +2,10 @@ package slogo.FrontEnd;
 
 import java.io.File;
 
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -289,15 +293,21 @@ public class Visualizer extends Application implements FrontEndExternal{
         myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
     }
 
+    private void endPause(){
+      paused = false;
+    }
+    private void setPause(){
+      paused = true;
+    }
+
+    private void singleStep(){
+      step(true);
+    }
     private void setUpTopCenterButtons() {
-        Button start = makeButton("Start", TURTLE_BUTTON_SHAPE);
-        start.setOnAction(event -> paused = false);
-        Button pause = makeButton("Pause", TURTLE_BUTTON_SHAPE);
-        pause.setOnAction(event -> paused=true);
-        Button reset = makeButton("Reset", TURTLE_BUTTON_SHAPE);
-        reset.setOnAction(event -> resetAnimation());
-        Button singleStep = makeButton("Step", TURTLE_BUTTON_SHAPE);
-        singleStep.setOnAction(event -> step(true));
+        Button start = makeButton("endPause", TURTLE_BUTTON_SHAPE, this.getClass());
+        Button pause = makeButton("setPause", TURTLE_BUTTON_SHAPE,this.getClass());
+        Button reset = makeButton("resetAnimation", TURTLE_BUTTON_SHAPE, this.getClass());
+        Button singleStep = makeButton("singleStep", TURTLE_BUTTON_SHAPE,this.getClass());
         ScrollBar speedBar = new ScrollBar();
         speedBar.setMin(MIN_SPEED);
         speedBar.setMax(MAX_SPEED);
@@ -311,20 +321,36 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     private void setUpTopButtons() {
         HBox topButtons = new HBox(SPACING);
-        Button myHelpButton = makeButton(myResources.getString("HelpButton"), HELP_BUTTON_SHAPE);
+        Button myHelpButton = makeButton("helpButton", HELP_BUTTON_SHAPE, this.getClass());
         myHelpButton.setOnAction(event -> displayHelp());
-        Button mySetTurtleImageButton = makeButton(myResources.getString("SetTurtle"), SET_TURTLE_IMAGE_BUTTON_SHAPE);
+        Button mySetTurtleImageButton = makeButton("setTurtle", SET_TURTLE_IMAGE_BUTTON_SHAPE, this.getClass());
         mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
         topButtons.getChildren().add(myHelpButton);
         topButtons.getChildren().add(mySetTurtleImageButton);
         myRightVBox.getChildren().add(topButtons);
     }
 
-    static Button makeButton(String text, Rectangle shape){
-        Button button = new Button(text);
+    protected static Button makeButton(String text, Rectangle shape, Class<?> clazz){
+      String methodName = myResources.getString(text);
+      Method method = null;
+      try {
+        method = clazz.getDeclaredMethod(methodName);
+      }
+      catch (NoSuchMethodException e) {
+        showError(e.getMessage());
+      }
+        Button button = new Button(myResources.getString(text));
         button.setLayoutY(shape.getY());
         button.setLayoutX(shape.getX());
         button.setMinSize(shape.getWidth(), shape.getHeight());
+      Method finalMethod = method;
+      button.setOnAction(event -> {
+          try {
+            finalMethod.invoke(clazz);
+          } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
+            showError(e.getMessage());
+          }
+      });
         return button;
     }
 
@@ -386,7 +412,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         }
     }
 
-  private void showError (String message) {
+  private static void showError(String message) {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(myResources.getString("IOError"));
     alert.setContentText(message);
@@ -394,10 +420,10 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setUpBottomButtons() {
-        Button runButton = makeButton(myResources.getString("RunButton"), RUN_BUTTON_SHAPE);
+        Button runButton = makeButton("runButton", RUN_BUTTON_SHAPE, this.getClass());
         runButton.setTooltip(new Tooltip(myResources.getString("RunHover")));
         runButton.setOnAction(event -> runButtonEvent());
-        Button clearButton = makeButton(myResources.getString("ClearButton"), CLEAR_COMMAND_BOX_SHAPE);
+        Button clearButton = makeButton("clearButton", CLEAR_COMMAND_BOX_SHAPE, this.getClass());
         clearButton.setTooltip(new Tooltip(myResources.getString("ClearHover")));
         clearButton.setOnAction(event -> myCommandBox.clearContents());
         myCenterVBox.getChildren().addAll(runButton,clearButton);
