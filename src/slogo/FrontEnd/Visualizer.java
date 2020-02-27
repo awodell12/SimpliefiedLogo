@@ -5,10 +5,11 @@ import java.io.File;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -296,15 +297,11 @@ public class Visualizer extends Application implements FrontEndExternal{
         reset.setOnAction(event -> resetAnimation());
         Button singleStep = makeButton("Step", TURTLE_BUTTON_SHAPE);
         singleStep.setOnAction(event -> step(true));
-        ScrollBar speedBar = new ScrollBar();
-        speedBar.setMin(MIN_SPEED);
-        speedBar.setMax(MAX_SPEED);
-        speedBar.setValue(DEFAULT_SPEED);
-        speedBar.setOnMousePressed(event -> {
-            animation.setRate(speedBar.getValue());
-            System.out.println("speed");
-        });
-        myCenterVBox.getChildren().addAll(start, pause, reset, singleStep, speedBar);
+        Slider speedSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
+        speedSlider.valueProperty().addListener((ov, old_val, new_val) -> animation.setRate(speedSlider.getValue()));
+        speedSlider.setShowTickMarks(true);
+        speedSlider.setShowTickLabels(true);
+        myCenterVBox.getChildren().addAll(start, pause, reset, singleStep, speedSlider);
     }
 
     private void setUpTopButtons() {
