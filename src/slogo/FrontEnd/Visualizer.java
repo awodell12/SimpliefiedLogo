@@ -8,18 +8,14 @@ import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -39,7 +35,10 @@ import javax.imageio.ImageIO;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class Visualizer extends Application implements FrontEndExternal{
     private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
@@ -93,6 +92,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     private static final double FPS = 24;
     private static final double MILLISECOND_DELAY = 1000/FPS;
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;
+    private static final double MIN_SPEED = 0.1;
+    private static final double MAX_SPEED = 10;
+    private static final double DEFAULT_SPEED = 1;
 
     private CommandBox myCommandBox;
     private ClearableEntriesBox myHistory;
@@ -113,6 +115,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     private boolean isReady = true;
     private boolean paused = false;
     private final Queue<CommandResult> resultQueue = new LinkedList<>();
+    private Timeline animation;
 
 
     /**
@@ -246,7 +249,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         HBox.setMargin(myRightVBox, new Insets(SPACING,MARGIN,0,0));
         myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
-        Timeline animation = new Timeline();
+        animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
         animation.play();
@@ -293,15 +296,15 @@ public class Visualizer extends Application implements FrontEndExternal{
         reset.setOnAction(event -> resetAnimation());
         Button singleStep = makeButton("Step", TURTLE_BUTTON_SHAPE);
         singleStep.setOnAction(event -> step(true));
-        /*ScrollBar speedBar = new ScrollBar();
-                makeScrollBar(0.1, 10, INITIAL_SCROLL_SPEED, SIZE*(0.95),SIZE/2);
-        myScrollBar.setMin();
-        myScrollBar.setMax(max);
-        myScrollBar.setValue(val);
-        myScrollBar.setLayoutY(y);
-        myScrollBar.setLayoutX(x);*/
-        myCenterVBox.getChildren().addAll(start, pause, reset, singleStep);
-
+        ScrollBar speedBar = new ScrollBar();
+        speedBar.setMin(MIN_SPEED);
+        speedBar.setMax(MAX_SPEED);
+        speedBar.setValue(DEFAULT_SPEED);
+        speedBar.setOnMousePressed(event -> {
+            animation.setRate(speedBar.getValue());
+            System.out.println("speed");
+        });
+        myCenterVBox.getChildren().addAll(start, pause, reset, singleStep, speedBar);
     }
 
     private void setUpTopButtons() {
@@ -324,6 +327,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
 
     private void resetAnimation() {
+        myTurtleView.clearPaths();
     }
 
 
@@ -335,20 +339,30 @@ public class Visualizer extends Application implements FrontEndExternal{
             menuBar.getMenus().add(menu);
             for(String entry : MENU_OPTIONS[i]){
                 MenuItem menuItem = new MenuItem(entry);
-                switch (i) {
-                    case 0:
-                        menuItem.setOnAction(event -> myTurtleView.setPenColor(COLOR_MAP.get(entry)));
-                        break;
-                    case 1:
-                        menuItem.setOnAction(event -> setLanguage(entry));
-                        break;
-                    case 2:
-                        menuItem.setOnAction(event -> myTurtleView.setBackGroundColor(COLOR_MAP.get(entry)));
-                        break;
+                String methodName = myResources.getString(entry);
+                try {
+                    Method method = this.getClass().getDeclaredMethod(methodName);
+                    menuItem.setOnAction(event -> {
+                        try {
+                            method.invoke(this.getClass(), entry);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            showError("");
+                        }
+                    });
+                } catch (NoSuchMethodException e) {
+                    showError("");
                 }
                 menu.getItems().add(menuItem);
             }
         }
+    }
+
+    private void setPenColor(String colorName){
+        myTurtleView.setPenColor(COLOR_MAP.get(colorName));
+    }
+
+    private void setBackGroundColor(String colorName){
+        myTurtleView.setBackGroundColor(COLOR_MAP.get(colorName));
     }
 
     private void setLanguage(String language){
