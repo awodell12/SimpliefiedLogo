@@ -41,7 +41,7 @@ public class ClearableEntriesBox extends HBox {
         //scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-        Button clearButton = Visualizer.makeButton("clearEntryBox", clearButtonShape, this.getClass());
+        Button clearButton = Visualizer.makeButton("clearEntryBox", clearButtonShape, this);
         clearButton.setTooltip(new Tooltip(myResources.getString("HoverText")));
         clearButton.setOnAction(event -> clearEntryBox());
         this.setSpacing(SPACING);
