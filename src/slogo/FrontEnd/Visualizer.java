@@ -133,6 +133,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         myStage = primaryStage;
         Scene display = setUpDisplay();
         myStage.setScene(display);
+        myStage.setTitle(myResources.getString("AppTitle"));
         myStage.show();
     }
 
