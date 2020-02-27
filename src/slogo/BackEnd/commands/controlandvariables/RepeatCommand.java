@@ -31,7 +31,7 @@ public class RepeatCommand implements Command {
     List<CommandResult> results = new ArrayList<>();
     int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
     for (double i = 1; i <= numLoops; i ++) {
-      backEnd.setVariable("repcount",numLoops);
+      backEnd.setVariable("repcount",i);
       results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength)));
       returnVal = results.get(results.size()-1).getReturnVal();
     }

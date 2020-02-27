@@ -42,7 +42,8 @@ public class ClearScreenCommand implements Command {
                 true,
                 backEnd.getTurtles().get(0).getPenUp(),
                 backEnd.getTurtles().get(0).getVisible(),
-                false
+                false,
+            ""
         );
         return List.of(clearResult);
     }
