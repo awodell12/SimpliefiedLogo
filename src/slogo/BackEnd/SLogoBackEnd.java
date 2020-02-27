@@ -138,7 +138,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       if (myUserCommands.containsKey(rawToken)) {
         return myUserCommands.get(rawToken);
       }
-      throw e;
+      throw new ParseException("Don't know how to " + rawToken.toUpperCase());
     }
   }
 
