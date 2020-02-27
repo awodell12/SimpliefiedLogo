@@ -1,8 +1,7 @@
 package slogo.BackEnd;
 
-import slogo.CommandResult;
-
 import java.util.List;
+import slogo.CommandResult;
 
 /**
  * Carries out the functionality of individual instructions
@@ -13,6 +12,8 @@ public interface Command {
 
   int getNumArgs();
 
+  int getNumVars();
+
   /**
    * Carries out the command, changing the relevant data in the model according to the
    * effects of the command. Currently, commands can effect the turtle, the paths list,
@@ -20,5 +21,9 @@ public interface Command {
    * @return The effects on the model of this individual command, bundled into a CommandResult
    * instance.
    */
-  CommandResult execute(List<Double> arguments);
+
+  List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, BackEndInternal backEnd)
+      throws ParseException;
+
+  List<String> findVars(String[] tokenList);
 }
