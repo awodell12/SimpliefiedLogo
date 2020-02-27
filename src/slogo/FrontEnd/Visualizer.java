@@ -198,7 +198,7 @@ public class Visualizer extends Application implements FrontEndExternal{
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, String errorMessage) {
         myTurtleView.setTurtleHeading(turtleRotate);
-        myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
+        //myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
         myDesiredTurtlePosition = turtlePos;
         xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
         yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
