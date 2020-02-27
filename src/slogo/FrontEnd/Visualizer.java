@@ -2,27 +2,20 @@ package slogo.FrontEnd;
 
 import java.io.File;
 
-//import javafx.animation.KeyFrame;
-//import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -30,9 +23,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -45,8 +35,10 @@ import javax.imageio.ImageIO;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
-import java.util.List;
+import java.util.function.Consumer;
 
 public class Visualizer extends Application implements FrontEndExternal{
     private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
@@ -67,10 +59,12 @@ public class Visualizer extends Application implements FrontEndExternal{
     private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(50, 50);
     private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(75, 50);
     private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(75, 50);
+    private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
     private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
     private static final double SPACING = 10;
     private static final double MARGIN = 25;
     private static final double BOTTOM_INSET = 0.15;
+    private static final double TOP_INSET = 0.1;
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
     private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass", "Black"},
             {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
@@ -99,6 +93,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     private static final double FPS = 24;
     private static final double MILLISECOND_DELAY = 1000/FPS;
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;
+    private static final double MIN_SPEED = 0.1;
+    private static final double MAX_SPEED = 10;
+    private static final double DEFAULT_SPEED = 1;
 
     private CommandBox myCommandBox;
     private ClearableEntriesBox myHistory;
@@ -117,7 +114,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     private double yIncrement;
     private Point2D myStartPos = null;
     private boolean isReady = true;
+    private boolean paused = false;
     private final Queue<CommandResult> resultQueue = new LinkedList<>();
+    private Timeline animation;
 
 
     /**
@@ -238,7 +237,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
             try {
-                step();
+                step(false);
             } /*catch (IOException ex) {
                 System.out.println("Caught IO Exception");
             } */catch (Exception ex) {
@@ -252,7 +251,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         HBox.setMargin(myRightVBox, new Insets(SPACING,MARGIN,0,0));
         myLayout.setStyle("-fx-border-color: black");
         myRoot.getChildren().add(myLayout);
-        Timeline animation = new Timeline();
+        animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
         animation.play();
@@ -262,10 +261,15 @@ public class Visualizer extends Application implements FrontEndExternal{
     private void setUpCenterPane() {
         myCenterVBox = new VBox(SPACING);
         myCenterVBox.setPrefHeight(HEIGHT);
+        setUpTopCenterButtons();
         setUpBottomButtons();
         myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
         int lastIndex = myCenterVBox.getChildren().size();
         VBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * BOTTOM_INSET,0));
+        //myTopCenterVBox = new VBox(SPACING);
+        //VBox.setMargin(myCenterVBox.getChildren().get(myCenterVBox.getChildren().size()-1), new Insets(0,0, HEIGHT/2,0));
+        //myTopCenterVBox.setPrefHeight(HEIGHT/3);
+        //myTopCenterVBox.setAlignment(Pos.TOP_CENTER);
     }
 
     private void setUpLeftPane() {
@@ -285,6 +289,25 @@ public class Visualizer extends Application implements FrontEndExternal{
         myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
     }
 
+    private void setUpTopCenterButtons() {
+        Button start = makeButton("Start", TURTLE_BUTTON_SHAPE);
+        start.setOnAction(event -> paused = false);
+        Button pause = makeButton("Pause", TURTLE_BUTTON_SHAPE);
+        pause.setOnAction(event -> paused=true);
+        Button reset = makeButton("Reset", TURTLE_BUTTON_SHAPE);
+        reset.setOnAction(event -> resetAnimation());
+        Button singleStep = makeButton("Step", TURTLE_BUTTON_SHAPE);
+        singleStep.setOnAction(event -> step(true));
+        ScrollBar speedBar = new ScrollBar();
+        speedBar.setMin(MIN_SPEED);
+        speedBar.setMax(MAX_SPEED);
+        speedBar.setValue(DEFAULT_SPEED);
+        speedBar.setOnMousePressed(event -> {
+            animation.setRate(speedBar.getValue());
+            System.out.println("speed");
+        });
+        myCenterVBox.getChildren().addAll(start, pause, reset, singleStep, speedBar);
+    }
 
     private void setUpTopButtons() {
         HBox topButtons = new HBox(SPACING);
@@ -305,6 +328,10 @@ public class Visualizer extends Application implements FrontEndExternal{
         return button;
     }
 
+    private void resetAnimation() {
+        myTurtleView.clearPaths();
+    }
+
 
     private void setUpMenus(){
         MenuBar menuBar = new MenuBar();
@@ -314,20 +341,30 @@ public class Visualizer extends Application implements FrontEndExternal{
             menuBar.getMenus().add(menu);
             for(String entry : MENU_OPTIONS[i]){
                 MenuItem menuItem = new MenuItem(entry);
-                switch (i) {
-                    case 0:
-                        menuItem.setOnAction(event -> myTurtleView.setPenColor(COLOR_MAP.get(entry)));
-                        break;
-                    case 1:
-                        menuItem.setOnAction(event -> setLanguage(entry));
-                        break;
-                    case 2:
-                        menuItem.setOnAction(event -> myTurtleView.setBackGroundColor(COLOR_MAP.get(entry)));
-                        break;
+                String methodName = myResources.getString(entry);
+                try {
+                    Method method = this.getClass().getDeclaredMethod(methodName);
+                    menuItem.setOnAction(event -> {
+                        try {
+                            method.invoke(this.getClass(), entry);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            showError("");
+                        }
+                    });
+                } catch (NoSuchMethodException e) {
+                    showError("");
                 }
                 menu.getItems().add(menuItem);
             }
         }
+    }
+
+    private void setPenColor(String colorName){
+        myTurtleView.setPenColor(COLOR_MAP.get(colorName));
+    }
+
+    private void setBackGroundColor(String colorName){
+        myTurtleView.setBackGroundColor(COLOR_MAP.get(colorName));
     }
 
     private void setLanguage(String language){
@@ -366,20 +403,21 @@ public class Visualizer extends Application implements FrontEndExternal{
         myCenterVBox.getChildren().addAll(runButton,clearButton);
     }
 
-    private void step(){
-        if(myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX()-myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||
-                Math.abs(myCurrentTurtlePosition.getY()-myDesiredTurtlePosition.getY()) >= SIGNIFICANT_DIFFERENCE)){
-            myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX()+xIncrement, myCurrentTurtlePosition.getY()+yIncrement);
-            myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY());
-            if(myStartPos != null){
-                myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
-                myStartPos = myCurrentTurtlePosition;
-            }
-        }
-        else if(!isReady){
-            isReady = true;
-            if(resultQueue.size() > 0){
-                processResult(null);
+    private void step(boolean overridePause){
+        if(!paused || overridePause) {
+            if (myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX() - myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||
+                    Math.abs(myCurrentTurtlePosition.getY() - myDesiredTurtlePosition.getY()) >= SIGNIFICANT_DIFFERENCE)) {
+                myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX() + xIncrement, myCurrentTurtlePosition.getY() + yIncrement);
+                myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY());
+                if (myStartPos != null) {
+                    myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
+                    myStartPos = myCurrentTurtlePosition;
+                }
+            } else if (!isReady) {
+                isReady = true;
+                if (resultQueue.size() > 0) {
+                    processResult(null);
+                }
             }
         }
     }
