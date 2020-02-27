@@ -2,11 +2,13 @@ package slogo.FrontEnd;
 
 import java.io.File;
 
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -67,7 +69,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     private static final double BOTTOM_INSET = 0.15;
     private static final double TOP_INSET = 0.1;
     private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
-    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass"},
+    private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass", "Black"},
             {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
             {"White", "Duke Blue", "Gray", "Red", "Azure", "LemonChiffon"}};
     private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
@@ -79,6 +81,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         put("Duke Blue", Color.ROYALBLUE);
         put("Billion Dollar Grass", Color.LAWNGREEN);
         put("Dark Salmon", Color.DARKSALMON);
+        put("Black", Color.BLACK);
     }};
     private static final Map<String, String> HELP_CATEGORIES = new HashMap<>(){{
         put("Basic Syntax", "Basic_Syntax");
@@ -132,6 +135,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         myStage = primaryStage;
         Scene display = setUpDisplay();
         myStage.setScene(display);
+        myStage.setTitle(myResources.getString("AppTitle"));
         myStage.show();
     }
 
@@ -199,7 +203,7 @@ public class Visualizer extends Application implements FrontEndExternal{
                                 double variableValue, String udcName, String udcText, boolean clearScreen,
                                 boolean isPenUp, boolean turtleVisibility, String errorMessage) {
         myTurtleView.setTurtleHeading(turtleRotate);
-        myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
+        //myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
         myDesiredTurtlePosition = turtlePos;
         xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
         yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
@@ -282,21 +286,27 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     private void setUpRightPane() {
         setUpTopButtons();
-        myHistory = new ClearableEntriesBox(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("UDCLabel"));
-        myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
+        myHistory = new ClearableEntriesBox(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
+        myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("UDCLabel"));
         myVariables = new ClearableEntriesBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
         myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
     }
 
+    private void endPause(){
+      paused = false;
+    }
+    private void setPause(){
+      paused = true;
+    }
+
+    private void singleStep(){
+      step(true);
+    }
     private void setUpTopCenterButtons() {
-        Button start = makeButton("Start", TURTLE_BUTTON_SHAPE);
-        start.setOnAction(event -> paused = false);
-        Button pause = makeButton("Pause", TURTLE_BUTTON_SHAPE);
-        pause.setOnAction(event -> paused=true);
-        Button reset = makeButton("Reset", TURTLE_BUTTON_SHAPE);
-        reset.setOnAction(event -> resetAnimation());
-        Button singleStep = makeButton("Step", TURTLE_BUTTON_SHAPE);
-        singleStep.setOnAction(event -> step(true));
+        Button start = makeButton("endPause", TURTLE_BUTTON_SHAPE, this.getClass());
+        Button pause = makeButton("setPause", TURTLE_BUTTON_SHAPE,this.getClass());
+        Button reset = makeButton("resetAnimation", TURTLE_BUTTON_SHAPE, this.getClass());
+        Button singleStep = makeButton("singleStep", TURTLE_BUTTON_SHAPE,this.getClass());
         Slider speedSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
         speedSlider.valueProperty().addListener((ov, old_val, new_val) -> animation.setRate(speedSlider.getValue()));
         speedSlider.setShowTickMarks(true);
@@ -306,20 +316,35 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     private void setUpTopButtons() {
         HBox topButtons = new HBox(SPACING);
-        Button myHelpButton = makeButton(myResources.getString("HelpButton"), HELP_BUTTON_SHAPE);
+        Button myHelpButton = makeButton("displayHelp", HELP_BUTTON_SHAPE, this.getClass());
         myHelpButton.setOnAction(event -> displayHelp());
-        Button mySetTurtleImageButton = makeButton(myResources.getString("SetTurtle"), SET_TURTLE_IMAGE_BUTTON_SHAPE);
+        Button mySetTurtleImageButton = makeButton("setTurtleImage", SET_TURTLE_IMAGE_BUTTON_SHAPE, this.getClass());
         mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
         topButtons.getChildren().add(myHelpButton);
         topButtons.getChildren().add(mySetTurtleImageButton);
         myRightVBox.getChildren().add(topButtons);
     }
 
-    static Button makeButton(String text, Rectangle shape){
-        Button button = new Button(text);
+    protected static Button makeButton(String text, Rectangle shape, Class<?> clazz){
+      Method method = null;
+      try {
+        method = clazz.getDeclaredMethod(text);
+      }
+      catch (NoSuchMethodException e) {
+        showError(e.getMessage());
+      }
+        Button button = new Button(myResources.getString(text));
         button.setLayoutY(shape.getY());
         button.setLayoutX(shape.getX());
         button.setMinSize(shape.getWidth(), shape.getHeight());
+      Method finalMethod = method;
+      button.setOnAction(event -> {
+          try {
+            finalMethod.invoke(clazz);
+          } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
+            showError(e.getMessage());
+          }
+      });
         return button;
     }
 
@@ -336,7 +361,7 @@ public class Visualizer extends Application implements FrontEndExternal{
             menuBar.getMenus().add(menu);
             for(String entry : MENU_OPTIONS[i]){
                 MenuItem menuItem = new MenuItem(entry);
-                String methodName = myResources.getString(entry);
+                String methodName = myResources.getString(MENU_NAMES[i]);
                 try {
                     Method method = this.getClass().getDeclaredMethod(methodName);
                     menuItem.setOnAction(event -> {
@@ -381,7 +406,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         }
     }
 
-  private void showError (String message) {
+  private static void showError(String message) {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(myResources.getString("IOError"));
     alert.setContentText(message);
@@ -389,9 +414,11 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setUpBottomButtons() {
-        Button runButton = makeButton(myResources.getString("RunButton"), RUN_BUTTON_SHAPE);
+        Button runButton = makeButton("runButton", RUN_BUTTON_SHAPE, this.getClass());
+        runButton.setTooltip(new Tooltip(myResources.getString("RunHover")));
         runButton.setOnAction(event -> runButtonEvent());
-        Button clearButton = makeButton(myResources.getString("ClearButton"), CLEAR_COMMAND_BOX_SHAPE);
+        Button clearButton = makeButton("clearButton", CLEAR_COMMAND_BOX_SHAPE, this.getClass());
+        clearButton.setTooltip(new Tooltip(myResources.getString("ClearHover")));
         clearButton.setOnAction(event -> myCommandBox.clearContents());
         myCenterVBox.getChildren().addAll(runButton,clearButton);
     }

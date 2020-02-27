@@ -4,6 +4,7 @@ import java.util.ResourceBundle;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
@@ -40,7 +41,8 @@ public class ClearableEntriesBox extends HBox {
         //scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-        Button clearButton = Visualizer.makeButton(myResources.getString("ClearButton"), clearButtonShape);
+        Button clearButton = Visualizer.makeButton("clearEntryBox", clearButtonShape, this.getClass());
+        clearButton.setTooltip(new Tooltip(myResources.getString("HoverText")));
         clearButton.setOnAction(event -> clearEntryBox());
         this.setSpacing(SPACING);
         this.getChildren().addAll(scrollPane, clearButton);

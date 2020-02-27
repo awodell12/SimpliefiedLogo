@@ -43,7 +43,8 @@ public class GoHomeCommand implements Command {
                 false,
                 backEnd.getTurtles().get(0).getPenUp(),
                 backEnd.getTurtles().get(0).getVisible(),
-                true
+                true,
+                ""
         );
         return List.of(clearResult);
     }

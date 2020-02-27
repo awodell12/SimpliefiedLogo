@@ -26,7 +26,7 @@ public class CommandResult {
 
   public CommandResult(double retVal, int tokensParsed, int turtleID, double heading, List<Double> pos, List<Double> pathStart, String pathColor,
                        String variableName, double variableVal, String udcName, String udcText,
-                       boolean clearScreen, boolean penUp, boolean turtleVisible, boolean turtleReset) {
+                       boolean clearScreen, boolean penUp, boolean turtleVisible, boolean turtleReset, String errorMessage) {
     returnVal = retVal;
     myTokensParsed = tokensParsed;
     myErrorMessage = "";
@@ -43,6 +43,7 @@ public class CommandResult {
     myTurtleReset = turtleReset;
     myPathStart = pathStart;
     myPathColor = pathColor;
+    myErrorMessage = errorMessage;
   }
 
   public CommandResult(double retVal, int tokensParsed){
