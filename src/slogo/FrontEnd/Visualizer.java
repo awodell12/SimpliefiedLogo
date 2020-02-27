@@ -290,20 +290,20 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     private void setUpTopButtons() {
         HBox topButtons = new HBox(SPACING);
-        Button myHelpButton = makeButton("helpButton", HELP_BUTTON_SHAPE);
+        Button myHelpButton = makeButton("helpButton", HELP_BUTTON_SHAPE, this.getClass());
         myHelpButton.setOnAction(event -> displayHelp());
-        Button mySetTurtleImageButton = makeButton("setTurtle", SET_TURTLE_IMAGE_BUTTON_SHAPE);
+        Button mySetTurtleImageButton = makeButton("setTurtle", SET_TURTLE_IMAGE_BUTTON_SHAPE, this.getClass());
         mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
         topButtons.getChildren().add(myHelpButton);
         topButtons.getChildren().add(mySetTurtleImageButton);
         myRightVBox.getChildren().add(topButtons);
     }
 
-    protected Button makeButton(String text, Rectangle shape){
+    protected static Button makeButton(String text, Rectangle shape, Class<?> clazz){
       String methodName = myResources.getString(text);
       Method method = null;
       try {
-        method = this.getClass().getDeclaredMethod(methodName);
+        method = clazz.getDeclaredMethod(methodName);
       }
       catch (NoSuchMethodException e) {
         showError(e.getMessage());
@@ -315,7 +315,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       Method finalMethod = method;
       button.setOnAction(event -> {
           try {
-            finalMethod.invoke(this.getClass());
+            finalMethod.invoke(clazz);
           } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
             showError(e.getMessage());
           }
@@ -367,7 +367,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         }
     }
 
-  private void showError (String message) {
+  private static void showError(String message) {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(myResources.getString("IOError"));
     alert.setContentText(message);
@@ -375,10 +375,10 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setUpBottomButtons() {
-        Button runButton = makeButton("runButton", RUN_BUTTON_SHAPE);
+        Button runButton = makeButton("runButton", RUN_BUTTON_SHAPE, this.getClass());
         runButton.setTooltip(new Tooltip(myResources.getString("RunHover")));
         runButton.setOnAction(event -> runButtonEvent());
-        Button clearButton = makeButton("clearButton", CLEAR_COMMAND_BOX_SHAPE);
+        Button clearButton = makeButton("clearButton", CLEAR_COMMAND_BOX_SHAPE, this.getClass());
         clearButton.setTooltip(new Tooltip(myResources.getString("ClearHover")));
         clearButton.setOnAction(event -> myCommandBox.clearContents());
         myCenterVBox.getChildren().addAll(runButton,clearButton);
