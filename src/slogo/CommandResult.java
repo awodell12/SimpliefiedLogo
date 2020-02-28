@@ -2,7 +2,6 @@ package slogo;
 
 import java.util.ArrayList;
 import java.util.List;
-import slogo.BackEnd.Path;
 
 
 public class CommandResult {
@@ -24,6 +23,7 @@ public class CommandResult {
   private List<Double> myPathStart;
   private String myPathColor;
   private boolean actualCommand;
+  private String myOriginalInstruction;
 
   public CommandResult(double retVal, int tokensParsed, int turtleID, double heading, List<Double> pos, List<Double> pathStart, String pathColor,
                        String variableName, double variableVal, String udcName, String udcText,
@@ -46,6 +46,7 @@ public class CommandResult {
     myPathColor = pathColor;
     myErrorMessage = errorMessage;
     actualCommand = true;
+    myOriginalInstruction = null;
   }
 
   public CommandResult(double retVal, int tokensParsed){
@@ -128,5 +129,13 @@ public class CommandResult {
 
   public boolean isActualCommand(){
     return actualCommand;
+  }
+
+  public void setMyOriginalInstruction(String instruction){
+    myOriginalInstruction = instruction;
+  }
+
+  public String getMyOriginalInstruction(){
+    return myOriginalInstruction;
   }
 }
