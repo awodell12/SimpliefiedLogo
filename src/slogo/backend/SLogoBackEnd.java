@@ -31,6 +31,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   // TODO: make UserCommand Map
   public static final String WHITESPACE = "\\s+";
   private List<Turtle> myTurtles;
+  private List<Turtle> myActiveTurtles;
+  private Map<Integer, List<Integer>> myPalette;
 
   public SLogoBackEnd() {
     myLanguage = new ArrayList<>();
