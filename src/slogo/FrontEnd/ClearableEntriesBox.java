@@ -1,6 +1,8 @@
 package slogo.FrontEnd;
 
 import java.util.ResourceBundle;
+
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -68,7 +70,7 @@ public class ClearableEntriesBox extends HBox {
      * @param entry the string to be added to the displayed entries
      * @param name the name of the entry that needs to be overwritten (or null)
      */
-    protected void addEntry(String entry, String name){
+    protected Node addEntry(String entry, String name){
         myTextFlow.getChildren().remove(myTextFlow.getChildren().size()-1);
         Text newText = new Text(entry + "\n");
         myTextFlow.getChildren().add(newText);
@@ -84,6 +86,6 @@ public class ClearableEntriesBox extends HBox {
             entryList.add(name);
             // note that we add name, not entry, because we want to store only the NAME not the full text entry
         }
-
+        return newText;
     }
 }

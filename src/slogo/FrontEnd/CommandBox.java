@@ -39,6 +39,10 @@ public class CommandBox extends HBox {
      */
     protected void clearContents(){inputArea.clear();}
 
+    protected void setText(String text){
+        inputArea.setText(text);
+    }
+
     private void removePrompt() {
         if(inputArea.getText().equals(prompt)){
             inputArea.clear();

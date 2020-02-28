@@ -16,6 +16,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -462,12 +463,14 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void addUserDefinedCommand(String name, String command){
-    myUserDefinedCommands.addEntry(name + ":\n" + command, name);
+    Node entry = myUserDefinedCommands.addEntry(name + ":\n" + command, name);
+    entry.setOnMouseClicked(event -> myCommandBox.setText(name));
   }
 
   private void runButton(){
     String instruction = myCommandBox.getContents();
-    myHistory.addEntry(instruction, null);
+    Node entry = myHistory.addEntry(instruction, null);
+    entry.setOnMouseClicked(event -> myCommandBox.setText(instruction));
     // the following is a hotfix so that clearable entry boxes don't have delayed updates
     myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
     myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
