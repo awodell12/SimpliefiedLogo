@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import slogo.BackEnd.BackEndExternal;
-import slogo.BackEnd.SLogoBackEnd;
-import slogo.BackEnd.SLogoLanguageChanger;
+import slogo.backend.BackEndExternal;
+import slogo.backend.SLogoBackEnd;
+import slogo.backend.SLogoLanguageChanger;
 
 public class BackEndOutsideTester {
 

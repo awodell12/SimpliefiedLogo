@@ -2,7 +2,6 @@ package slogo;
 
 import java.util.ArrayList;
 import java.util.List;
-import slogo.BackEnd.Path;
 
 
 public class CommandResult {
