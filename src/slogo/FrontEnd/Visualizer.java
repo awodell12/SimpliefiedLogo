@@ -484,6 +484,10 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void executeInstruction(String instruction) {
     myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
+    if(instruction != myCurrentlyHighlighted) {
+      myHistory.highlightNext();
+      myCurrentlyHighlighted = instruction;
+    }
     // the following is a hotfix so that clearable entry boxes don't have delayed updates
     myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
     myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
