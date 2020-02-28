@@ -65,6 +65,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double SPACING = 10;
   private static final double MARGIN = 25;
   private static final double BOTTOM_INSET = 0.15;
+  private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
   private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background", "PenUp"};
   private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass", "Black"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
@@ -211,7 +212,6 @@ public class Visualizer extends Application implements FrontEndExternal{
                                double variableValue, String udcName, String udcText, boolean clearScreen,
                                boolean isPenUp, boolean turtleVisibility, String errorMessage, String originalInstruction) {
     myTurtleView.setTurtleHeading(turtleRotate);
-    //myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
     myDesiredTurtlePosition = turtlePos;
     xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
     yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
@@ -219,7 +219,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     if(variableName != null) addVariable(variableName, variableValue);
     if(udcName != null) addUserDefinedCommand(udcName, udcText);
     if(clearScreen) myTurtleView.clearPaths();
-    //if(resetTurtle) myTurtleView.resetTurtle();
     myTurtleView.setTurtleVisibility(turtleVisibility);
     myTurtleView.setIsPenUp(isPenUp);
     displayErrorMessage(errorMessage);
@@ -281,10 +280,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     myCenterVBox.setAlignment(Pos.BOTTOM_CENTER);
     int lastIndex = myCenterVBox.getChildren().size();
     VBox.setMargin(myCenterVBox.getChildren().get(lastIndex-1), new Insets(0,0,HEIGHT * BOTTOM_INSET,0));
-    //myTopCenterVBox = new VBox(SPACING);
-    //VBox.setMargin(myCenterVBox.getChildren().get(myCenterVBox.getChildren().size()-1), new Insets(0,0, HEIGHT/2,0));
-    //myTopCenterVBox.setPrefHeight(HEIGHT/3);
-    //myTopCenterVBox.setAlignment(Pos.TOP_CENTER);
   }
 
   private void setUpLeftPane() {
@@ -315,10 +310,21 @@ public class Visualizer extends Application implements FrontEndExternal{
     step(true);
   }
   private void setUpTopCenterButtons() {
-    Button start = makeButton("endPause", TURTLE_BUTTON_SHAPE, this);
-    Button pause = makeButton("setPause", TURTLE_BUTTON_SHAPE, this);
-    Button reset = makeButton("resetAnimation", TURTLE_BUTTON_SHAPE, this);
-    Button singleStep = makeButton("singleStep", TURTLE_BUTTON_SHAPE,this);
+    String[] buttonNames = new String[]{"moveForward", "moveBackward", "rotateRight", "rotateLeft", "endPause",
+                          "setPause", "resetAnimation", "singleStep"};
+    List<Button> buttons = new ArrayList<>();
+    for(String buttonName : buttonNames){
+      buttons.add(makeButton(buttonName, TURTLE_BUTTON_SHAPE, this));
+    }
+    for(int i=0; i<NUM_TURTLE_MOVE_BUTTONS; i++){
+      HBox hbox = new HBox(SPACING);
+      TextArea valueSetter = new TextArea();
+      hbox.getChildren().addAll(buttons.get(i), valueSetter);
+      myCenterVBox.getChildren().add(hbox);
+    }
+    for(Button button : buttons.subList(NUM_TURTLE_MOVE_BUTTONS, buttons.size())){
+      myCenterVBox.getChildren().add(button);
+    }
     Slider speedSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
     speedSlider.valueProperty().addListener((ov, old_val, new_val) -> animation.setRate(speedSlider.getValue()));
     speedSlider.setShowTickMarks(true);
@@ -331,7 +337,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     penSlider.setShowTickLabels(true);
     Text penSliderLabel = new Text("Pen Thickness");
     penSliderLabel.setUnderline(true);
-    myCenterVBox.getChildren().addAll(start, pause, reset, singleStep, sliderLabel, speedSlider, penSliderLabel, penSlider);
+    myCenterVBox.getChildren().addAll(sliderLabel, speedSlider, penSliderLabel, penSlider);
   }
 
   private void setUpTopButtons() {
@@ -367,6 +373,23 @@ public class Visualizer extends Application implements FrontEndExternal{
       }
     });
     return button;
+  }
+
+  private void moveForward(){
+    executeInstruction("fd 50");
+    //TODO: make this work for different languages
+  }
+
+  private void moveBackward(){
+    executeInstruction("bk 50");
+  }
+
+  private void rotateRight(){
+    executeInstruction("rt 50");
+  }
+
+  private void rotateLeft(){
+    executeInstruction("lt 50");
   }
 
   private void resetAnimation() {
