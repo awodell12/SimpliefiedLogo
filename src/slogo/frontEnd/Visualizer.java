@@ -181,7 +181,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), -result.getMyPosition().get(1)),
             startPos, result.getMyVariableName(),
             result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
-            result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction());
+            result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction(),
+            result.getTurtleID());
   }
 
   /**
@@ -203,10 +204,26 @@ public class Visualizer extends Application implements FrontEndExternal{
    * @param turtleVisibility whether or not to show the turtle
    * @param originalInstruction the original instruction text that this command result corresponds to
    * @param errorMessage error message string, if any
+   * @param activeTurtles list of active turtle IDs
+   * @param turtleID which turtle this command is for
+   * @param paletteIndex if a new color is being created, what is its index
+   * @param penColorIndex color index to set the pen color to (for all turtles)
+   * @param backgroundColorIndex color index to set the background color to
+   * @param newColorRGB the rgb values for a new color that's being created
+   * @param imageIndex what image to set all turtles to
+   * @param penSize what thickness to set the pen to (for all turtles)
+   *                take in a turtle id as well. if it doesn't exist create it.
+   *                     store a list of active turtles, and a list of existing turtles
+   *                     clicking on a turtle executes a tell command, adding that turtle to active turtles and then doing tell for the whole list
+   *                     commands also return a list of active turtles
+   *                     color: index for palette, color for palette, index for pen, index for background
+   *                     image: index for the turtle's image
    */
   private void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
                                double variableValue, String udcName, String udcText, boolean clearScreen,
-                               boolean isPenUp, boolean turtleVisibility, String errorMessage, String originalInstruction) {
+                               boolean isPenUp, boolean turtleVisibility, String errorMessage, String originalInstruction,
+                               int turtleID, List<Integer> activeTurtles, int paletteIndex, int penColorIndex,
+                               int backgroundColorIndex, List<Integer> newColorRGB, int imageIndex, double penSize) {
     myTurtleView.setTurtleHeading(turtleRotate);
     myDesiredTurtlePosition = turtlePos;
     xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
