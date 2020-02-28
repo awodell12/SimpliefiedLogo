@@ -16,6 +16,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -49,14 +50,14 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Paint BACKGROUND = Color.WHITE;
   private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(650, 125);
   private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(300*ASPECT_RATIO,300);
-  private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(250, 125);
-  private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(250, 125);
-  private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(250, 125);
+  private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(225, 125);
+  private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(225, 125);
+  private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(225, 125);
   private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(60, 40);
-  private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(50, 50);
-  private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(75, 50);
-  private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(50, 50);
-  private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(50, 50);
+  private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(30, 30);
+  private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(60, 40);
+  private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(30, 30);
+  private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(75, 50);
   private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(75, 50);
   private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
@@ -322,7 +323,15 @@ public class Visualizer extends Application implements FrontEndExternal{
     speedSlider.valueProperty().addListener((ov, old_val, new_val) -> animation.setRate(speedSlider.getValue()));
     speedSlider.setShowTickMarks(true);
     speedSlider.setShowTickLabels(true);
-    myCenterVBox.getChildren().addAll(start, pause, reset, singleStep, speedSlider);
+    Text sliderLabel = new Text("Animation Speed");
+    sliderLabel.setUnderline(true);
+    Slider penSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
+    penSlider.valueProperty().addListener((ov, old_val, new_val) -> myTurtleView.setPenThickness(penSlider.getValue()));
+    penSlider.setShowTickMarks(true);
+    penSlider.setShowTickLabels(true);
+    Text penSliderLabel = new Text("Pen Thickness");
+    penSliderLabel.setUnderline(true);
+    myCenterVBox.getChildren().addAll(start, pause, reset, singleStep, sliderLabel, speedSlider, penSliderLabel, penSlider);
   }
 
   private void setUpTopButtons() {
@@ -396,7 +405,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setPenUp(String menuName){
-    executeInstruction(menuName + "");
+    executeInstruction(menuName + ""); // need the blank string so it registers as a new distinct string object
   }
 
   private void setBackGroundColor(String colorName){

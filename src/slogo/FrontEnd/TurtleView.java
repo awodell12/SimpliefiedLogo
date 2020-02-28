@@ -15,13 +15,15 @@ import javafx.scene.shape.*;
 public class TurtleView extends Group{
     private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
     private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+    private static final double TURTLE_SIZE = 50;
+    private static final double SIGNIFICANT_DIFFERENCE = 0.001;
+
     private final ImageView myTurtle;
     private Color myPenColor = Color.BLACK;
+    private double myPenThickness = 1;
     private final Rectangle myBackground;
     private boolean isPenUp = false;
     private boolean myTurtleVisibility = true;
-    private static final double TURTLE_SIZE = 50;
-    private static final double SIGNIFICANT_DIFFERENCE = 0.001;
     private final double myWidth;
     private final double myHeight;
     private final double xOffset;
@@ -102,6 +104,7 @@ public class TurtleView extends Group{
             path.getElements().add(moveTo);
             path.getElements().add(line);
             path.setStroke(myPenColor);
+            path.setStrokeWidth(myPenThickness);
             this.getChildren().add(path);
         }
     }
@@ -141,6 +144,10 @@ public class TurtleView extends Group{
      */
     protected void setIsPenUp(boolean up){
         isPenUp = up;
+    }
+
+    protected void setPenThickness(double value) {
+        myPenThickness = value;
     }
 
     /**
