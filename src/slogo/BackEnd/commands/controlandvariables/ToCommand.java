@@ -36,6 +36,9 @@ public class ToCommand implements Command {
       toVars.add(tokens[programCounter].substring(1));
     }
     programCounter += 2;
+    if (programCounter >= tokens.length) {
+      throw new ParseException("Expected instructions in brackets ([ ... ])");
+    }
     int numCommands = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
     String[] commandTokens = Arrays.copyOfRange(tokens,programCounter,programCounter + numCommands);
     backEnd.setUserCommand(cmdName,toVars,commandTokens);
