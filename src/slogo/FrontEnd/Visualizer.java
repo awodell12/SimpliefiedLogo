@@ -33,7 +33,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import slogo.CommandResult;
-
 import javax.imageio.ImageIO;
 
 
@@ -62,6 +61,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(75, 50);
   private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
+  private static final Rectangle TURTLE_MOVEMENT_LABEL_SHAPE = new Rectangle(20, 5);
   private static final double SPACING = 10;
   private static final double MARGIN = 25;
   private static final double BOTTOM_INSET = 0.15;
@@ -123,6 +123,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final Queue<String> correspondingOriginalInstructions = new LinkedList<>();
   private String myCurrentlyHighlighted = null;
   private Timeline animation;
+  private List<TextArea> turtleMovementButtons = new ArrayList<>();
 
 
   /**
@@ -319,6 +320,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(int i=0; i<NUM_TURTLE_MOVE_BUTTONS; i++){
       HBox hbox = new HBox(SPACING);
       TextArea valueSetter = new TextArea();
+      valueSetter.setMaxSize(TURTLE_MOVEMENT_LABEL_SHAPE.getWidth(), TURTLE_MOVEMENT_LABEL_SHAPE.getHeight());
+      turtleMovementButtons.add(valueSetter);
       hbox.getChildren().addAll(buttons.get(i), valueSetter);
       myCenterVBox.getChildren().add(hbox);
     }
@@ -376,20 +379,20 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void moveForward(){
-    executeInstruction("fd 50");
+    executeInstruction("fd " + turtleMovementButtons.get(0).getText());
     //TODO: make this work for different languages
   }
 
   private void moveBackward(){
-    executeInstruction("bk 50");
+    executeInstruction("bk " + turtleMovementButtons.get(1).getText());
   }
 
   private void rotateRight(){
-    executeInstruction("rt 50");
+    executeInstruction("rt " + turtleMovementButtons.get(2).getText());
   }
 
   private void rotateLeft(){
-    executeInstruction("lt 50");
+    executeInstruction("lt " + turtleMovementButtons.get(3).getText());
   }
 
   private void resetAnimation() {
