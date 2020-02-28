@@ -46,7 +46,7 @@ public class Controller extends Application{
             else {
                 ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModel.parseScript(input);
                 for (CommandResult result : resultList) {
-                    myVisualizer.processResult(result);
+                    myVisualizer.processResult(result, input);
                 }
             }
         };

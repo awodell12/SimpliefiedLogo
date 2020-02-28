@@ -29,6 +29,7 @@ public interface FrontEndExternal {
     /**
      * Takes in a command result for the visualizer to process (after all other queued command results finish)
      * @param result a commandresult from controller, OR null if this is called by the step function
+     * @param originalInstruction the original text that was entered in command box, corresponding to this command result
      */
-    public void processResult(CommandResult result);
+    public void processResult(CommandResult result, String originalInstruction);
 }

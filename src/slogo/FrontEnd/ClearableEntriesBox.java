@@ -7,7 +7,6 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -21,12 +20,12 @@ import java.util.List;
  */
 public class ClearableEntriesBox extends HBox {
 
-  private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
-  private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+    private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
+    private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
 
-    private final TextFlow myTextFlow;
-    private final Text descriptionText;
-    private final List<String> entryList;
+    protected final TextFlow myTextFlow;
+    protected final Text descriptionText;
+    protected final List<String> entryList;
 
     private static final double SPACING = 10;
 
@@ -50,6 +49,7 @@ public class ClearableEntriesBox extends HBox {
         descriptionText.setUnderline(true);
         descriptionText.setFill(Color.BLUE);
         myTextFlow.getChildren().add(descriptionText);
+        myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
         entryList = new ArrayList<>();
     }
 
@@ -59,6 +59,7 @@ public class ClearableEntriesBox extends HBox {
     protected void clearEntryBox(){
         myTextFlow.getChildren().clear();
         myTextFlow.getChildren().add(descriptionText);
+        myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
         entryList.clear();
     }
 
@@ -68,8 +69,10 @@ public class ClearableEntriesBox extends HBox {
      * @param name the name of the entry that needs to be overwritten (or null)
      */
     protected void addEntry(String entry, String name){
+        myTextFlow.getChildren().remove(myTextFlow.getChildren().size()-1);
         Text newText = new Text(entry + "\n");
         myTextFlow.getChildren().add(newText);
+        myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
         if(name != null){
             for(int i=0; i<entryList.size(); i++){
                 if(name.equals(entryList.get(i))){

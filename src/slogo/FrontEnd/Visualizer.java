@@ -101,7 +101,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double DEFAULT_SPEED = 1;
 
   private CommandBox myCommandBox;
-  private ClearableEntriesBox myHistory;
+  private History myHistory;
   private ClearableEntriesBox myUserDefinedCommands;
   private ClearableEntriesBox myVariables;
   private TurtleView myTurtleView;
@@ -119,6 +119,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   private boolean isReady = true;
   private boolean paused = false;
   private final Queue<CommandResult> resultQueue = new LinkedList<>();
+  private final Queue<String> correspondingOriginalInstructions = new LinkedList<>();
+  private String myCurrentlyHighlighted = null;
   private Timeline animation;
 
 
@@ -154,22 +156,27 @@ public class Visualizer extends Application implements FrontEndExternal{
   /**
    * Takes in a command result for the visualizer to process (after all other queued command results finish)
    * @param result a commandresult from controller, OR null if this is called by the step function
+   * @param originalInstruction the original instruction text that this command result corresponds to
    */
-  public void processResult(CommandResult result){
+  public void processResult(CommandResult result, String originalInstruction){
     if(!isReady){
-      if(result != null) resultQueue.add(result);
+      if(result != null) {
+        resultQueue.add(result);
+        correspondingOriginalInstructions.add(originalInstruction);
+      }
     }
     else{
       isReady = false;
       if(result == null){
         result = resultQueue.poll();
+        originalInstruction = correspondingOriginalInstructions.poll();
       }
       assert result != null; // intellij wants us to do this but it's not really necessary
-      dissectCommand(result);
+      dissectCommand(result, originalInstruction);
     }
   }
 
-  private void dissectCommand(CommandResult result) {
+  private void dissectCommand(CommandResult result, String originalInstruction) {
     Point2D startPos = null;
     if(result.getPathStart() != null){
       startPos = new Point2D(result.getPathStart().get(0), -result.getPathStart().get(1));
@@ -177,7 +184,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), -result.getMyPosition().get(1)),
             startPos, result.getMyVariableName(),
             result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
-            result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage());
+            result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), originalInstruction);
   }
 
   /**
@@ -189,19 +196,20 @@ public class Visualizer extends Application implements FrontEndExternal{
    * see user defined commands currently available
    * @param turtleRotate new angle to set turtle to
    * @param turtlePos new coordinates for turtle
+   * @param startPos start of path to draw
    * @param variableName string name for variable to be created/overwritten
    * @param variableValue value for new variable
-   * @param startPos start of path to draw
    * @param udcName name of the newly created user defined command
    * @param udcText the actual commands that entail the user defined command
    * @param clearScreen whether or not the turtle view should be cleared
    * @param isPenUp whether or not the pen is up
    * @param turtleVisibility whether or not to show the turtle
+   * @param originalInstruction the original instruction text that this command result corresponds to
    * @param errorMessage error message string, if any
    */
   private void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
                                double variableValue, String udcName, String udcText, boolean clearScreen,
-                               boolean isPenUp, boolean turtleVisibility, String errorMessage) {
+                               boolean isPenUp, boolean turtleVisibility, String errorMessage, String originalInstruction) {
     myTurtleView.setTurtleHeading(turtleRotate);
     //myTurtleView.setTurtlePosition(turtlePos.getX(), turtlePos.getY());
     myDesiredTurtlePosition = turtlePos;
@@ -215,6 +223,10 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.setTurtleVisibility(turtleVisibility);
     myTurtleView.setIsPenUp(isPenUp);
     displayErrorMessage(errorMessage);
+    if(originalInstruction != myCurrentlyHighlighted) {
+      myHistory.highlightNext();
+      myCurrentlyHighlighted = originalInstruction;
+    }
     // the following is a hotfix so that clearable entry boxes don't have delayed updates
     myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
     myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
@@ -286,7 +298,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setUpRightPane() {
     setUpTopButtons();
-    myHistory = new ClearableEntriesBox(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
+    myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
     myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("UDCLabel"));
     myVariables = new ClearableEntriesBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
     myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
@@ -435,7 +447,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       } else if (!isReady) {
         isReady = true;
         if (resultQueue.size() > 0) {
-          processResult(null);
+          processResult(null, null);
         }
       }
     }
@@ -455,8 +467,12 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void runButton(){
     String instruction = myCommandBox.getContents();
-    myInstructionQueue.add(instruction);
     myHistory.addEntry(instruction, null);
+    // the following is a hotfix so that clearable entry boxes don't have delayed updates
+    myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
+    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
+
+    myInstructionQueue.add(instruction);
   }
 
   private void clearButton(){
