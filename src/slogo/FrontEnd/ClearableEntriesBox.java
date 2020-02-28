@@ -16,6 +16,7 @@ import javafx.scene.text.TextFlow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This class is used to manage the display elements of the history, variables, and user defined commands
@@ -69,10 +70,12 @@ public class ClearableEntriesBox extends HBox {
      * Takes in the latest user entry and stores it so it can be displayed. Deletes old entry if necessary
      * @param entry the string to be added to the displayed entries
      * @param name the name of the entry that needs to be overwritten (or null)
+     * @param action the lambda defining what happens when the entry is clicked
      */
-    protected Node addEntry(String entry, String name){
+    protected void addEntry(String entry, String name, Consumer<String> action){
         myTextFlow.getChildren().remove(myTextFlow.getChildren().size()-1);
         Text newText = new Text(entry + "\n");
+        newText.setOnMouseClicked(event -> action.accept(entry));
         myTextFlow.getChildren().add(newText);
         myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
         if(name != null){
@@ -86,6 +89,5 @@ public class ClearableEntriesBox extends HBox {
             entryList.add(name);
             // note that we add name, not entry, because we want to store only the NAME not the full text entry
         }
-        return newText;
     }
 }

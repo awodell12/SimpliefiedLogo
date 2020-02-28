@@ -8,8 +8,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
-import java.util.List;
-
 /**
  * The TurtleView class encapsulated the view of the turtle and allows for the current state of the
  * Turtle and its taken paths to be displayed to the user.
@@ -96,7 +94,7 @@ public class TurtleView extends Group{
             double turtleY = boundY(turtlePos.getY()) + TURTLE_SIZE/2;
             double startX = boundX(startPos.getX())+TURTLE_SIZE/2;
             double startY = boundY(startPos.getY())+TURTLE_SIZE/2;
-            if(!almostEqual(turtleX-startX, turtlePos.getX()-startPos.getX()) || !almostEqual(turtleY-startY, turtlePos.getY()-startPos.getY())){
+            if(notAlmostEqual(turtleX - startX, turtlePos.getX() - startPos.getX()) || notAlmostEqual(turtleY - startY, turtlePos.getY() - startPos.getY())){
                 return; // don't draw the path if the turtle is wrapping around in this step
             }
             MoveTo moveTo = new MoveTo(turtleX , turtleY);
@@ -168,7 +166,7 @@ public class TurtleView extends Group{
         return y;
     }
 
-    private boolean almostEqual(double a, double b){
-        return Math.abs(a-b) <= SIGNIFICANT_DIFFERENCE;
+    private boolean notAlmostEqual(double a, double b){
+        return Math.abs(a - b) > SIGNIFICANT_DIFFERENCE;
     }
 }

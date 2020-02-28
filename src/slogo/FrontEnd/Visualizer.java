@@ -16,7 +16,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -39,10 +38,7 @@ import javax.imageio.ImageIO;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class Visualizer extends Application implements FrontEndExternal{
   private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
@@ -68,11 +64,11 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double SPACING = 10;
   private static final double MARGIN = 25;
   private static final double BOTTOM_INSET = 0.15;
-  private static final double TOP_INSET = 0.1;
-  private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background"};
+  private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background", "PenUp"};
   private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass", "Black"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
-          {"White", "Duke Blue", "Gray", "Red", "Azure", "LemonChiffon"}};
+          {"White", "Duke Blue", "Gray", "Red", "Azure", "LemonChiffon"},
+          {"penUp", "penDown"}};
   private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
     put("Red", Color.RED);
     put("White", Color.WHITE);
@@ -92,6 +88,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("Boolean Operations", "Booleans");
     put("Variables, Control Structures, and User-Defined Commands", "Variables_Control_UDC");
   }};
+  //private static final Map<String, String> PENUP_MAPPING = new HashMap<>(){{
+  //        put("Up (not drawing)", "pu"); put("Down (drawing)", false); }};
 
   private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
   private static final double FPS = 24;
@@ -233,7 +231,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
   }
 
-  private Scene setUpDisplay() throws IOException{
+  private Scene setUpDisplay() {
     Group myRoot = new Group();
     HBox myLayout = new HBox(SPACING * 2);
 
@@ -397,12 +395,16 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.setPenColor(COLOR_MAP.get(colorName));
   }
 
+  private void setPenUp(String menuName){
+    executeInstruction(menuName + "");
+  }
+
   private void setBackGroundColor(String colorName){
     myTurtleView.setBackGroundColor(COLOR_MAP.get(colorName));
   }
 
   private void setLanguage(String language){
-    myInstructionQueue.add("language: " + language);
+    executeInstruction("language: " + language);
   }
 
   private void setTurtleImage() {
@@ -459,22 +461,23 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void addVariable(String name, double value){
-    myVariables.addEntry(name + " : " + value, name);
+    myVariables.addEntry(name + " : " + value, name, e->{});
   }
 
   private void addUserDefinedCommand(String name, String command){
-    Node entry = myUserDefinedCommands.addEntry(name + ":\n" + command, name);
-    entry.setOnMouseClicked(event -> myCommandBox.setText(name));
+    myUserDefinedCommands.addEntry(name + ":\n" + command, name, e->myCommandBox.setText(name));
   }
 
   private void runButton(){
     String instruction = myCommandBox.getContents();
-    Node entry = myHistory.addEntry(instruction, null);
-    entry.setOnMouseClicked(event -> myCommandBox.setText(instruction));
+    executeInstruction(instruction);
+  }
+
+  private void executeInstruction(String instruction) {
+    myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
     // the following is a hotfix so that clearable entry boxes don't have delayed updates
     myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
     myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
-
     myInstructionQueue.add(instruction);
   }
 
