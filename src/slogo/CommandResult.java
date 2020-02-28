@@ -23,6 +23,7 @@ public class CommandResult {
   private boolean myTurtleReset;
   private List<Double> myPathStart;
   private String myPathColor;
+  private boolean actualCommand;
 
   public CommandResult(double retVal, int tokensParsed, int turtleID, double heading, List<Double> pos, List<Double> pathStart, String pathColor,
                        String variableName, double variableVal, String udcName, String udcText,
@@ -44,6 +45,7 @@ public class CommandResult {
     myPathStart = pathStart;
     myPathColor = pathColor;
     myErrorMessage = errorMessage;
+    actualCommand = true;
   }
 
   public CommandResult(double retVal, int tokensParsed){
@@ -61,6 +63,7 @@ public class CommandResult {
     myPenUp = false;
     myTurtleVisible = true;
     myTurtleReset = false;
+    actualCommand = false;
   }
 
 
@@ -121,5 +124,9 @@ public class CommandResult {
 
   public boolean isMyTurtleReset() {
     return myTurtleReset;
+  }
+
+  public boolean isActualCommand(){
+    return actualCommand;
   }
 }

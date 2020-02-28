@@ -8,8 +8,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
-import java.util.List;
-
 /**
  * The TurtleView class encapsulated the view of the turtle and allows for the current state of the
  * Turtle and its taken paths to be displayed to the user.
@@ -17,13 +15,15 @@ import java.util.List;
 public class TurtleView extends Group{
     private static final String RESOURCE_LOCATION = "slogo/FrontEnd/Resources.config";
     private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+    private static final double TURTLE_SIZE = 50;
+    private static final double SIGNIFICANT_DIFFERENCE = 0.001;
+
     private final ImageView myTurtle;
     private Color myPenColor = Color.BLACK;
+    private double myPenThickness = 1;
     private final Rectangle myBackground;
     private boolean isPenUp = false;
     private boolean myTurtleVisibility = true;
-    private static final double TURTLE_SIZE = 50;
-    private static final double SIGNIFICANT_DIFFERENCE = 0.001;
     private final double myWidth;
     private final double myHeight;
     private final double xOffset;
@@ -96,7 +96,7 @@ public class TurtleView extends Group{
             double turtleY = boundY(turtlePos.getY()) + TURTLE_SIZE/2;
             double startX = boundX(startPos.getX())+TURTLE_SIZE/2;
             double startY = boundY(startPos.getY())+TURTLE_SIZE/2;
-            if(!almostEqual(turtleX-startX, turtlePos.getX()-startPos.getX()) || !almostEqual(turtleY-startY, turtlePos.getY()-startPos.getY())){
+            if(notAlmostEqual(turtleX - startX, turtlePos.getX() - startPos.getX()) || notAlmostEqual(turtleY - startY, turtlePos.getY() - startPos.getY())){
                 return; // don't draw the path if the turtle is wrapping around in this step
             }
             MoveTo moveTo = new MoveTo(turtleX , turtleY);
@@ -104,6 +104,7 @@ public class TurtleView extends Group{
             path.getElements().add(moveTo);
             path.getElements().add(line);
             path.setStroke(myPenColor);
+            path.setStrokeWidth(myPenThickness);
             this.getChildren().add(path);
         }
     }
@@ -145,6 +146,10 @@ public class TurtleView extends Group{
         isPenUp = up;
     }
 
+    protected void setPenThickness(double value) {
+        myPenThickness = value;
+    }
+
     /**
      * moves the turtle back to home position
      */
@@ -168,7 +173,7 @@ public class TurtleView extends Group{
         return y;
     }
 
-    private boolean almostEqual(double a, double b){
-        return Math.abs(a-b) <= SIGNIFICANT_DIFFERENCE;
+    private boolean notAlmostEqual(double a, double b){
+        return Math.abs(a - b) > SIGNIFICANT_DIFFERENCE;
     }
 }
