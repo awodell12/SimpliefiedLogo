@@ -4,6 +4,7 @@ import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
+import slogo.backend.CommandResultBuilder;
 
 public class GoHomeCommand implements Command {
 
@@ -26,27 +27,30 @@ public class GoHomeCommand implements Command {
         double retVal = backEnd.getTurtles().get(0).setPos(0, 0);
         System.out.println("Went home \n " +
                 "Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-
-        CommandResult clearResult = new CommandResult(
-                retVal,
-                0,
-                0,
-                backEnd.getTurtles().get(0).getHeading(),
-                List.of(backEnd.getTurtles().get(0).getX(),
-                        backEnd.getTurtles().get(0).getY()),
-                prevPos,
-                "000000",
-                null,
-                0,
-                null,
-                null,
-                false,
-                backEnd.getTurtles().get(0).getPenUp(),
-                backEnd.getTurtles().get(0).getVisible(),
-                true,
-                ""
-        );
-        return List.of(clearResult);
+        CommandResultBuilder builder = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(),
+            List.of(backEnd.getTurtles().get(0).getX(),
+                backEnd.getTurtles().get(0).getY()));
+        return List.of(builder.buildCommandResult());
+//        CommandResult clearResult = new CommandResult(
+//                retVal,
+//                0,
+//                0,
+//                backEnd.getTurtles().get(0).getHeading(),
+//                List.of(backEnd.getTurtles().get(0).getX(),
+//                        backEnd.getTurtles().get(0).getY()),
+//                prevPos,
+//                "000000",
+//                null,
+//                0,
+//                null,
+//                null,
+//                false,
+//                backEnd.getTurtles().get(0).getPenUp(),
+//                backEnd.getTurtles().get(0).getVisible(),
+//                true,
+//                ""
+//        );
+//        return List.of(clearResult);
     }
 
     @Override

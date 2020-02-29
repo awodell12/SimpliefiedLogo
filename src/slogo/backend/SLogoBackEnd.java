@@ -34,7 +34,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
 
-
   public SLogoBackEnd() {
     myLanguage = new ArrayList<>();
     myVariables = new HashMap<>();
@@ -323,25 +322,13 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, String pathColor) {
-    return new CommandResult(
-        retVal,
-        tokensParsed,
-        0,
-        myTurtles.get(0).getHeading(),
-        List.of(myTurtles.get(0).getX(),
-            myTurtles.get(0).getY()),
-        pathStart,
-        pathColor,
-        null,
-        0,
-        null,
-        null,
-        false,
-        myTurtles.get(0).getPenUp(),
-        myTurtles.get(0).getVisible(),
-        false,
-        ""
-    );
+    CommandResultBuilder builder = new CommandResultBuilder(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+    builder.retVal(retVal);
+    builder.tokensParsed(tokensParsed);
+    builder.setPathStart(pathStart);
+    //TODO: MAKE THIS WORK WITH COLOR INDEX
+    builder.setPathColor(0);
+    return builder.buildCommandResult();
   }
 
   public CommandResult makeCommandResult(double retVal, int tokensParsed, String varName,
@@ -363,46 +350,31 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return builder.buildCommandResult();
   }
   public CommandResult makeErrorCommandResult(double retVal, int tokensParsed, String errorMessage) {
-    CommandResult ret = new CommandResult(
-        retVal,
-        tokensParsed,
-        0,
-        myTurtles.get(0).getHeading(),
-        List.of(myTurtles.get(0).getX(),
-            myTurtles.get(0).getY()),
-        null,
-        null,
-        null,
-        0,
-        null,
-        null,
-        false,
-        myTurtles.get(0).getPenUp(),
-        myTurtles.get(0).getVisible(),
-        false,
-        errorMessage
-    );
-    return ret;
+    CommandResultBuilder builder = new CommandResultBuilder(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+    builder.retVal(retVal);
+    builder.tokensParsed(tokensParsed);
+    builder.setErrorMessage(errorMessage);
+    return builder.buildCommandResult();
   }
   public CommandResult makeCommandResult(double retVal, int tokensParsed) {
-    return new CommandResult(
-        retVal,
-        tokensParsed,
-        0,
-        myTurtles.get(0).getHeading(),
-        List.of(myTurtles.get(0).getX(),
-            myTurtles.get(0).getY()),
-        null,
-        null,
-        null,
-        0,
-        null,
-        null,
-        false,
-        myTurtles.get(0).getPenUp(),
-        myTurtles.get(0).getVisible(),
-        false,
-        ""
-    );
+    CommandResultBuilder builder = new CommandResultBuilder(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+    builder.retVal(retVal);
+    builder.tokensParsed(tokensParsed);
+    return builder.buildCommandResult();
+  }
+
+  @Override
+  public void setActiveTurtles(List<Integer> turtleIDs) {
+
+  }
+
+  @Override
+  public void addPaletteColor(int index, List<Integer> rgbColor) {
+
+  }
+
+  @Override
+  public List<Turtle> getTurtles(List<Integer> ids) {
+    return null;
   }
 }
