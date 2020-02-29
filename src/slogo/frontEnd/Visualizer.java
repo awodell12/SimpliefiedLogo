@@ -535,7 +535,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void addVariable(String name, double value){
-    myVariables.addVariable(name, value, newValue->executeInstruction("make :"+name+" "+newValue));
+    myVariables.addEntry(name + " : " + value, name, newValue->executeInstruction("make :"+name+" "+newValue));
   }
 
   private void addUserDefinedCommand(String name, String command){
