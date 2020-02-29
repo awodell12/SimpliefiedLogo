@@ -24,6 +24,8 @@ public class TurtleView extends Group{
     private static final double HIGHLIGHTED_OPACITY = 1.0;
 
     private final Map<Integer, Turtle> myTurtles = new HashMap<>();
+    private Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
+    private List<Integer> existingTurtleIDs = new ArrayList<>();
     private Color myPenColor = Color.BLACK;
     private double myPenThickness = 1;
     private final Rectangle myBackground;
@@ -56,6 +58,22 @@ public class TurtleView extends Group{
         resetTurtle(id);
         myTurtle.setOnMouseClicked(event -> toggleActive(id, onClicked));
         this.getChildren().add(myTurtle);
+    }
+
+    /**
+     * get the list of actual turtle coordinates that have not been altered to fit the screen
+     * @return map of turtle ids to positions
+     */
+    protected Map<Integer, Point2D> getUnalteredTurtlePositions(){
+        return unalteredTurtlePositions;
+    }
+
+    /**
+     * give the visualizer a list of existing turtle ids
+     * @return list of ids
+     */
+    protected List<Integer> getExistingTurtleIDs(){
+        return existingTurtleIDs;
     }
 
     /**

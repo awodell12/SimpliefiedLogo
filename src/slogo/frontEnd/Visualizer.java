@@ -16,7 +16,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -127,8 +126,6 @@ public class Visualizer extends Application implements FrontEndExternal{
   private Timeline animation;
   private List<TextArea> turtleMovementButtons = new ArrayList<>();
   private int myCurrentTurtleID;
-  private List<Integer> existingTurtleIDs = new ArrayList<>();
-  private Map<Integer, Point2D> turtlePositions = new HashMap<>(); // TODO: put these in TurtleView to preserve design principles
   private Text myPenText;
   private TextFlow myTurtleInfo = new TextFlow();
 
@@ -235,13 +232,13 @@ public class Visualizer extends Application implements FrontEndExternal{
                                int turtleID, List<Integer> activeTurtles, int paletteIndex, int penColorIndex,
                                int backgroundColorIndex, List<Integer> newColorRGB, int imageIndex, double penSize) {
     myCurrentTurtleID = turtleID;
-    if(!existingTurtleIDs.contains(turtleID)){
+    if(!myTurtleView.getExistingTurtleIDs().contains(turtleID)){
       createTurtle(turtlePos, turtleID);
     }
     myTurtleView.activateTurtles(activeTurtles);
     myTurtleView.setTurtleHeading(turtleRotate, turtleID);
     myDesiredTurtlePosition = turtlePos;
-    myCurrentTurtlePosition = turtlePositions.get(turtleID);
+    myCurrentTurtlePosition = myTurtleView.getUnalteredTurtlePositions().get(turtleID);
     xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
     yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
     myStartPos = startPos;
@@ -261,12 +258,13 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
     myTurtleView.makeTurtle(turtleID, this::activateTurtle);
-    existingTurtleIDs.add(turtleID);
-    turtlePositions.put(turtleID, turtlePos);
+    myTurtleView.getExistingTurtleIDs().add(turtleID);
+    myTurtleView.getUnalteredTurtlePositions().put(turtleID, turtlePos);
     String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
     myTurtleInfo.getChildren().add(new Text("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0]
-            + "  Position: (" + (int)turtlePositions.get(myCurrentTurtleID).getX() + ","
-            + (int)turtlePositions.get(myCurrentTurtleID).getY() + ")  Heading: " + activityAndHeading[1] + "\n"));
+            + "  Position: (" + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getX() + ","
+            + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getY() + ")  Heading: "
+            + activityAndHeading[1] + "\n"));
   }
 
   private Scene setUpDisplay() {
@@ -540,7 +538,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       if (myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX() - myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||
               Math.abs(myCurrentTurtlePosition.getY() - myDesiredTurtlePosition.getY()) >= SIGNIFICANT_DIFFERENCE)) {
         myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX() + xIncrement, myCurrentTurtlePosition.getY() + yIncrement);
-        turtlePositions.put(myCurrentTurtleID, myCurrentTurtlePosition);
+        myTurtleView.getUnalteredTurtlePositions().put(myCurrentTurtleID, myCurrentTurtlePosition);
         myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY(), myCurrentTurtleID);
         if (myStartPos != null) {
           myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
@@ -549,7 +547,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         Text turtleInfo = (Text) myTurtleInfo.getChildren().get(myCurrentTurtleID);
         String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
         turtleInfo.setText("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0] + "  Position: ("
-                + (int)turtlePositions.get(myCurrentTurtleID).getX() + "," + (int)turtlePositions.get(myCurrentTurtleID).getY()
+                + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getX() + "," + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getY()
                 + ")  Heading: " + activityAndHeading[1] + "\n");
       } else if (!isReady) {
         isReady = true;
