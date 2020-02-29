@@ -34,6 +34,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import slogo.CommandResult;
+
 import javax.imageio.ImageIO;
 
 
@@ -63,6 +64,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
   private static final Rectangle TURTLE_MOVEMENT_LABEL_SHAPE = new Rectangle(20, 5);
+  private static final Rectangle TURTLE_INFO_SHAPE = new Rectangle(275 ,75);
   private static final double SPACING = 10;
   private static final double MARGIN = 25;
   private static final double BOTTOM_INSET = 0.15;
@@ -101,7 +103,6 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MIN_SPEED = 0.1;
   private static final double MAX_SPEED = 10;
   private static final double DEFAULT_SPEED = 1;
-  private static final int PEN_TEXT_VBOX_INDEX = 4;
 
   private CommandBox myCommandBox;
   private History myHistory;
@@ -127,7 +128,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private List<TextArea> turtleMovementButtons = new ArrayList<>();
   private int myCurrentTurtleID;
   private List<Integer> existingTurtleIDs = new ArrayList<>();
-  private Map<Integer, Point2D> turtlePositions = new HashMap<>();
+  private Map<Integer, Point2D> turtlePositions = new HashMap<>(); // TODO: put these in TurtleView to preserve design principles
   private Text myPenText;
   private TextFlow myTurtleInfo = new TextFlow();
 
@@ -265,7 +266,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
     myTurtleInfo.getChildren().add(new Text("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0]
             + "  Position: (" + (int)turtlePositions.get(myCurrentTurtleID).getX() + ","
-            + (int)turtlePositions.get(myCurrentTurtleID).getY() + ")  Heading: " + activityAndHeading[1]));
+            + (int)turtlePositions.get(myCurrentTurtleID).getY() + ")  Heading: " + activityAndHeading[1] + "\n"));
   }
 
   private Scene setUpDisplay() {
@@ -345,7 +346,12 @@ public class Visualizer extends Application implements FrontEndExternal{
     myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
     myPenText = new Text();
     setPenText();
-    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables, myPenText, myTurtleInfo);
+    myTurtleInfo.setMaxSize(TURTLE_INFO_SHAPE.getWidth(), TURTLE_INFO_SHAPE.getHeight());
+    ScrollPane turtleInfoPane = new ScrollPane();
+    turtleInfoPane.setContent(myTurtleInfo);
+    turtleInfoPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    turtleInfoPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables, myPenText, turtleInfoPane);
   }
 
   private void setPenText(){
@@ -393,7 +399,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       setPenText();
       myRightVBox.requestLayout(); // make sure everything is updated graphically
     });
-    penSlider.setShowTickMarks(true); //TODO: fix the tick marks so more than one shows up
+    penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
     Text penSliderLabel = new Text("Pen Thickness");
     penSliderLabel.setUnderline(true);
@@ -544,7 +550,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
         turtleInfo.setText("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0] + "  Position: ("
                 + (int)turtlePositions.get(myCurrentTurtleID).getX() + "," + (int)turtlePositions.get(myCurrentTurtleID).getY()
-                + ")  Heading: " + activityAndHeading[1]);
+                + ")  Heading: " + activityAndHeading[1] + "\n");
       } else if (!isReady) {
         isReady = true;
         if (resultQueue.size() > 0) {

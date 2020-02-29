@@ -188,7 +188,8 @@ public class TurtleView extends Group{
     }
 
     protected String[] getPenState(){
-        return new String[]{Boolean.toString(isPenUp), myPenColor.toString(), Double.toString(myPenThickness)};
+        //TODO: replace 0 with myPenColor.toString() or pen color index
+        return new String[]{Boolean.toString(isPenUp), "0", Double.toString(myPenThickness)};
     }
 
     protected String[] getTurtleInfo(int turtleID) {

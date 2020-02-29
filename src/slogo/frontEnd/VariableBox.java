@@ -1,7 +1,6 @@
 package slogo.frontEnd;
 
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
@@ -9,14 +8,15 @@ import java.util.function.Consumer;
 
 public class VariableBox extends ClearableEntriesBox {
 
-  private static final double SPACING = 10;
+  private static final String LABEL_TEXT = "Click a\nvariable\nto set to:";
+  private static final Rectangle LABEL_SHAPE = new Rectangle(20, 20);
   private final TextArea valueText;
 
   public VariableBox(Rectangle shape, Rectangle clearButtonShape, String description) {
     super(shape, clearButtonShape, description);
-    Text label = new Text("Click a variable\n to set it to:");
+    Text label = new Text(LABEL_TEXT);
     valueText = new TextArea();
-    valueText.setMaxSize(20, 20);
+    valueText.setMaxSize(LABEL_SHAPE.getWidth(), LABEL_SHAPE.getHeight());
     rightSide.getChildren().addAll(label, valueText);
   }
 
