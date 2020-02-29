@@ -1,14 +1,15 @@
 package slogo.frontEnd;
 
 
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Turtle extends ImageView {
   private boolean isActive = true;
   private boolean visibility = true;
 
-  public Turtle(String imageLocation){
-    super(imageLocation);
+  public Turtle(Image image){
+    super(image);
   }
 
   protected boolean isActive(){

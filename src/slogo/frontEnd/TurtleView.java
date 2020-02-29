@@ -17,6 +17,8 @@ import javafx.scene.shape.*;
 public class TurtleView extends Group{
     private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
     private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+    private static final Image myActiveTurtleImage = new Image("slogo/frontEnd/Resources/activeturtle.png");
+    private static final Image myInactiveTurtleImage = new Image("slogo/frontEnd/Resources/turtle.png");
     private static final double TURTLE_SIZE = 50;
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;
     private static final double UNHIGHLIGHTED_OPACITY = 0.1;
@@ -46,13 +48,11 @@ public class TurtleView extends Group{
     }
 
     protected void makeTurtle(int id, Consumer<Boolean> onClicked){
-        String myTurtleImage = "slogo/frontEnd/Resources/turtle.png";
-        Turtle myTurtle = new Turtle(myTurtleImage);
+        Turtle myTurtle = new Turtle(myActiveTurtleImage);
         myTurtle.setPreserveRatio(true);
         myTurtle.setCache(true);
         myTurtle.setFitWidth(TURTLE_SIZE);
         myTurtle.setFitHeight(TURTLE_SIZE);
-        myTurtle.setStyle("-fx-background-color: yellow");
         myTurtles.put(id, myTurtle);
         resetTurtle(id);
         myTurtle.setOnMouseClicked(event -> toggleActive(id, onClicked));
@@ -180,22 +180,22 @@ public class TurtleView extends Group{
     protected void activateTurtles(List<Integer> activeTurtles) {
         for(Turtle turtle : myTurtles.values()){
             turtle.setActive(false);
-            turtle.setStyle("-fx-border-color: white");
+            turtle.setImage(myInactiveTurtleImage);
         }
         for(int id : activeTurtles){
             myTurtles.get(id).setActive(true);
-            myTurtles.get(id).setStyle("-fx-border-color: yellow");
+            myTurtles.get(id).setImage(myActiveTurtleImage);
         }
     }
 
     private void toggleActive(int id, Consumer<Boolean> onClicked) {
         if(myTurtles.get(id).isActive()){
             myTurtles.get(id).setActive(false);
-            myTurtles.get(id).setStyle("-fx-border-color: white");
+            myTurtles.get(id).setImage(myInactiveTurtleImage); //TODO: maybe just use opacity
             onClicked.accept(false);
         }else{
             myTurtles.get(id).setActive(true);
-            myTurtles.get(id).setStyle("-fx-border-color: yellow");
+            myTurtles.get(id).setImage(myActiveTurtleImage);
             onClicked.accept(true);
         }
     }
