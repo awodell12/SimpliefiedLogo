@@ -1,5 +1,8 @@
 package slogo.backend.commands.turtlecommands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
@@ -33,8 +36,8 @@ public class ClearScreenCommand implements Command {
                 backEnd.getTurtles().get(0).getHeading(),
                 List.of(backEnd.getTurtles().get(0).getX(),
                         backEnd.getTurtles().get(0).getY()),
-                null,
-                null,
+                null, //TODO: change 0 values so that stuff doesn't get auto reset
+                0,
                 null,
                 0,
                 null,
@@ -43,7 +46,13 @@ public class ClearScreenCommand implements Command {
                 backEnd.getTurtles().get(0).getPenUp(),
                 backEnd.getTurtles().get(0).getVisible(),
                 false,
-            ""
+                0,
+                Arrays.asList(0, 0, 0),
+                1.0,
+                Collections.singletonList(0),
+                0,
+                0,
+                ""
         );
         return List.of(clearResult);
     }

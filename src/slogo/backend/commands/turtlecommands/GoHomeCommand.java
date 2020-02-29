@@ -1,5 +1,7 @@
 package slogo.backend.commands.turtlecommands;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
@@ -35,7 +37,7 @@ public class GoHomeCommand implements Command {
                 List.of(backEnd.getTurtles().get(0).getX(),
                         backEnd.getTurtles().get(0).getY()),
                 prevPos,
-                "000000",
+                0,
                 null,
                 0,
                 null,
@@ -44,6 +46,12 @@ public class GoHomeCommand implements Command {
                 backEnd.getTurtles().get(0).getPenUp(),
                 backEnd.getTurtles().get(0).getVisible(),
                 true,
+                0,
+                Arrays.asList(0, 0, 0),
+                1.0,
+                Collections.singletonList(0),
+                0,
+                0,
                 ""
         );
         return List.of(clearResult);

@@ -319,7 +319,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     myLanguage = interpretPatterns(language);
   }
 
-  public CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, String pathColor) {
+  public CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, int pathColor) {
     return new CommandResult(
         retVal,
         tokensParsed,
@@ -337,6 +337,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         myTurtles.get(0).getPenUp(),
         myTurtles.get(0).getVisible(),
         false,
+        0,
+        List.of(0,0,0),
+        0.0,
+        List.of(0),
+        0,
+        0, //TODO: change these to be not zeros so stuff doesn't get reset
         ""
     );
   }
@@ -360,7 +366,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return builder.buildCommandResult();
   }
   public CommandResult makeErrorCommandResult(double retVal, int tokensParsed, String errorMessage) {
-    CommandResult ret = new CommandResult(
+    return new CommandResult(
         retVal,
         tokensParsed,
         0,
@@ -368,7 +374,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         List.of(myTurtles.get(0).getX(),
             myTurtles.get(0).getY()),
         null,
-        null,
+        0,
         null,
         0,
         null,
@@ -377,9 +383,14 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         myTurtles.get(0).getPenUp(),
         myTurtles.get(0).getVisible(),
         false,
+        0,
+        List.of(0,0,0),
+        0.0,
+        List.of(0),
+        0,
+        0, //TODO: change these to be not zeros so stuff doesn't get reset
         errorMessage
     );
-    return ret;
   }
   public CommandResult makeCommandResult(double retVal, int tokensParsed) {
     return new CommandResult(
@@ -390,7 +401,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         List.of(myTurtles.get(0).getX(),
             myTurtles.get(0).getY()),
         null,
-        null,
+        0,
         null,
         0,
         null,
@@ -399,6 +410,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         myTurtles.get(0).getPenUp(),
         myTurtles.get(0).getVisible(),
         false,
+        0,
+        List.of(0,0,0),
+        0.0,
+        List.of(0),
+        0,
+        0, //TODO: change these to be not zeros so stuff doesn't get reset
         ""
     );
   }

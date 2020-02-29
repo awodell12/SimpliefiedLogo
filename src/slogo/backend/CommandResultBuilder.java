@@ -1,5 +1,7 @@
 package slogo.backend;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import slogo.CommandResult;
 
@@ -11,7 +13,7 @@ public class CommandResultBuilder {
   private double turtleHeading;
   private List<Double> turtlePos;
   private List<Double> startPos;
-  private String pathColor;
+  private int pathColor;
   private String varName;
   private double varValue;
   private String udcName;
@@ -21,6 +23,12 @@ public class CommandResultBuilder {
   private boolean turtleVis;
   private boolean turtleReset;
   private String errorMessage;
+  private int backgroundColor;
+  private int newPaletteIndex;
+  private double penSize;
+  private List<Integer> newPaletteColor;
+  private List<Integer> activeTurtles;
+  private int shapeIndex;
 
   public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition) {
     myRetVal = 0;
@@ -29,7 +37,7 @@ public class CommandResultBuilder {
     turtlePos = turtlePosition;
     turtleHeading = turtleFacing;
     startPos = null;
-    pathColor = null;
+    pathColor = 0;
     varName = null;
     varValue = 0;
     udcName = null;
@@ -39,6 +47,16 @@ public class CommandResultBuilder {
     turtleVis = true;
     turtleReset = false;
     errorMessage = "";
+    backgroundColor = 0; //TODO: change these so that stuff doesn't automatically get set to zero
+    newPaletteIndex = 0;
+    activeTurtles = new ArrayList<>();
+    activeTurtles.add(0);
+    penSize = 1.0;
+    newPaletteColor = new ArrayList<>();
+    newPaletteColor.add(0);
+    newPaletteColor.add(0);
+    newPaletteColor.add(0);
+    shapeIndex = 0;
   }
 
 
@@ -69,6 +87,7 @@ public class CommandResultBuilder {
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
         startPos, pathColor, varName, varValue, udcName, udcScript,
-        clear, penUp, turtleVis, turtleReset, errorMessage);
+        clear, penUp, turtleVis, turtleReset, backgroundColor, newPaletteColor, penSize, activeTurtles,
+            shapeIndex, newPaletteIndex, errorMessage);
   }
 }

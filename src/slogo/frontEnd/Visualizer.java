@@ -122,6 +122,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   private String myCurrentlyHighlighted = null;
   private Timeline animation;
   private List<TextArea> turtleMovementButtons = new ArrayList<>();
+  private int myCurrentTurtleID;
+  private List<Integer> existingTurtleIDs = new ArrayList<>();
+  private Map<Integer, Point2D> turtlePositions = new HashMap<>();
 
 
   /**
@@ -182,7 +185,8 @@ public class Visualizer extends Application implements FrontEndExternal{
             startPos, result.getMyVariableName(),
             result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
             result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction(),
-            result.getTurtleID());
+            result.getTurtleID(), result.getActiveTurtleIDs(), result.getPaletteIndex(), result.getPenColor(),
+            result.getBackgroundColor(), result.getNewPaletteColor(), result.getShapeIndex(), result.getPenSize());
   }
 
   /**
@@ -224,15 +228,21 @@ public class Visualizer extends Application implements FrontEndExternal{
                                boolean isPenUp, boolean turtleVisibility, String errorMessage, String originalInstruction,
                                int turtleID, List<Integer> activeTurtles, int paletteIndex, int penColorIndex,
                                int backgroundColorIndex, List<Integer> newColorRGB, int imageIndex, double penSize) {
-    myTurtleView.setTurtleHeading(turtleRotate);
+    myCurrentTurtleID = turtleID;
+    if(!existingTurtleIDs.contains(turtleID)){
+      createTurtle(turtlePos, turtleID);
+    }
+    myTurtleView.activateTurtles(activeTurtles);
+    myTurtleView.setTurtleHeading(turtleRotate, turtleID);
     myDesiredTurtlePosition = turtlePos;
+    myCurrentTurtlePosition = turtlePositions.get(turtleID);
     xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
     yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
     myStartPos = startPos;
     if(variableName != null) addVariable(variableName, variableValue);
     if(udcName != null) addUserDefinedCommand(udcName, udcText);
     if(clearScreen) myTurtleView.clearPaths();
-    myTurtleView.setTurtleVisibility(turtleVisibility);
+    myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
     displayErrorMessage(errorMessage);
     if(originalInstruction != myCurrentlyHighlighted) {
@@ -242,6 +252,12 @@ public class Visualizer extends Application implements FrontEndExternal{
     // the following is a hotfix so that clearable entry boxes don't have delayed updates
     myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
     myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
+  }
+
+  private void createTurtle(Point2D turtlePos, int turtleID) {
+    myTurtleView.makeTurtle(turtleID, this::activateTurtle);
+    existingTurtleIDs.add(turtleID);
+    turtlePositions.put(turtleID, turtlePos);
   }
 
   private Scene setUpDisplay() {
@@ -266,10 +282,10 @@ public class Visualizer extends Application implements FrontEndExternal{
       try {
         step(false);
       } /*catch (IOException ex) {
-                System.out.println("Caught IO Exception");
-            } */catch (Exception ex) {
+        System.out.println("Caught IO Exception");
+      } */catch (Exception ex) {
         System.out.println("Caught Exception");
-        //ex.printStackTrace();
+        ex.printStackTrace();
       }
     });
 
@@ -298,10 +314,20 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpLeftPane() {
     setUpMenus();
     myTurtleView = new TurtleView(TURTLE_VIEW_SHAPE.getWidth(), TURTLE_VIEW_SHAPE.getHeight());
+    createTurtle(new Point2D(0,0), 0);
     myErrorMessage = new Text(myResources.getString("DefaultErrorMessage"));
     myErrorMessage.setFill(Color.RED);
     myCommandBox = new CommandBox(COMMAND_BOX_SHAPE);
     myLeftVBox.getChildren().addAll(myTurtleView, myErrorMessage, myCommandBox);
+  }
+
+  private void activateTurtle(boolean dummy) {
+    StringBuilder instruction = new StringBuilder("tell [ ");
+    for(int id : myTurtleView.getActiveTurtles()){
+      instruction.append(id).append(" ");
+    }
+    instruction.append("]");
+    executeInstruction(instruction.toString());
   }
 
   private void setUpRightPane() {
@@ -489,7 +515,8 @@ public class Visualizer extends Application implements FrontEndExternal{
       if (myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX() - myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||
               Math.abs(myCurrentTurtlePosition.getY() - myDesiredTurtlePosition.getY()) >= SIGNIFICANT_DIFFERENCE)) {
         myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX() + xIncrement, myCurrentTurtlePosition.getY() + yIncrement);
-        myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY());
+        turtlePositions.put(myCurrentTurtleID, myCurrentTurtlePosition);
+        myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY(), myCurrentTurtleID);
         if (myStartPos != null) {
           myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
           myStartPos = myCurrentTurtlePosition;
@@ -522,7 +549,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void executeInstruction(String instruction) {
     myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
-    if(instruction != myCurrentlyHighlighted) {
+    if(instruction != myCurrentlyHighlighted) { // want to compare object references here
       myHistory.highlightNext();
       myCurrentlyHighlighted = instruction;
     }

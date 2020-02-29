@@ -84,7 +84,7 @@ public interface BackEndInternal {
 
   int distanceToEndBracket(String[] tokenList);
 
-  CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, String pathColor);
+  CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, int pathColor);
 
   CommandResult makeCommandResult(double retVal, int tokensParsed, String varName,
       double varValue);
