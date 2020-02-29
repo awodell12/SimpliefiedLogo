@@ -16,6 +16,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -28,6 +29,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -99,6 +101,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MIN_SPEED = 0.1;
   private static final double MAX_SPEED = 10;
   private static final double DEFAULT_SPEED = 1;
+  private static final int PEN_TEXT_VBOX_INDEX = 4;
 
   private CommandBox myCommandBox;
   private History myHistory;
@@ -125,6 +128,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   private int myCurrentTurtleID;
   private List<Integer> existingTurtleIDs = new ArrayList<>();
   private Map<Integer, Point2D> turtlePositions = new HashMap<>();
+  private Text myPenText;
+  private TextFlow myTurtleInfo = new TextFlow();
 
 
   /**
@@ -244,20 +249,23 @@ public class Visualizer extends Application implements FrontEndExternal{
     if(clearScreen) myTurtleView.clearPaths();
     myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
+    setPenText();
     displayErrorMessage(errorMessage);
     if(originalInstruction != myCurrentlyHighlighted) {
       myHistory.highlightNext();
       myCurrentlyHighlighted = originalInstruction;
     }
-    // the following is a hotfix so that clearable entry boxes don't have delayed updates
-    myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
-    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
+    myRightVBox.requestLayout(); // make sure everything is updated graphically
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
     myTurtleView.makeTurtle(turtleID, this::activateTurtle);
     existingTurtleIDs.add(turtleID);
     turtlePositions.put(turtleID, turtlePos);
+    String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
+    myTurtleInfo.getChildren().add(new Text("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0]
+            + "  Position: (" + (int)turtlePositions.get(myCurrentTurtleID).getX() + ","
+            + (int)turtlePositions.get(myCurrentTurtleID).getY() + ")  Heading: " + activityAndHeading[1]));
   }
 
   private Scene setUpDisplay() {
@@ -273,10 +281,10 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     myRightVBox = new VBox(SPACING);
     myRightVBox.setMaxSize(WIDTH/3, HEIGHT);
-    setUpRightPane();
 
     setUpLeftPane();
     setUpCenterPane();
+    setUpRightPane();
 
     KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
       try {
@@ -335,7 +343,14 @@ public class Visualizer extends Application implements FrontEndExternal{
     myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
     myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("UDCLabel"));
     myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
-    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
+    myPenText = new Text();
+    setPenText();
+    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables, myPenText, myTurtleInfo);
+  }
+
+  private void setPenText(){
+    String[] penState = myTurtleView.getPenState();
+    myPenText.setText("Pen Up: " + penState[0] + " Pen Color: " + penState[1] + " Pen Thickness: " + penState[2]);
   }
 
   private void endPause(){
@@ -373,8 +388,12 @@ public class Visualizer extends Application implements FrontEndExternal{
     Text sliderLabel = new Text("Animation Speed");
     sliderLabel.setUnderline(true);
     Slider penSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
-    penSlider.valueProperty().addListener((ov, old_val, new_val) -> myTurtleView.setPenThickness(penSlider.getValue()));
-    penSlider.setShowTickMarks(true);
+    penSlider.valueProperty().addListener((ov, old_val, new_val) -> {
+      myTurtleView.setPenThickness(penSlider.getValue());
+      setPenText();
+      myRightVBox.requestLayout(); // make sure everything is updated graphically
+    });
+    penSlider.setShowTickMarks(true); //TODO: fix the tick marks so more than one shows up
     penSlider.setShowTickLabels(true);
     Text penSliderLabel = new Text("Pen Thickness");
     penSliderLabel.setUnderline(true);
@@ -521,6 +540,11 @@ public class Visualizer extends Application implements FrontEndExternal{
           myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
           myStartPos = myCurrentTurtlePosition;
         }
+        Text turtleInfo = (Text) myTurtleInfo.getChildren().get(myCurrentTurtleID);
+        String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
+        turtleInfo.setText("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0] + "  Position: ("
+                + (int)turtlePositions.get(myCurrentTurtleID).getX() + "," + (int)turtlePositions.get(myCurrentTurtleID).getY()
+                + ")  Heading: " + activityAndHeading[1]);
       } else if (!isReady) {
         isReady = true;
         if (resultQueue.size() > 0) {
@@ -553,9 +577,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       myHistory.highlightNext();
       myCurrentlyHighlighted = instruction;
     }
-    // the following is a hotfix so that clearable entry boxes don't have delayed updates
-    myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
-    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
+    myRightVBox.requestLayout(); // make sure everything is updated graphically
     myInstructionQueue.add(instruction);
   }
 
