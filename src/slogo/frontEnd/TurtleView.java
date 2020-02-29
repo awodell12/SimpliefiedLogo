@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
@@ -17,7 +16,7 @@ import javafx.scene.shape.*;
 public class TurtleView extends Group{
     private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
     private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
-    private static final Image myActiveTurtleImage = new Image("slogo/frontEnd/Resources/activeturtle.png");
+    private static final Image myActiveTurtleImage = new Image("slogo/frontEnd/Resources/activeTurtle.png");
     private static final Image myInactiveTurtleImage = new Image("slogo/frontEnd/Resources/turtle.png");
     private static final double TURTLE_SIZE = 50;
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;

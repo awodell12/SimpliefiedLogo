@@ -71,11 +71,16 @@ public class ClearableEntriesBox extends HBox {
      * @param name the name of the entry that needs to be overwritten (or null)
      * @param action the lambda defining what happens when the entry is clicked
      */
-    protected void addEntry(String entry, String name, Consumer<String> action){
-        myTextFlow.getChildren().remove(myTextFlow.getChildren().size()-1);
+    protected void addEntry(String entry, String name, Consumer<String> action) {
+        myTextFlow.getChildren().remove(myTextFlow.getChildren().size() - 1);
         Text newText = new Text(entry + "\n");
         newText.setOnMouseClicked(event -> action.accept(entry));
         myTextFlow.getChildren().add(newText);
+        checkDuplicates(name);
+    }
+
+    // not part of the API
+    protected void checkDuplicates(String name){
         myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
         if(name != null){
             for(int i=0; i<entryList.size(); i++){

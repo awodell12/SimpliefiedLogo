@@ -103,7 +103,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private CommandBox myCommandBox;
   private History myHistory;
   private ClearableEntriesBox myUserDefinedCommands;
-  private ClearableEntriesBox myVariables;
+  private VariableBox myVariables;
   private TurtleView myTurtleView;
   private final ObservableList<String> myInstructionQueue;
   private Stage myStage;
@@ -334,7 +334,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     setUpTopButtons();
     myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
     myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("UDCLabel"));
-    myVariables = new ClearableEntriesBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
+    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
     myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
   }
 
@@ -535,7 +535,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void addVariable(String name, double value){
-    myVariables.addEntry(name + " : " + value, name, e->{});
+    myVariables.addVariable(name, value, newValue->executeInstruction("make :"+name+" "+newValue));
   }
 
   private void addUserDefinedCommand(String name, String command){
