@@ -147,6 +147,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private int myCurrentTurtleID;
   private Text myPenText;
   private TextFlow myTurtleInfo = new TextFlow();
+  private MenuBar myMenuBar;
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -573,34 +574,42 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setUpMenus(){
-    MenuBar menuBar = new MenuBar();
-    myLeftVBox.getChildren().add(menuBar);
+    myMenuBar = new MenuBar();
+    myLeftVBox.getChildren().add(myMenuBar);
     for(int i=0; i<MENU_NAMES.length; i++){
       Menu menu = new Menu(MENU_NAMES[i]);
-      menuBar.getMenus().add(menu);
+      myMenuBar.getMenus().add(menu);
       for(String entry : MENU_OPTIONS[i]){
-        MenuItem menuItem = new MenuItem(entry);
-        String methodName = myResources.getString(MENU_NAMES[i]);
-        String labelGetterName = myResources.getString(MENU_NAMES[i] + "Label");
-        // get another method name that will give us the label corresponding to this menu name
-        // the method should return a node object
-        try {
-          Method method = this.getClass().getDeclaredMethod(methodName, String.class);
-          Method labelGetter = this.getClass().getDeclaredMethod(labelGetterName, String.class);
-          menuItem.setGraphic((Node) labelGetter.invoke(this, entry));
-          menuItem.setOnAction(event -> {
-            try {
-              method.invoke(this, entry);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-              showError("Error invoking the method");
-            }
-          });
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-          showError("Method doesn't exist or error invoking the method");
-        }
-        menu.getItems().add(menuItem);
+        addMenuItem(i, entry, null);
       }
     }
+  }
+
+  private void addMenuItem(int menuNameIndex, String menuItemName, ImageView imageView){
+    Menu menu = myMenuBar.getMenus().get(menuNameIndex);
+    String menuName = MENU_NAMES[menuNameIndex];
+    MenuItem menuItem = new MenuItem(menuItemName);
+    String methodName = myResources.getString(menuName);
+    String labelGetterName = myResources.getString(menuName + "Label");
+    // get another method name that will give us the label corresponding to this menu name
+    // the method should return a node object
+    try {
+      Method method = this.getClass().getDeclaredMethod(methodName, String.class);
+      Method labelGetter = this.getClass().getDeclaredMethod(labelGetterName, String.class);
+      if(imageView == null) menuItem.setGraphic((Node) labelGetter.invoke(this, menuItemName));
+      else menuItem.setGraphic(imageView);
+      menuItem.setOnAction(event -> {
+        try {
+          method.invoke(this, menuItemName);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+          showError("Error invoking the method");
+        }
+      });
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      showError("Method doesn't exist or error invoking the method");
+    }
+    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(menuItemName));
+    menu.getItems().add(menuItem);
   }
 
   private void setTurtleImage() {
