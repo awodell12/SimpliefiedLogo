@@ -86,8 +86,7 @@ public interface BackEndInternal {
 
   CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, int pathColor);
 
-  CommandResult makeCommandResult(double retVal, int tokensParsed, String varName,
-      double varValue);
+  CommandResult makeCommandResult(double retVal, int tokensParsed, String varName, double varValue);
 
   CommandResult makeCommandResult(double retVal, int tokensParsed, String udcName, String udcScript);
 

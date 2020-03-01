@@ -322,31 +322,13 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, int pathColor) {
-    return new CommandResult(
-        retVal,
-        tokensParsed,
-        0,
-        myTurtles.get(0).getHeading(),
-        List.of(myTurtles.get(0).getX(),
-            myTurtles.get(0).getY()),
-        pathStart,
-        pathColor,
-        null,
-        0,
-        null,
-        null,
-        false,
-        myTurtles.get(0).getPenUp(),
-        myTurtles.get(0).getVisible(),
-        false,
-        0,
-        List.of(0,0,0),
-        0.0,
-        List.of(0),
-        0,
-        0, //TODO: change these to be not zeros so stuff doesn't get reset
-        ""
-    );
+    CommandResultBuilder builder = new CommandResultBuilder(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+    builder.retVal(retVal);
+    builder.tokensParsed(tokensParsed);
+    builder.setPathStart(pathStart);
+    //TODO: MAKE THIS WORK WITH COLOR INDEX
+    builder.setPathColor(0);
+    return builder.buildCommandResult();
   }
 
   public CommandResult makeCommandResult(double retVal, int tokensParsed, String varName,
