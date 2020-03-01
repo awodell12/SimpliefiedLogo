@@ -33,6 +33,7 @@ public class ClearScreenCommand implements Command {
         CommandResultBuilder clearResult = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),
             List.of(backEnd.getTurtles().get(0).getX(),
                 backEnd.getTurtles().get(0).getY()));
+        clearResult.setTurtleReset(true);
         return List.of(clearResult.buildCommandResult());
     }
 

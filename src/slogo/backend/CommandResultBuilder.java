@@ -119,6 +119,8 @@ public class CommandResultBuilder {
     actualCommand = isCommand;
   }
 
+  public void setTurtleReset(boolean isReset){ turtleReset = isReset; }
+
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
         startPos, pathColorIndex, varName, varValue, udcName, udcScript,
