@@ -29,6 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
@@ -71,6 +72,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double BOTTOM_INSET = 0.15;
   private static final double MENU_LABEL_SIZE = 20;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
+  private static final double SMALLER_FONT_SIZE = 12;
+  private static final double PEN_TEXT_WIDTH = 300;
   private static final List<String> MENU_NAMES = List.of("Color", "Language", "Background", "PenUp", "TurtleImage");
   private static final String[][] MENU_OPTIONS = new String[][]{{"0", "1", "2", "3", "4", "5", "6", "7", "8"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
@@ -286,13 +289,13 @@ public class Visualizer extends Application implements FrontEndExternal{
     if(clearScreen) myTurtleView.clearPaths();
     myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
-    setPenText();
     displayErrorMessage(errorMessage);
     if (newColorRGB != null){
       updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
     myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
-    myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)));
+    myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
+    setPenText();
     if(originalInstruction != myCurrentlyHighlighted) {
       myHistory.highlightNext();
       myCurrentlyHighlighted = originalInstruction;
@@ -391,6 +394,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("UDCLabel"));
     myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
     myPenText = new Text();
+    myPenText.setFont(new Font(SMALLER_FONT_SIZE));
+    myPenText.setWrappingWidth(PEN_TEXT_WIDTH);
     setPenText();
     myTurtleInfo.setMaxSize(TURTLE_INFO_SHAPE.getWidth(), TURTLE_INFO_SHAPE.getHeight());
     ScrollPane turtleInfoPane = new ScrollPane();
@@ -403,7 +408,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setPenText(){
     String[] penState = myTurtleView.getPenState();
     double thick = Double.parseDouble(penState[2]);
-    String penThick = String.format("%.3f", thick);
+    String penThick = String.format("%.2f", thick);
     myPenText.setText("Pen Up: " + penState[0] + " Pen Color: " + penState[1] + " Pen Thickness: " + penThick);
   }
 
@@ -510,7 +515,6 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void resetAnimation() {
     executeInstruction("clearscreen");
-    //myTurtleView.clearPaths(); // TODO: fix clear screen command
   }
 
   private void undoButton(){
@@ -537,7 +541,8 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setPenColor(String colorIndex){
     //executeInstruction("setpencolor " + colorIndex); // TODO: uncomment out when implemented in backend
-    myTurtleView.setPenColor(myColorPalette.get(colorIndex));
+    myTurtleView.setPenColor(myColorPalette.get(colorIndex), Integer.parseInt(colorIndex));
+    setPenText();
   }
 
   private void setPenUp(String menuName){
