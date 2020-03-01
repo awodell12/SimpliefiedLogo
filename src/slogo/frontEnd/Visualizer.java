@@ -16,6 +16,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -67,23 +68,24 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double SPACING = 10;
   private static final double MARGIN = 25;
   private static final double BOTTOM_INSET = 0.15;
+  private static final double MENU_LABEL_SIZE = 10;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
   private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background", "PenUp", "TurtleImage"};
-  private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass", "Black"},
+  private static final String[][] MENU_OPTIONS = new String[][]{{"0", "1", "2", "3", "4", "5", "6", "7", "8"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
-          {"White", "Duke Blue", "Gray", "Red", "Azure", "LemonChiffon"},
+          {"0", "1", "2", "3", "4", "5", "6", "7", "8"},
           {"penUp", "penDown"},
           {"0", "1", "2"}};
-  private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
-    put("Red", Color.RED);
-    put("White", Color.WHITE);
-    put("Gray", Color.GRAY);
-    put("Azure", Color.AZURE);
-    put("LemonChiffon", Color.LEMONCHIFFON);
-    put("Duke Blue", Color.ROYALBLUE);
-    put("Billion Dollar Grass", Color.LAWNGREEN);
-    put("Dark Salmon", Color.DARKSALMON);
-    put("Black", Color.BLACK);
+  private Map<String, Color> myColorPalette = new HashMap<>(){{
+    put("0", Color.RED);
+    put("1", Color.WHITE);
+    put("2", Color.GRAY);
+    put("3", Color.AZURE);
+    put("4", Color.LEMONCHIFFON);
+    put("5", Color.ROYALBLUE);
+    put("6", Color.LAWNGREEN);
+    put("7", Color.DARKSALMON);
+    put("8", Color.BLACK);
   }};
   private static final Map<String, String> HELP_CATEGORIES = new HashMap<>(){{
     put("Basic Syntax", "Basic_Syntax");
@@ -95,6 +97,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("Display Commands", "Display_Commands");
     put("Multiple Turtles", "Multiple_Turtle_Commands");
   }};
+  private static final List<String> imageList = List.of(myResources.getString("Duke"), myResources.getString("DefaultTurtle"),
+          myResources.getString("Duval"));
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
@@ -143,8 +147,6 @@ public class Visualizer extends Application implements FrontEndExternal{
   private int myCurrentTurtleID;
   private Text myPenText;
   private TextFlow myTurtleInfo = new TextFlow();
-  private List<String> imageList = List.of(myResources.getString("Duke"), myResources.getString("DefaultTurtle"),
-          myResources.getString("Duval"));
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -545,6 +547,22 @@ public class Visualizer extends Application implements FrontEndExternal{
     myCommandBox.clearContents();
   }
 
+  private Node getColorLabel(String index){
+    return new Rectangle(MENU_LABEL_SIZE, MENU_LABEL_SIZE, myColorPalette.get(index));
+  }
+
+  private Node getTurtleImageLabel(String index){
+    return new ImageView(imageList.get(Integer.parseInt(index)));
+  }
+
+  private Node getLanguageLabel(String irrelevant){
+    return null;
+  }
+
+  private Node getPenUpLabel(String irrelevant){
+    return null;
+  }
+
   private void setUpMenus(){
     MenuBar menuBar = new MenuBar();
     myLeftVBox.getChildren().add(menuBar);
@@ -554,8 +572,13 @@ public class Visualizer extends Application implements FrontEndExternal{
       for(String entry : MENU_OPTIONS[i]){
         MenuItem menuItem = new MenuItem(entry);
         String methodName = myResources.getString(MENU_NAMES[i]);
+        String labelGetterName = myResources.getString(MENU_NAMES[i] + "Label");
+        // get another method name that will give us the label corresponding to this menu name
+        // the method should return a node object
         try {
           Method method = this.getClass().getDeclaredMethod(methodName, String.class);
+          Method labelGetter = this.getClass().getDeclaredMethod(labelGetterName, String.class);
+          menuItem.setGraphic((Node) labelGetter.invoke(this, entry));
           menuItem.setOnAction(event -> {
             try {
               method.invoke(this, entry);
@@ -563,8 +586,8 @@ public class Visualizer extends Application implements FrontEndExternal{
               showError("Error invoking the method");
             }
           });
-        } catch (NoSuchMethodException e) {
-          showError("Method doesn't exist");
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+          showError("Method doesn't exist or error invoking the method");
         }
         menu.getItems().add(menuItem);
       }
