@@ -68,7 +68,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double SPACING = 10;
   private static final double MARGIN = 25;
   private static final double BOTTOM_INSET = 0.15;
-  private static final double MENU_LABEL_SIZE = 10;
+  private static final double MENU_LABEL_SIZE = 20;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
   private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background", "PenUp", "TurtleImage"};
   private static final String[][] MENU_OPTIONS = new String[][]{{"0", "1", "2", "3", "4", "5", "6", "7", "8"},
@@ -515,16 +515,18 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
   }
 
-  private void setPenColor(String colorName){
-    myTurtleView.setPenColor(myColorPalette.get(colorName));
+  private void setPenColor(String colorIndex){
+    //executeInstruction("setpencolor " + colorIndex); // TODO: uncomment out when implemented in backend
+    myTurtleView.setPenColor(myColorPalette.get(colorIndex));
   }
 
   private void setPenUp(String menuName){
     executeInstruction(menuName + ""); // need the blank string so it registers as a new distinct string object
   }
 
-  private void setBackGroundColor(String colorName){
-    myTurtleView.setBackGroundColor(myColorPalette.get(colorName));
+  private void setBackGroundColor(String colorIndex){
+    //executeInstruction("setbackground " + colorIndex); // TODO: uncomment out when implemented in backend
+    myTurtleView.setBackGroundColor(myColorPalette.get(colorIndex));
   }
 
   private void setLanguage(String language){
@@ -552,7 +554,10 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private Node getTurtleImageLabel(String index){
-    return new ImageView(imageList.get(Integer.parseInt(index)));
+    ImageView imageView = new ImageView(imageList.get(Integer.parseInt(index)));
+    imageView.setFitHeight(MENU_LABEL_SIZE);
+    imageView.setFitWidth(MENU_LABEL_SIZE);
+    return imageView;
   }
 
   private Node getLanguageLabel(String irrelevant){
