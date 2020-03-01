@@ -39,7 +39,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     myVariables = new HashMap<>();
     myUserCommands = new HashMap<>();
     myTurtles = new ArrayList<>();
-    myTurtles.add(new SLogoTurtle());
+    myTurtles.add(new SLogoTurtle(0));
     myLanguage = interpretPatterns("English");
     mySyntax = interpretPatterns("Syntax");
   }
@@ -367,14 +367,22 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   public void setActiveTurtles(List<Integer> turtleIDs) {
     ArrayList<Turtle> active = new ArrayList<>();
     for (Integer num : turtleIDs) {
-      for (Turtle turtle : myTurtles) {
-        if (turtle.getId() == num) {
-          active.add(turtle);
-        }
-      }
+      active.add(getTurtleWithID(num));
     }
     myActiveTurtles = active;
     System.out.println("Active turtles: " + active.toString());
+  }
+
+  private Turtle getTurtleWithID(Integer num) {
+    boolean exists = false;
+    for (Turtle turtle : myTurtles) {
+      if (turtle.getId() == num) {
+        return turtle;
+      }
+    }
+    Turtle newTurtle = new SLogoTurtle(num);
+    myTurtles.add(newTurtle);
+    return newTurtle;
   }
 
   @Override

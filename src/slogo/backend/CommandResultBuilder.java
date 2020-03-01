@@ -60,8 +60,14 @@ public class CommandResultBuilder {
     shapeIndex = 0;
   }
 
+  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp) {
+    this(turtleFacing,turtlePosition);
+    turtleID = turtleID;
+    penUp = turtlePenUp;
+  }
 
-  public void retVal(double val) {
+
+    public void retVal(double val) {
     myRetVal = val;
   }
 

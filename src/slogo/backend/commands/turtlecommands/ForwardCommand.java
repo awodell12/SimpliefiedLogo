@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
+import slogo.backend.CommandResultBuilder;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 import slogo.backend.Turtle;
@@ -29,10 +30,18 @@ public class ForwardCommand implements Command {
     List<CommandResult> results = new ArrayList<>();
     for (Turtle turtle : backEnd.getActiveTurtles()) {
       List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
-      backEnd.getTurtles().get(0).moveForward(arguments.get(0));
-      System.out.println("Moved forward by " + arguments.get(0));
-      System.out.println("Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-      results.add(backEnd.makeCommandResult(arguments.get(0),0,prevPos,0));
+      turtle.moveForward(arguments.get(0));
+      System.out.println("Turtle " + turtle.getId() + " moved forward by " + arguments.get(0) + " and is now at x=" +  turtle.getX() + " y=" + turtle.getY());
+      CommandResultBuilder builder = new CommandResultBuilder(
+          turtle.getId(),
+          turtle.getHeading(),
+          turtle.getPosition(),
+          turtle.getPenUp()
+      );
+      builder.retVal(arguments.get(0));
+      builder.setPathStart(prevPos);
+      builder.setPathColor(0); //TODO: Make this based on some data stored in the back end or passed to us.
+      results.add(builder.buildCommandResult());
     }
     if (results.isEmpty()) {
       results.add(backEnd.makeCommandResult(arguments.get(0),0));
