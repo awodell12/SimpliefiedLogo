@@ -17,10 +17,9 @@ public class TurtleView extends Group{
     private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
     private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
     private static final Image myActiveTurtleImage = new Image("slogo/frontEnd/Resources/activeTurtle.png");
-    private static final Image myInactiveTurtleImage = new Image("slogo/frontEnd/Resources/turtle.png");
     private static final double TURTLE_SIZE = 50;
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;
-    private static final double UNHIGHLIGHTED_OPACITY = 0.1;
+    private static final double UNHIGHLIGHTED_OPACITY = 0.4;
     private static final double HIGHLIGHTED_OPACITY = 1.0;
 
     private final Map<Integer, Turtle> myTurtles = new HashMap<>();
@@ -197,12 +196,14 @@ public class TurtleView extends Group{
     protected void activateTurtles(List<Integer> activeTurtles) {
         for(Turtle turtle : myTurtles.values()){
             turtle.setActive(false);
-            turtle.setImage(myInactiveTurtleImage);
+            //turtle.setImage(myInactiveTurtleImage);
+            turtle.setOpacity(UNHIGHLIGHTED_OPACITY);
         }
         for(int id : activeTurtles){
             if(myTurtles.containsKey(id)) {
                 myTurtles.get(id).setActive(true);
-                myTurtles.get(id).setImage(myActiveTurtleImage);
+                //myTurtles.get(id).setImage(myActiveTurtleImage);
+                myTurtles.get(id).setOpacity(HIGHLIGHTED_OPACITY);
             }
         }
     }
@@ -220,11 +221,13 @@ public class TurtleView extends Group{
     private void toggleActive(int id, Consumer<Boolean> onClicked) {
         if(myTurtles.get(id).isActive()){
             myTurtles.get(id).setActive(false);
-            myTurtles.get(id).setImage(myInactiveTurtleImage); //TODO: maybe just use opacity
+            myTurtles.get(id).setOpacity(UNHIGHLIGHTED_OPACITY);
+            //myTurtles.get(id).setImage(myInactiveTurtleImage); //TODO: maybe just use opacity
             onClicked.accept(false);
         }else{
             myTurtles.get(id).setActive(true);
-            myTurtles.get(id).setImage(myActiveTurtleImage);
+            myTurtles.get(id).setOpacity(HIGHLIGHTED_OPACITY);
+            //myTurtles.get(id).setImage(myActiveTurtleImage);
             onClicked.accept(true);
         }
     }

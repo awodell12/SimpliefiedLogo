@@ -261,6 +261,9 @@ public class Visualizer extends Application implements FrontEndExternal{
       createTurtle(turtlePos, turtleID);
     }
     myTurtleView.activateTurtles(activeTurtles);
+    for(int id : myTurtleView.getExistingTurtleIDs()){
+      updateTurtleInfo(id);
+    }
     myTurtleView.setTurtleHeading(turtleRotate, turtleID);
     myDesiredTurtlePosition = turtlePos;
     myCurrentTurtlePosition = myTurtleView.getUnalteredTurtlePositions().get(turtleID);
@@ -287,10 +290,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.getExistingTurtleIDs().add(turtleID);
     myTurtleView.getUnalteredTurtlePositions().put(turtleID, turtlePos);
     String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
-    myTurtleInfo.getChildren().add(new Text("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0]
-            + "  Position: (" + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getX() + ","
-            + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getY() + ")  Heading: "
-            + activityAndHeading[1] + "\n"));
+    myTurtleInfo.getChildren().add(new Text("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0] + "  Position: ("
+            + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getX() + "," + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getY()
+            + ")  Heading: " + activityAndHeading[1] + "\n"));
   }
 
   private Scene setUpDisplay() {
@@ -529,7 +531,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     Image image = new Image(imageList.get(Integer.parseInt(num)));
     myTurtleView.setTurtleImage(image);
     //TODO: move the above 2 lines to interpretResult once this command is supported by backend
-    executeInstruction("setshape " + Integer.parseInt(num));
+    //executeInstruction("setshape " + Integer.parseInt(num));
   }
 
   private void runButton(){
@@ -612,11 +614,7 @@ public class Visualizer extends Application implements FrontEndExternal{
           myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
           myStartPos = myCurrentTurtlePosition;
         }
-        Text turtleInfo = (Text) myTurtleInfo.getChildren().get(myCurrentTurtleID);
-        String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
-        turtleInfo.setText("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0] + "  Position: ("
-                + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getX() + "," + (int)myTurtleView.getUnalteredTurtlePositions().get(myCurrentTurtleID).getY()
-                + ")  Heading: " + activityAndHeading[1] + "\n");
+        updateTurtleInfo(myCurrentTurtleID);
       } else if (!isReady) {
         isReady = true;
         if (resultQueue.size() > 0) {
@@ -624,6 +622,14 @@ public class Visualizer extends Application implements FrontEndExternal{
         }
       }
     }
+  }
+
+  private void updateTurtleInfo(int id) {
+    Text turtleInfo = (Text) myTurtleInfo.getChildren().get(id);
+    String[] activityAndHeading = myTurtleView.getTurtleInfo(id);
+    turtleInfo.setText("Turtle " + id + ": \nActive: " + activityAndHeading[0] + "  Position: ("
+            + (int)myTurtleView.getUnalteredTurtlePositions().get(id).getX() + "," + (int)myTurtleView.getUnalteredTurtlePositions().get(id).getY()
+            + ")  Heading: " + activityAndHeading[1] + "\n");
   }
 
   private void displayErrorMessage(String message){
