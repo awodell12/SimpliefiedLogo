@@ -30,7 +30,7 @@ public class ClearScreenCommand implements Command {
         backEnd.getTurtles().get(0).setHeading(0);
         System.out.println("Went home, cleared paths \n " +
                 "Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-        CommandResultBuilder clearResult = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(),
+        CommandResultBuilder clearResult = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),
             List.of(backEnd.getTurtles().get(0).getX(),
                 backEnd.getTurtles().get(0).getY()));
         return List.of(clearResult.buildCommandResult());

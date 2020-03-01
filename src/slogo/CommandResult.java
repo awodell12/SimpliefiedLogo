@@ -34,7 +34,7 @@ public class CommandResult {
                        String variableName, double variableVal, String udcName, String udcText,
                        boolean clearScreen, boolean penUp, boolean turtleVisible, boolean turtleReset,
                        int backGroundColor, List<Integer> newPaletteColor, double penSize, List<Integer> activeTurtles,
-                       int shapeIndex, int newPaletteIndex, String errorMessage) {
+                       int shapeIndex, int newPaletteIndex, String errorMessage, boolean doesSomething) {
     returnVal = retVal;
     myTokensParsed = tokensParsed;
     myErrorMessage = errorMessage;
@@ -57,7 +57,7 @@ public class CommandResult {
     myShapeIndex = shapeIndex;
     myTurtleID = turtleID;
     paletteIndex = newPaletteIndex;
-    actualCommand = true;
+    actualCommand = doesSomething;
   }
 
   public CommandResult(double retVal, int tokensParsed){
@@ -99,7 +99,7 @@ public class CommandResult {
     return myRotation;
   }
 
-  public List<Double> getMyPosition() {
+  public List<Double> getTurtlePosition() {
     return myPosition;
   }
 

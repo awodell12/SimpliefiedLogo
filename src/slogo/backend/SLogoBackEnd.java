@@ -323,7 +323,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, int pathColor) {
-    CommandResultBuilder builder = new CommandResultBuilder(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
     builder.retVal(retVal);
     builder.tokensParsed(tokensParsed);
     builder.setPathStart(pathStart);
@@ -334,7 +334,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   public CommandResult makeCommandResult(double retVal, int tokensParsed, String varName,
       double varValue) {
-    CommandResultBuilder builder = new CommandResultBuilder(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
     builder.retVal(retVal);
     builder.tokensParsed(tokensParsed);
     builder.variableName(varName);
@@ -343,7 +343,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResult makeCommandResult(double retVal, int tokensParsed, String udcName, String udcScript) {
-    CommandResultBuilder builder = new CommandResultBuilder(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
     builder.retVal(retVal);
     builder.tokensParsed(tokensParsed);
     builder.userDefinedCommandName(udcName);
@@ -351,14 +351,14 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return builder.buildCommandResult();
   }
   public CommandResult makeErrorCommandResult(double retVal, int tokensParsed, String errorMessage) {
-    CommandResultBuilder builder = new CommandResultBuilder(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
     builder.retVal(retVal);
     builder.tokensParsed(tokensParsed);
     builder.setErrorMessage(errorMessage);
     return builder.buildCommandResult();
   }
   public CommandResult makeCommandResult(double retVal, int tokensParsed) {
-    CommandResultBuilder builder = new CommandResultBuilder(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
     builder.retVal(retVal);
     builder.tokensParsed(tokensParsed);
     return builder.buildCommandResult();
@@ -371,7 +371,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       active.add(getTurtleWithID(num));
     }
     myActiveTurtles = active;
-    System.out.println("Active turtles: " + active.toString());
   }
 
   private Turtle getTurtleWithID(Integer num) {
@@ -399,5 +398,18 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   @Override
   public List<Turtle> getActiveTurtles() {
     return new ArrayList<>(myActiveTurtles);
+  }
+
+  @Override
+  public List<Integer> getActiveTurtleNumbers() {
+    List<Integer> ret = new ArrayList<>();
+    for (Turtle active : myActiveTurtles) {
+      ret.add(active.getId());
+    }
+    return ret;
+  }
+
+  public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
+    return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers());
   }
 }

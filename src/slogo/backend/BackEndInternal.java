@@ -103,5 +103,9 @@ public interface BackEndInternal {
   List<Turtle> getTurtles(List<Integer> ids);
 
   List<Turtle> getActiveTurtles();
+
+  List<Integer> getActiveTurtleNumbers();
+
+  CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition);
 }
 
