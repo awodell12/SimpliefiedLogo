@@ -57,12 +57,11 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(225, 125);
   private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(225, 125);
   private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(225, 125);
-  private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(60, 40);
+  private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(30, 30);
-  private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(75, 50);
-  private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(75, 50);
+  private static final Rectangle TOP_RIGHT_BUTTON_SHAPE = new Rectangle(75, 50);
   private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
   private static final Rectangle TURTLE_MOVEMENT_LABEL_SHAPE = new Rectangle(20, 5);
@@ -74,7 +73,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
   private static final double SMALLER_FONT_SIZE = 12;
   private static final double PEN_TEXT_WIDTH = 300;
-  private static final List<String> MENU_NAMES = List.of("Color", "Language", "Background", "PenUp", "TurtleImage");
+  private static final List<String> MENU_NAMES = List.of("PenColor", "Language", "Background", "PenUp", "TurtleImage");
   private static final String[][] MENU_OPTIONS = new String[][]{{"0", "1", "2", "3", "4", "5", "6", "7", "8"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
           {"0", "1", "2", "3", "4", "5", "6", "7", "8"},
@@ -109,6 +108,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
+  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace"};
+  private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight", 
+          "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
 
   private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
   private static final double FPS = 24;
@@ -293,6 +295,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     if (newColorRGB != null){
       updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
+    //TODO: show error if the requested color index is not in color palette?
     myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
     myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
     setPenText();
@@ -423,10 +426,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     step(true);
   }
   private void setUpTopCenterButtons() {
-    String[] buttonNames = new String[]{"moveForward", "moveBackward", "rotateRight", "rotateLeft", "endPause",
-                          "setPause", "resetAnimation", "singleStep"};
     List<Button> buttons = new ArrayList<>();
-    for(String buttonName : buttonNames){
+    for(String buttonName : TOP_CENTER_BUTTON_METHODS){
       buttons.add(makeButton(buttonName, TURTLE_BUTTON_SHAPE, this));
     }
     for(int i=0; i<NUM_TURTLE_MOVE_BUTTONS; i++){
@@ -461,12 +462,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setUpTopButtons() {
     HBox topButtons = new HBox(SPACING);
-    Button myHelpButton = makeButton("displayHelp", HELP_BUTTON_SHAPE, this);
-    myHelpButton.setOnAction(event -> displayHelp());
-    Button mySetTurtleImageButton = makeButton("setTurtleImage", SET_TURTLE_IMAGE_BUTTON_SHAPE, this);
-    mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
-    topButtons.getChildren().add(myHelpButton);
-    topButtons.getChildren().add(mySetTurtleImageButton);
+    for(String methodName : TOP_RIGHT_BUTTON_METHODS){
+      topButtons.getChildren().add(makeButton(methodName, TOP_RIGHT_BUTTON_SHAPE, this));
+    }
     myRightVBox.getChildren().add(topButtons);
   }
 
@@ -515,6 +513,10 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void resetAnimation() {
     executeInstruction("clearscreen");
+  }
+
+  private void newWorkspace(){
+    //TODO: implement this
   }
 
   private void undoButton(){
