@@ -43,6 +43,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class Visualizer extends Application implements FrontEndExternal{
   private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
   private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
@@ -285,6 +286,14 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
     undone = false;
     myRightVBox.requestLayout(); // make sure everything is updated graphically
+    if (newColorRGB != null){
+      myColorPalette.put(Integer.toString(paletteIndex), Color.color(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ));
+      updateColorMenus(paletteIndex);
+    }
+  }
+
+  private void updateColorMenus(int paletteIndex) {
+    // TODO newly created color in palette to Background and penColor menus
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
