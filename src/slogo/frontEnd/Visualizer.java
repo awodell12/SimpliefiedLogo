@@ -92,6 +92,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("Math Operations", "Math");
     put("Boolean Operations", "Booleans");
     put("Variables, Control Structures, and User-Defined Commands", "Variables_Control_UDC");
+    put("Display Commands", "Display_Commands");
+    put("Multiple Turtles", "Multiple_Turtle_Commands");
   }};
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
