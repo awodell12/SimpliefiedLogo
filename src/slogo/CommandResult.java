@@ -182,4 +182,8 @@ public class CommandResult {
   public int getPaletteIndex(){
     return paletteIndex;
   }
+
+  public void setMyScreenClear(boolean value){
+    myScreenClear = value;
+  }
 }

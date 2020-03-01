@@ -664,7 +664,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void updateTurtleInfo(int id) {
-    Text turtleInfo = (Text) myTurtleInfo.getChildren().get(id);
+    Text turtleInfo = (Text) myTurtleInfo.getChildren().get(myTurtleView.getExistingTurtleIDs().indexOf(id));
     String[] activityAndHeading = myTurtleView.getTurtleInfo(id);
     turtleInfo.setText("Turtle " + id + ": \nActive: " + activityAndHeading[0] + "  Position: ("
             + (int)myTurtleView.getUnalteredTurtlePositions().get(id).getX() + "," + (int)myTurtleView.getUnalteredTurtlePositions().get(id).getY()
