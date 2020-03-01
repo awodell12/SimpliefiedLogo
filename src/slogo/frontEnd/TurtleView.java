@@ -143,9 +143,7 @@ public class TurtleView extends Group{
         if(numChildren >= 2) this.getChildren().remove(1, numChildren);
         for(Map.Entry<Integer, Turtle> turtle : myTurtles.entrySet()){
             if(turtle.getValue().getVisibility()) this.getChildren().add(turtle.getValue());
-            resetTurtle(turtle.getKey());
         }
-        //TODO: decide if this should only clear paths/reset a specific turtle
     }
 
     /**
