@@ -291,8 +291,10 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
     undone = false;
     myRightVBox.requestLayout(); // make sure everything is updated graphically
+    //newColorRGB = List.of(100, 100, 100);
+    //paletteIndex = 12;
     if (newColorRGB != null){
-      updateColorMenus(paletteIndex, Color.color(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
+      updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
   }
 
