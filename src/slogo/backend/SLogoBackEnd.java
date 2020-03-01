@@ -40,6 +40,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     myUserCommands = new HashMap<>();
     myTurtles = new ArrayList<>();
     myTurtles.add(new SLogoTurtle(0));
+    myActiveTurtles = List.of(myTurtles.get(0));
     myLanguage = interpretPatterns("English");
     mySyntax = interpretPatterns("Syntax");
   }

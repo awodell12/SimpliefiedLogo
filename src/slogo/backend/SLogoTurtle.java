@@ -17,7 +17,8 @@ public class SLogoTurtle implements Turtle {
     private static final double TO_DEGREES = 180 / Math.PI;
     private static final double OFFSET = 180;
 
-    public SLogoTurtle(){
+    public SLogoTurtle(int id){
+        myId = id;
     }
 
     public SLogoTurtle(double x, double y, double heading){

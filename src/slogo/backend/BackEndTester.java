@@ -59,7 +59,7 @@ public class BackEndTester {
 //    parser.parseScript("set :b 120 for [ :a 1 3 1 ] [ fd sum :b fd :a ] fd 1234.1234");
 //    parser.parseScript("to foo [ :distance ] [ fd :distance ] fd 3 foo foo foo 30.0\n"
 //        + "to foo [ :turn :fdamt :useless ] [ rt :turn forward :fdamt ] fd foo foo 88 21 -100.0 -200.0 0.1");
-    List<CommandResult> results = parser.parseScript("fd tell [ 1 3 5 0 2 ] fd 50");
+    List<CommandResult> results = parser.parseScript("fd tell [ 1 3 5 0 2 ] fd 50 tell [ 7 1 5 ] fd 14.4");
     System.out.println("results.size() = " + results.size());
     CommandResult result = results.get(results.size()-1);
     if (!(result.getErrorMessage() == null)) {
