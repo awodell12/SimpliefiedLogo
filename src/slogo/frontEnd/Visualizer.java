@@ -22,6 +22,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -92,8 +93,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("Boolean Operations", "Booleans");
     put("Variables, Control Structures, and User-Defined Commands", "Variables_Control_UDC");
   }};
-  //private static final Map<String, String> PENUP_MAPPING = new HashMap<>(){{
-  //        put("Up (not drawing)", "pu"); put("Down (drawing)", false); }};
+  private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
+  private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
+  private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
 
   private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
   private static final double FPS = 24;
@@ -122,7 +124,14 @@ public class Visualizer extends Application implements FrontEndExternal{
   private boolean isReady = true;
   private boolean paused = false;
   private final Queue<CommandResult> resultQueue = new LinkedList<>();
+  private CommandResult previousResult = new CommandResult(0, 0, 0, 0,
+          List.of(0.0,0.0), null, 0, null, 0, null, null,
+          false, false, true, false, 0, Arrays.asList(0, 0, 0),
+          1.0, Collections.singletonList(0), 0, 0, "");
+  private CommandResult currentResult = previousResult;
+  private boolean undone = false;
   private String myCurrentlyHighlighted = null;
+  private String myCurrentInstruction = null;
   private Timeline animation;
   private List<TextArea> turtleMovementButtons = new ArrayList<>();
   private int myCurrentTurtleID;
@@ -180,6 +189,11 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void dissectCommand(CommandResult result) {
+    if(result.getMyOriginalInstruction() != myCurrentInstruction) {
+      previousResult = currentResult;
+      myCurrentInstruction = result.getMyOriginalInstruction();
+    }
+    currentResult = result;
     Point2D startPos = null;
     if(result.getPathStart() != null){
       startPos = new Point2D(result.getPathStart().get(0), -result.getPathStart().get(1));
@@ -253,6 +267,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       myHistory.highlightNext();
       myCurrentlyHighlighted = originalInstruction;
     }
+    undone = false;
     myRightVBox.requestLayout(); // make sure everything is updated graphically
   }
 
@@ -421,6 +436,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       method = clazz.getClass().getDeclaredMethod(text);
     }
     catch (NoSuchMethodException e) {
+      e.printStackTrace();
       showError(e.getMessage());
     }
     Button button = new Button(myResources.getString(text));
@@ -433,6 +449,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         assert finalMethod != null;
         finalMethod.invoke(clazz);
       } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
+        e.printStackTrace();
         showError(e.getMessage());
       }
     });
@@ -460,6 +477,34 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.clearPaths();
   }
 
+  private void undoButton(){
+    myHistory.addEntry("undo " + myCurrentInstruction, null, e->myCommandBox.setText(myCurrentInstruction));
+    processResult(previousResult);
+    undone = true;
+  }
+
+  private void redoButton(){
+    if(undone) {
+      myHistory.addEntry("redo " + myCurrentInstruction, null, e->myCommandBox.setText(myCurrentInstruction));
+      processResult(previousResult);
+    }
+  }
+
+  private void setPenColor(String colorName){
+    myTurtleView.setPenColor(COLOR_MAP.get(colorName));
+  }
+
+  private void setPenUp(String menuName){
+    executeInstruction(menuName + ""); // need the blank string so it registers as a new distinct string object
+  }
+
+  private void setBackGroundColor(String colorName){
+    myTurtleView.setBackGroundColor(COLOR_MAP.get(colorName));
+  }
+
+  private void setLanguage(String language){
+    executeInstruction("language: " + language);
+  }
 
   private void setUpMenus(){
     MenuBar menuBar = new MenuBar();
@@ -487,22 +532,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
   }
 
-  private void setPenColor(String colorName){
-    myTurtleView.setPenColor(COLOR_MAP.get(colorName));
-  }
-
-  private void setPenUp(String menuName){
-    executeInstruction(menuName + ""); // need the blank string so it registers as a new distinct string object
-  }
-
-  private void setBackGroundColor(String colorName){
-    myTurtleView.setBackGroundColor(COLOR_MAP.get(colorName));
-  }
-
-  private void setLanguage(String language){
-    executeInstruction("language: " + language);
-  }
-
   private void setTurtleImage() {
     final FileChooser fileChooser = new FileChooser();
     File file = fileChooser.showOpenDialog(myStage);
@@ -526,11 +555,15 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setUpBottomButtons() {
-    Button runButton = makeButton("runButton", RUN_BUTTON_SHAPE, this);
-    runButton.setTooltip(new Tooltip(myResources.getString("RunHover")));
-    Button clearButton = makeButton("clearButton", CLEAR_COMMAND_BOX_SHAPE, this);
-    clearButton.setTooltip(new Tooltip(myResources.getString("ClearHover")));
-    myCenterVBox.getChildren().addAll(runButton,clearButton);
+    GridPane buttonGrid = new GridPane();
+    buttonGrid.setHgap(SPACING);
+    buttonGrid.setVgap(SPACING);
+    for(int i=0; i<BOTTOM_BUTTON_METHOD_NAMES.length; i++){
+      Button button = makeButton(BOTTOM_BUTTON_METHOD_NAMES[i], RUN_BUTTON_SHAPE, this);
+      button.setTooltip(new Tooltip(myResources.getString(BOTTOM_BUTTON_HOVER_NAMES[i])));
+      buttonGrid.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
+    }
+    myCenterVBox.getChildren().add(buttonGrid);
   }
 
   private void step(boolean overridePause){
