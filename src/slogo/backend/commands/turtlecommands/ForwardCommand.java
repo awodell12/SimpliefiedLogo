@@ -32,7 +32,7 @@ public class ForwardCommand implements Command {
       backEnd.getTurtles().get(0).moveForward(arguments.get(0));
       System.out.println("Moved forward by " + arguments.get(0));
       System.out.println("Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-      results.add(backEnd.makeCommandResult(arguments.get(0),0,prevPos,"000000"));
+      results.add(backEnd.makeCommandResult(arguments.get(0),0,prevPos,0));
     }
     if (results.isEmpty()) {
       results.add(backEnd.makeCommandResult(arguments.get(0),0));

@@ -1,10 +1,11 @@
 package slogo.frontEnd;
 
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.function.Consumer;
+
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
@@ -15,15 +16,18 @@ import javafx.scene.shape.*;
 public class TurtleView extends Group{
     private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
     private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+    private static final Image myActiveTurtleImage = new Image("slogo/frontEnd/Resources/activeTurtle.png");
+    private static final Image myInactiveTurtleImage = new Image("slogo/frontEnd/Resources/turtle.png");
     private static final double TURTLE_SIZE = 50;
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;
+    private static final double UNHIGHLIGHTED_OPACITY = 0.1;
+    private static final double HIGHLIGHTED_OPACITY = 1.0;
 
-    private final ImageView myTurtle;
+    private final Map<Integer, Turtle> myTurtles = new HashMap<>();
     private Color myPenColor = Color.BLACK;
     private double myPenThickness = 1;
     private final Rectangle myBackground;
     private boolean isPenUp = false;
-    private boolean myTurtleVisibility = true;
     private final double myWidth;
     private final double myHeight;
     private final double xOffset;
@@ -34,19 +38,23 @@ public class TurtleView extends Group{
         myHeight = height - TURTLE_SIZE;
         xOffset = myWidth/2 - TURTLE_SIZE/2;
         yOffset = myHeight/2 - TURTLE_SIZE/2;
-        String myTurtleImage = "slogo/frontEnd/Resources/turtle.png";
-        myTurtle = new ImageView(myTurtleImage);
-        myTurtle.setPreserveRatio(true);
-        myTurtle.setCache(true);
-        myTurtle.setFitWidth(TURTLE_SIZE);
-        myTurtle.setFitHeight(TURTLE_SIZE);
-        resetTurtle();
         myBackground = new Rectangle(width, height);
         myBackground.setFill(Color.WHITE);
         myBackground.setStroke(Color.BLACK);
         myBackground.setStrokeType(StrokeType.OUTSIDE);
         myBackground.setStyle("-fx-border-color: black");
         this.getChildren().add(myBackground);
+    }
+
+    protected void makeTurtle(int id, Consumer<Boolean> onClicked){
+        Turtle myTurtle = new Turtle(myActiveTurtleImage);
+        myTurtle.setPreserveRatio(true);
+        myTurtle.setCache(true);
+        myTurtle.setFitWidth(TURTLE_SIZE);
+        myTurtle.setFitHeight(TURTLE_SIZE);
+        myTurtles.put(id, myTurtle);
+        resetTurtle(id);
+        myTurtle.setOnMouseClicked(event -> toggleActive(id, onClicked));
         this.getChildren().add(myTurtle);
     }
 
@@ -61,17 +69,17 @@ public class TurtleView extends Group{
      * @param x the new x coordinate for the turtle
      * @param y the new y coordinate for the turtle
      */
-    protected void setTurtlePosition(double x, double y){
-        myTurtle.setX(boundX(x));
-        myTurtle.setY(boundY(y));
+    protected void setTurtlePosition(double x, double y, int id){
+        myTurtles.get(id).setX(boundX(x));
+        myTurtles.get(id).setY(boundY(y));
     }
 
     /**
      * Rotate the turtle
      * @param angle angle to rotate by
      */
-    protected void setTurtleHeading(double angle){
-        myTurtle.setRotate(angle);
+    protected void setTurtleHeading(double angle, int id){
+        myTurtles.get(id).setRotate(angle);
     }
 
     /**
@@ -110,14 +118,17 @@ public class TurtleView extends Group{
     }
 
     /**
-     * Removes all of the taken paths displayed on the screen by clearing the display and returns the turtle
-     * back to its starting position
+     * Removes all of the taken paths displayed on the screen by clearing the display and returns all turtles
+     * back to the starting position
      */
     protected void clearPaths(){
         int numChildren = this.getChildren().size();
         if(numChildren >= 2) this.getChildren().remove(1, numChildren);
-        if(myTurtleVisibility) this.getChildren().add(myTurtle);
-        resetTurtle();
+        for(Map.Entry<Integer, Turtle> turtle : myTurtles.entrySet()){
+            if(turtle.getValue().getVisibility()) this.getChildren().add(turtle.getValue());
+            resetTurtle(turtle.getKey());
+        }
+        //TODO: decide if this should only clear paths/reset a specific turtle
     }
 
     /**
@@ -125,17 +136,20 @@ public class TurtleView extends Group{
      * @param newTurtleImage image object to set the turtle image to
      */
     protected void setTurtleImage(Image newTurtleImage){
-        myTurtle.setImage(newTurtleImage);
+        for(Turtle turtle : myTurtles.values()) {
+            turtle.setImage(newTurtleImage);
+        }
     }
 
-    protected void setTurtleVisibility(boolean turtleVisibility) {
-        if(turtleVisibility && !myTurtleVisibility){
+    protected void setTurtleVisibility(boolean turtleVisibility, int id) {
+        Turtle myTurtle = myTurtles.get(id);
+        if(turtleVisibility && !myTurtle.getVisibility()){
             this.getChildren().add(myTurtle);
         }
-        else if(!turtleVisibility && myTurtleVisibility){
+        else if(!turtleVisibility && myTurtle.getVisibility()){
             this.getChildren().remove(myTurtle);
         }
-        myTurtleVisibility = turtleVisibility;
+        myTurtle.setVisibility(turtleVisibility);
     }
 
     /**
@@ -151,12 +165,57 @@ public class TurtleView extends Group{
     }
 
     /**
+     * get a list of ids for the active turtles
+     * @return list of ids for the active turtles
+     */
+    protected List<Integer> getActiveTurtles(){
+        List<Integer> activeTurtles = new ArrayList<>();
+        for(Map.Entry<Integer, Turtle> turtleEntry : myTurtles.entrySet()){
+            if(turtleEntry.getValue().isActive()) activeTurtles.add(turtleEntry.getKey());
+        }
+        return activeTurtles;
+    }
+
+    protected void activateTurtles(List<Integer> activeTurtles) {
+        for(Turtle turtle : myTurtles.values()){
+            turtle.setActive(false);
+            turtle.setImage(myInactiveTurtleImage);
+        }
+        for(int id : activeTurtles){
+            myTurtles.get(id).setActive(true);
+            myTurtles.get(id).setImage(myActiveTurtleImage);
+        }
+    }
+
+    protected String[] getPenState(){
+        //TODO: replace 0 with myPenColor.toString() or pen color index
+        return new String[]{Boolean.toString(isPenUp), "0", Double.toString(myPenThickness)};
+    }
+
+    protected String[] getTurtleInfo(int turtleID) {
+        Turtle turtle = myTurtles.get(turtleID);
+        return new String[]{Boolean.toString(turtle.isActive()), Integer.toString((int)turtle.getRotate())};
+    }
+
+    private void toggleActive(int id, Consumer<Boolean> onClicked) {
+        if(myTurtles.get(id).isActive()){
+            myTurtles.get(id).setActive(false);
+            myTurtles.get(id).setImage(myInactiveTurtleImage); //TODO: maybe just use opacity
+            onClicked.accept(false);
+        }else{
+            myTurtles.get(id).setActive(true);
+            myTurtles.get(id).setImage(myActiveTurtleImage);
+            onClicked.accept(true);
+        }
+    }
+
+    /**
      * moves the turtle back to home position
      */
-    private void resetTurtle(){
-        myTurtle.setY(yOffset);
-        myTurtle.setX(xOffset);
-        myTurtle.setRotate(0);
+    private void resetTurtle(int id){
+        myTurtles.get(id).setY(yOffset);
+        myTurtles.get(id).setX(xOffset);
+        myTurtles.get(id).setRotate(0);
     }
 
     private double boundX(double x){

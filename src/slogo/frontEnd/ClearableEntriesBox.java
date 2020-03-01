@@ -8,6 +8,7 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -28,6 +29,7 @@ public class ClearableEntriesBox extends HBox {
     protected final TextFlow myTextFlow;
     protected final Text descriptionText;
     protected final List<String> entryList;
+    protected final VBox rightSide;
 
     private static final double SPACING = 10;
 
@@ -39,14 +41,15 @@ public class ClearableEntriesBox extends HBox {
         myTextFlow.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(myTextFlow);
-        //scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
         Button clearButton = Visualizer.makeButton("clearEntryBox", clearButtonShape, this);
         clearButton.setTooltip(new Tooltip(myResources.getString("HoverText")));
         clearButton.setOnAction(event -> clearEntryBox());
+        rightSide = new VBox(SPACING);
+        rightSide.getChildren().add(clearButton);
         this.setSpacing(SPACING);
-        this.getChildren().addAll(scrollPane, clearButton);
+        this.getChildren().addAll(scrollPane, rightSide);
         descriptionText = new Text(description + "\n");
         descriptionText.setUnderline(true);
         descriptionText.setFill(Color.BLUE);
@@ -71,11 +74,16 @@ public class ClearableEntriesBox extends HBox {
      * @param name the name of the entry that needs to be overwritten (or null)
      * @param action the lambda defining what happens when the entry is clicked
      */
-    protected void addEntry(String entry, String name, Consumer<String> action){
-        myTextFlow.getChildren().remove(myTextFlow.getChildren().size()-1);
+    protected void addEntry(String entry, String name, Consumer<String> action) {
+        myTextFlow.getChildren().remove(myTextFlow.getChildren().size() - 1);
         Text newText = new Text(entry + "\n");
         newText.setOnMouseClicked(event -> action.accept(entry));
         myTextFlow.getChildren().add(newText);
+        checkDuplicates(name);
+    }
+
+    // not part of the API
+    protected void checkDuplicates(String name){
         myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
         if(name != null){
             for(int i=0; i<entryList.size(); i++){

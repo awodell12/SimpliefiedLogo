@@ -19,21 +19,25 @@ public class CommandResult {
   private boolean myTurtleVisible;
   private boolean myTurtleReset;
   private List<Double> myPathStart;
-  private int myPathColor;
+  private int myPenColor;
   private int myBackgroundColor;
   private List<Integer> myNewPaletteColor;
   private double myPenSize;
   private List<Integer> myActiveTurtleIDs;
   private int myShapeIndex;
+  private int myTurtleID;
   private String myOriginalInstruction;
+  private boolean actualCommand;
+  private int paletteIndex;
 
-  public CommandResult(double retVal, int tokensParsed, int turtleID, double heading, List<Double> pos, List<Double> pathStart, int pathColor,
+  public CommandResult(double retVal, int tokensParsed, int turtleID, double heading, List<Double> pos, List<Double> pathStart, int penColor,
                        String variableName, double variableVal, String udcName, String udcText,
                        boolean clearScreen, boolean penUp, boolean turtleVisible, boolean turtleReset,
-                       int backGroundColor, List<Integer> newPaletteColor, double penSize, List<Integer> activeTurtles, int shapeIndex) {
+                       int backGroundColor, List<Integer> newPaletteColor, double penSize, List<Integer> activeTurtles,
+                       int shapeIndex, int newPaletteIndex, String errorMessage) {
     returnVal = retVal;
     myTokensParsed = tokensParsed;
-    myErrorMessage = "";
+    myErrorMessage = errorMessage;
     myRotation = heading;
     myPosition = pos;
     myVariableName = variableName;
@@ -45,12 +49,15 @@ public class CommandResult {
     myTurtleVisible = turtleVisible;
     myTurtleReset = turtleReset;
     myPathStart = pathStart;
-    myPathColor = pathColor;
+    myPenColor = penColor;
     myBackgroundColor = backGroundColor;
     myNewPaletteColor = newPaletteColor;
     myPenSize = penSize;
     myActiveTurtleIDs = activeTurtles;
     myShapeIndex = shapeIndex;
+    myTurtleID = turtleID;
+    paletteIndex = newPaletteIndex;
+    actualCommand = true;
   }
 
   public CommandResult(double retVal, int tokensParsed){
@@ -68,6 +75,8 @@ public class CommandResult {
     myPenUp = false;
     myTurtleVisible = true;
     myTurtleReset = false;
+    actualCommand = false;
+    myErrorMessage = "";
   }
 
 
@@ -130,8 +139,8 @@ public class CommandResult {
     return myTurtleReset;
   }
 
-  public int getPathColor(){
-    return myPathColor;
+  public int getPenColor(){
+    return myPenColor;
   }
 
   public int getBackgroundColor(){
@@ -154,15 +163,23 @@ public class CommandResult {
     return myShapeIndex;
   }
 
-  public String getMyOriginalInstruction() {
-    return new String(myOriginalInstruction);
+  public int getTurtleID(){
+    return myTurtleID;
   }
 
-  public void setMyOriginalInstruction(String instruction) {
+  public void setMyOriginalInstruction(String instruction){
     myOriginalInstruction = instruction;
   }
 
-  public boolean isActualCommand() {
-    return true;
+  public String getMyOriginalInstruction(){
+    return myOriginalInstruction;
+  }
+
+  public boolean isActualCommand(){
+    return actualCommand;
+  }
+
+  public int getPaletteIndex(){
+    return paletteIndex;
   }
 }

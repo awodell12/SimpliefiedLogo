@@ -16,6 +16,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -28,10 +29,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import slogo.CommandResult;
+
 import javax.imageio.ImageIO;
 
 
@@ -61,6 +64,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
   private static final Rectangle TURTLE_MOVEMENT_LABEL_SHAPE = new Rectangle(20, 5);
+  private static final Rectangle TURTLE_INFO_SHAPE = new Rectangle(275 ,75);
   private static final double SPACING = 10;
   private static final double MARGIN = 25;
   private static final double BOTTOM_INSET = 0.15;
@@ -103,7 +107,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private CommandBox myCommandBox;
   private History myHistory;
   private ClearableEntriesBox myUserDefinedCommands;
-  private ClearableEntriesBox myVariables;
+  private VariableBox myVariables;
   private TurtleView myTurtleView;
   private final ObservableList<String> myInstructionQueue;
   private Stage myStage;
@@ -122,6 +126,11 @@ public class Visualizer extends Application implements FrontEndExternal{
   private String myCurrentlyHighlighted = null;
   private Timeline animation;
   private List<TextArea> turtleMovementButtons = new ArrayList<>();
+  private int myCurrentTurtleID;
+  private List<Integer> existingTurtleIDs = new ArrayList<>();
+  private Map<Integer, Point2D> turtlePositions = new HashMap<>(); // TODO: put these in TurtleView to preserve design principles
+  private Text myPenText;
+  private TextFlow myTurtleInfo = new TextFlow();
 
 
   /**
@@ -181,7 +190,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), -result.getMyPosition().get(1)),
             startPos, result.getMyVariableName(),
             result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
-            result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction());
+            result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction(),
+            result.getTurtleID(), result.getActiveTurtleIDs(), result.getPaletteIndex(), result.getPenColor(),
+            result.getBackgroundColor(), result.getNewPaletteColor(), result.getShapeIndex(), result.getPenSize());
   }
 
   /**
@@ -203,28 +214,59 @@ public class Visualizer extends Application implements FrontEndExternal{
    * @param turtleVisibility whether or not to show the turtle
    * @param originalInstruction the original instruction text that this command result corresponds to
    * @param errorMessage error message string, if any
+   * @param activeTurtles list of active turtle IDs
+   * @param turtleID which turtle this command is for
+   * @param paletteIndex if a new color is being created, what is its index
+   * @param penColorIndex color index to set the pen color to (for all turtles)
+   * @param backgroundColorIndex color index to set the background color to
+   * @param newColorRGB the rgb values for a new color that's being created
+   * @param imageIndex what image to set all turtles to
+   * @param penSize what thickness to set the pen to (for all turtles)
+   *                take in a turtle id as well. if it doesn't exist create it.
+   *                     store a list of active turtles, and a list of existing turtles
+   *                     clicking on a turtle executes a tell command, adding that turtle to active turtles and then doing tell for the whole list
+   *                     commands also return a list of active turtles
+   *                     color: index for palette, color for palette, index for pen, index for background
+   *                     image: index for the turtle's image
    */
   private void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
                                double variableValue, String udcName, String udcText, boolean clearScreen,
-                               boolean isPenUp, boolean turtleVisibility, String errorMessage, String originalInstruction) {
-    myTurtleView.setTurtleHeading(turtleRotate);
+                               boolean isPenUp, boolean turtleVisibility, String errorMessage, String originalInstruction,
+                               int turtleID, List<Integer> activeTurtles, int paletteIndex, int penColorIndex,
+                               int backgroundColorIndex, List<Integer> newColorRGB, int imageIndex, double penSize) {
+    myCurrentTurtleID = turtleID;
+    if(!existingTurtleIDs.contains(turtleID)){
+      createTurtle(turtlePos, turtleID);
+    }
+    myTurtleView.activateTurtles(activeTurtles);
+    myTurtleView.setTurtleHeading(turtleRotate, turtleID);
     myDesiredTurtlePosition = turtlePos;
+    myCurrentTurtlePosition = turtlePositions.get(turtleID);
     xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
     yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
     myStartPos = startPos;
     if(variableName != null) addVariable(variableName, variableValue);
     if(udcName != null) addUserDefinedCommand(udcName, udcText);
     if(clearScreen) myTurtleView.clearPaths();
-    myTurtleView.setTurtleVisibility(turtleVisibility);
+    myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
+    setPenText();
     displayErrorMessage(errorMessage);
     if(originalInstruction != myCurrentlyHighlighted) {
       myHistory.highlightNext();
       myCurrentlyHighlighted = originalInstruction;
     }
-    // the following is a hotfix so that clearable entry boxes don't have delayed updates
-    myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
-    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
+    myRightVBox.requestLayout(); // make sure everything is updated graphically
+  }
+
+  private void createTurtle(Point2D turtlePos, int turtleID) {
+    myTurtleView.makeTurtle(turtleID, this::activateTurtle);
+    existingTurtleIDs.add(turtleID);
+    turtlePositions.put(turtleID, turtlePos);
+    String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
+    myTurtleInfo.getChildren().add(new Text("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0]
+            + "  Position: (" + (int)turtlePositions.get(myCurrentTurtleID).getX() + ","
+            + (int)turtlePositions.get(myCurrentTurtleID).getY() + ")  Heading: " + activityAndHeading[1] + "\n"));
   }
 
   private Scene setUpDisplay() {
@@ -240,19 +282,19 @@ public class Visualizer extends Application implements FrontEndExternal{
 
     myRightVBox = new VBox(SPACING);
     myRightVBox.setMaxSize(WIDTH/3, HEIGHT);
-    setUpRightPane();
 
     setUpLeftPane();
     setUpCenterPane();
+    setUpRightPane();
 
     KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
       try {
         step(false);
       } /*catch (IOException ex) {
-                System.out.println("Caught IO Exception");
-            } */catch (Exception ex) {
+        System.out.println("Caught IO Exception");
+      } */catch (Exception ex) {
         System.out.println("Caught Exception");
-        //ex.printStackTrace();
+        ex.printStackTrace();
       }
     });
 
@@ -281,18 +323,40 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpLeftPane() {
     setUpMenus();
     myTurtleView = new TurtleView(TURTLE_VIEW_SHAPE.getWidth(), TURTLE_VIEW_SHAPE.getHeight());
+    createTurtle(new Point2D(0,0), 0);
     myErrorMessage = new Text(myResources.getString("DefaultErrorMessage"));
     myErrorMessage.setFill(Color.RED);
     myCommandBox = new CommandBox(COMMAND_BOX_SHAPE);
     myLeftVBox.getChildren().addAll(myTurtleView, myErrorMessage, myCommandBox);
   }
 
+  private void activateTurtle(boolean dummy) {
+    StringBuilder instruction = new StringBuilder("tell [ ");
+    for(int id : myTurtleView.getActiveTurtles()){
+      instruction.append(id).append(" ");
+    }
+    instruction.append("]");
+    executeInstruction(instruction.toString());
+  }
+
   private void setUpRightPane() {
     setUpTopButtons();
     myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
     myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("UDCLabel"));
-    myVariables = new ClearableEntriesBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
-    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
+    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
+    myPenText = new Text();
+    setPenText();
+    myTurtleInfo.setMaxSize(TURTLE_INFO_SHAPE.getWidth(), TURTLE_INFO_SHAPE.getHeight());
+    ScrollPane turtleInfoPane = new ScrollPane();
+    turtleInfoPane.setContent(myTurtleInfo);
+    turtleInfoPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    turtleInfoPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables, myPenText, turtleInfoPane);
+  }
+
+  private void setPenText(){
+    String[] penState = myTurtleView.getPenState();
+    myPenText.setText("Pen Up: " + penState[0] + " Pen Color: " + penState[1] + " Pen Thickness: " + penState[2]);
   }
 
   private void endPause(){
@@ -330,7 +394,11 @@ public class Visualizer extends Application implements FrontEndExternal{
     Text sliderLabel = new Text("Animation Speed");
     sliderLabel.setUnderline(true);
     Slider penSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
-    penSlider.valueProperty().addListener((ov, old_val, new_val) -> myTurtleView.setPenThickness(penSlider.getValue()));
+    penSlider.valueProperty().addListener((ov, old_val, new_val) -> {
+      myTurtleView.setPenThickness(penSlider.getValue());
+      setPenText();
+      myRightVBox.requestLayout(); // make sure everything is updated graphically
+    });
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
     Text penSliderLabel = new Text("Pen Thickness");
@@ -472,11 +540,17 @@ public class Visualizer extends Application implements FrontEndExternal{
       if (myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX() - myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||
               Math.abs(myCurrentTurtlePosition.getY() - myDesiredTurtlePosition.getY()) >= SIGNIFICANT_DIFFERENCE)) {
         myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX() + xIncrement, myCurrentTurtlePosition.getY() + yIncrement);
-        myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY());
+        turtlePositions.put(myCurrentTurtleID, myCurrentTurtlePosition);
+        myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY(), myCurrentTurtleID);
         if (myStartPos != null) {
           myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
           myStartPos = myCurrentTurtlePosition;
         }
+        Text turtleInfo = (Text) myTurtleInfo.getChildren().get(myCurrentTurtleID);
+        String[] activityAndHeading = myTurtleView.getTurtleInfo(myCurrentTurtleID);
+        turtleInfo.setText("Turtle " + myCurrentTurtleID + ": \nActive: " + activityAndHeading[0] + "  Position: ("
+                + (int)turtlePositions.get(myCurrentTurtleID).getX() + "," + (int)turtlePositions.get(myCurrentTurtleID).getY()
+                + ")  Heading: " + activityAndHeading[1] + "\n");
       } else if (!isReady) {
         isReady = true;
         if (resultQueue.size() > 0) {
@@ -491,7 +565,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void addVariable(String name, double value){
-    myVariables.addEntry(name + " : " + value, name, e->{});
+    myVariables.addEntry(name + " : " + value, name, newValue->executeInstruction("make :"+name+" "+newValue));
   }
 
   private void addUserDefinedCommand(String name, String command){
@@ -505,13 +579,11 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void executeInstruction(String instruction) {
     myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
-    if(instruction != myCurrentlyHighlighted) {
+    if(instruction != myCurrentlyHighlighted) { // want to compare object references here
       myHistory.highlightNext();
       myCurrentlyHighlighted = instruction;
     }
-    // the following is a hotfix so that clearable entry boxes don't have delayed updates
-    myRightVBox.getChildren().removeAll(myHistory, myUserDefinedCommands, myVariables);
-    myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables);
+    myRightVBox.requestLayout(); // make sure everything is updated graphically
     myInstructionQueue.add(instruction);
   }
 

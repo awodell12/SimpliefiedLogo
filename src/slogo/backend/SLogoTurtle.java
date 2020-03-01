@@ -10,7 +10,7 @@ public class SLogoTurtle implements Turtle {
     private double myHeading = 0;
     private boolean myPenUp = false;
     private boolean myVisible = true;
-    private String myPenColor = "000000";
+    private int myPenColor = 0;
 
     private static final double MAX_DEGREES = 360;
     private static final double TO_RADIANS = Math.PI / 180;

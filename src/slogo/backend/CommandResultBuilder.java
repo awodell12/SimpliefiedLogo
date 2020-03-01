@@ -12,7 +12,7 @@ public class CommandResultBuilder {
   private double turtleHeading;
   private List<Double> turtlePos;
   private List<Double> startPos;
-  private int pathColorIndex;
+  private int pathColor;
   private String varName;
   private double varValue;
   private String udcName;
@@ -27,6 +27,9 @@ public class CommandResultBuilder {
   private List<Integer> activeTurtles;
   private int shapeIndex;
   private String errorMessage;
+  private int backgroundColor;
+  private int newPaletteIndex;
+  private List<Integer> newPaletteColor;
 
   public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition) {
     myRetVal = 0;
@@ -35,7 +38,7 @@ public class CommandResultBuilder {
     turtlePos = turtlePosition;
     turtleHeading = turtleFacing;
     startPos = null;
-    pathColorIndex = 0;
+    pathColor = 0;
     varName = null;
     varValue = 0;
     udcName = null;
@@ -50,6 +53,16 @@ public class CommandResultBuilder {
     activeTurtles = null;
     shapeIndex = 0;
     errorMessage = "";
+    backgroundColor = 0; //TODO: change these so that stuff doesn't automatically get set to zero
+    newPaletteIndex = 0;
+    activeTurtles = new ArrayList<>();
+    activeTurtles.add(0);
+    penSize = 1.0;
+    newPaletteColor = new ArrayList<>();
+    newPaletteColor.add(0);
+    newPaletteColor.add(0);
+    newPaletteColor.add(0);
+    shapeIndex = 0;
   }
 
 
@@ -74,7 +87,7 @@ public class CommandResultBuilder {
   }
 
   public void setPathColor(int index) {
-    pathColorIndex = index;
+    pathColor = index;
   }
 
   public void variableName(String name) {
@@ -102,10 +115,9 @@ public class CommandResultBuilder {
   }
 
   public CommandResult buildCommandResult() {
-    CommandResult ret = new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
-        startPos, pathColorIndex, varName, varValue, udcName, udcScript,
-        clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles,shapeIndex);
-    ret.setErrorMessage(errorMessage);
-    return ret;
+    return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
+        startPos, pathColor, varName, varValue, udcName, udcScript,
+        clear, penUp, turtleVis, turtleReset, backgroundColor, newPaletteColor, penSize, activeTurtles,
+            shapeIndex, newPaletteIndex, errorMessage);
   }
 }
