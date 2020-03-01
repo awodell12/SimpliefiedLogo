@@ -38,13 +38,25 @@ public class TellCommand implements Command {
       System.out.println(num);
     }
     backEnd.setActiveTurtles(activeTurtleNums);
-    CommandResultBuilder builder = backEnd.startCommandResult(
-        backEnd.getTurtles().get(0).getHeading(),
-        backEnd.getTurtles().get(0).getPosition());
-    builder.retVal(lastTurtleNum);
-    builder.tokensParsed(programCounter+1);
-    builder.activeTurtleIDs(activeTurtleNums);
-    return List.of(builder.buildCommandResult());
+    List<CommandResult> results = new ArrayList<>();
+    for (Integer num : activeTurtleNums) {
+      CommandResultBuilder builder = backEnd.startCommandResult(
+          backEnd.getTurtles().get(num).getHeading(),
+          backEnd.getTurtles().get(num).getPosition());
+      builder.retVal(lastTurtleNum);
+      builder.tokensParsed(programCounter+1);
+      builder.activeTurtleIDs(activeTurtleNums);
+      builder.setTurtleID(num);
+      results.add(builder.buildCommandResult());
+    }
+    return results;
+//    CommandResultBuilder builder = backEnd.startCommandResult(
+//        backEnd.getTurtles().get(0).getHeading(),
+//        backEnd.getTurtles().get(0).getPosition());
+//    builder.retVal(lastTurtleNum);
+//    builder.tokensParsed(programCounter+1);
+//    builder.activeTurtleIDs(activeTurtleNums);
+//    return List.of(builder.buildCommandResult());
   }
 
   @Override

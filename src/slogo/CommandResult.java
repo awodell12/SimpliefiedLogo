@@ -99,7 +99,7 @@ public class CommandResult {
     return myRotation;
   }
 
-  public List<Double> getMyPosition() {
+  public List<Double> getTurtlePosition() {
     return myPosition;
   }
 
