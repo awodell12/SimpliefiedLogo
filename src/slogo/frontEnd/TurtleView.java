@@ -29,6 +29,7 @@ public class TurtleView extends Group{
     private double myPenThickness = 1;
     private final Rectangle myBackground;
     private boolean isPenUp = false;
+    private int myImageIndex = 0;
     private final double myWidth;
     private final double myHeight;
     private final double xOffset;
@@ -214,6 +215,14 @@ public class TurtleView extends Group{
     protected String[] getTurtleInfo(int turtleID) {
         Turtle turtle = myTurtles.get(turtleID);
         return new String[]{Boolean.toString(turtle.isActive()), Integer.toString((int)turtle.getRotate())};
+    }
+
+    /**
+     * Return the image of a turtle. Assumes turtle 0 always exists and all turtles have same image.
+     * @return Image object of the turtle
+     */
+    protected Image getTurtleImage() {
+        return myTurtles.get(0).getImage();
     }
 
     private void toggleActive(int id, Consumer<Boolean> onClicked) {

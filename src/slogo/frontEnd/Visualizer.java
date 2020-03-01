@@ -97,8 +97,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("Display Commands", "Display_Commands");
     put("Multiple Turtles", "Multiple_Turtle_Commands");
   }};
-  private static final List<String> imageList = List.of(myResources.getString("Duke"), myResources.getString("DefaultTurtle"),
-          myResources.getString("Duval"));
+  private static final List<Image> imageList = List.of(new Image(myResources.getString("Duke")),
+          new Image(myResources.getString("DefaultTurtle")), new Image(myResources.getString("Duval")));
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
@@ -261,6 +261,10 @@ public class Visualizer extends Application implements FrontEndExternal{
     myCurrentTurtleID = turtleID;
     if(!myTurtleView.getExistingTurtleIDs().contains(turtleID)){
       createTurtle(turtlePos, turtleID);
+    }
+    Image image = imageList.get(imageIndex);
+    if(myTurtleView.getTurtleImage() != image) {
+      myTurtleView.setTurtleImage(image);
     }
     myTurtleView.activateTurtles(activeTurtles);
     for(int id : myTurtleView.getExistingTurtleIDs()){
@@ -534,7 +538,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setTurtleImageIndex(String num){
-    Image image = new Image(imageList.get(Integer.parseInt(num)));
+    Image image = imageList.get(Integer.parseInt(num));
     myTurtleView.setTurtleImage(image);
     //TODO: move the above 2 lines to interpretResult once this command is supported by backend
     //executeInstruction("setshape " + Integer.parseInt(num));
