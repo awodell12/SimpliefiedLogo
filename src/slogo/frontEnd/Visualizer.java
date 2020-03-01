@@ -288,17 +288,17 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.setIsPenUp(isPenUp);
     setPenText();
     displayErrorMessage(errorMessage);
+    if (newColorRGB != null){
+      updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
+    }
+    myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
+    myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)));
     if(originalInstruction != myCurrentlyHighlighted) {
       myHistory.highlightNext();
       myCurrentlyHighlighted = originalInstruction;
     }
     undone = false;
     myRightVBox.requestLayout(); // make sure everything is updated graphically
-    //newColorRGB = List.of(100, 100, 100);
-    //paletteIndex = 12;
-    if (newColorRGB != null){
-      updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
-    }
   }
 
   private void updateColorMenus(int paletteIndex, Color newColor) {
