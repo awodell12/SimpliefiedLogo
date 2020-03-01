@@ -71,7 +71,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double BOTTOM_INSET = 0.15;
   private static final double MENU_LABEL_SIZE = 20;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
-  private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background", "PenUp", "TurtleImage"};
+  private static final List<String> MENU_NAMES = List.of("Color", "Language", "Background", "PenUp", "TurtleImage");
   private static final String[][] MENU_OPTIONS = new String[][]{{"0", "1", "2", "3", "4", "5", "6", "7", "8"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
           {"0", "1", "2", "3", "4", "5", "6", "7", "8"},
@@ -287,13 +287,14 @@ public class Visualizer extends Application implements FrontEndExternal{
     undone = false;
     myRightVBox.requestLayout(); // make sure everything is updated graphically
     if (newColorRGB != null){
-      myColorPalette.put(Integer.toString(paletteIndex), Color.color(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ));
-      updateColorMenus(paletteIndex);
+      updateColorMenus(paletteIndex, Color.color(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
   }
 
-  private void updateColorMenus(int paletteIndex) {
-    // TODO newly created color in palette to Background and penColor menus
+  private void updateColorMenus(int paletteIndex, Color newColor) {
+      myColorPalette.put(Integer.toString(paletteIndex), newColor);
+      addMenuItem(MENU_NAMES.indexOf("Background"),  paletteIndex, null);
+      addMenuItem(MENU_NAMES.indexOf("Color"), paletteIndex, null);
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -580,13 +581,13 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpMenus(){
     MenuBar menuBar = new MenuBar();
     myLeftVBox.getChildren().add(menuBar);
-    for(int i=0; i<MENU_NAMES.length; i++){
-      Menu menu = new Menu(MENU_NAMES[i]);
+    for(int i=0; i<MENU_NAMES.size(); i++){
+      Menu menu = new Menu(MENU_NAMES.get(i));
       menuBar.getMenus().add(menu);
       for(String entry : MENU_OPTIONS[i]){
         MenuItem menuItem = new MenuItem(entry);
-        String methodName = myResources.getString(MENU_NAMES[i]);
-        String labelGetterName = myResources.getString(MENU_NAMES[i] + "Label");
+        String methodName = myResources.getString(MENU_NAMES.get(i));
+        String labelGetterName = myResources.getString(MENU_NAMES.get(i) + "Label");
         // get another method name that will give us the label corresponding to this menu name
         // the method should return a node object
         try {
