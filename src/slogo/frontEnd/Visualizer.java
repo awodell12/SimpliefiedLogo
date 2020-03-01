@@ -45,7 +45,7 @@ import java.util.*;
 public class Visualizer extends Application implements FrontEndExternal{
   private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
   private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
-  private static final double HEIGHT = Integer.parseInt(myResources.getString("WindowHeight"));
+  private static final double HEIGHT = Double.parseDouble(myResources.getString("WindowHeight"));
   private static final double ASPECT_RATIO = (16.0/9.0);
   private static final double WIDTH = HEIGHT * ASPECT_RATIO;
   private static final Paint BACKGROUND = Color.WHITE;
@@ -306,10 +306,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
       try {
         step(false);
-      } /*catch (IOException ex) {
-        System.out.println("Caught IO Exception");
-        showError("Please wait for the animation to finish");
-      } */catch (Exception ex) {
+      } catch (Exception ex) {
         System.out.println("Caught Exception");
         ex.printStackTrace();
       }
