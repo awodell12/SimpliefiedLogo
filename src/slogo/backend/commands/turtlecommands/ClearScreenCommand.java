@@ -7,6 +7,7 @@ import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
+import slogo.backend.CommandResultBuilder;
 
 public class ClearScreenCommand implements Command {
 
@@ -29,32 +30,10 @@ public class ClearScreenCommand implements Command {
         backEnd.getTurtles().get(0).setHeading(0);
         System.out.println("Went home, cleared paths \n " +
                 "Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-        CommandResult clearResult = new CommandResult(
-                retVal,
-                0,
-                0,
-                backEnd.getTurtles().get(0).getHeading(),
-                List.of(backEnd.getTurtles().get(0).getX(),
-                        backEnd.getTurtles().get(0).getY()),
-                null, //TODO: change 0 values so that stuff doesn't get auto reset
-                0,
-                null,
-                0,
-                null,
-                null,
-                true,
-                backEnd.getTurtles().get(0).getPenUp(),
-                backEnd.getTurtles().get(0).getVisible(),
-                false,
-                0,
-                Arrays.asList(0, 0, 0),
-                1.0,
-                Collections.singletonList(0),
-                0,
-                0,
-                ""
-        );
-        return List.of(clearResult);
+        CommandResultBuilder clearResult = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(),
+            List.of(backEnd.getTurtles().get(0).getX(),
+                backEnd.getTurtles().get(0).getY()));
+        return List.of(clearResult.buildCommandResult());
     }
 
     @Override

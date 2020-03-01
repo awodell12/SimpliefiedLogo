@@ -86,11 +86,20 @@ public interface BackEndInternal {
 
   CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, int pathColor);
 
-  CommandResult makeCommandResult(double retVal, int tokensParsed, String varName,
-      double varValue);
+  CommandResult makeCommandResult(double retVal, int tokensParsed, String varName, double varValue);
 
   CommandResult makeCommandResult(double retVal, int tokensParsed, String udcName, String udcScript);
 
   CommandResult makeCommandResult(double retVal, int tokensParsed);
+
+  void setActiveTurtles(List<Integer> turtleIDs);
+
+  void addPaletteColor(int index, List<Integer> rgbColor);
+
+  /**
+   * @param ids a list of IDs corresponding to turtles
+   * @return List of turtles with these IDs
+   */
+  List<Turtle> getTurtles(List<Integer> ids);
 }
 

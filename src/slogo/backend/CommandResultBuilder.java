@@ -1,7 +1,6 @@
 package slogo.backend;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import slogo.CommandResult;
 
@@ -13,7 +12,7 @@ public class CommandResultBuilder {
   private double turtleHeading;
   private List<Double> turtlePos;
   private List<Double> startPos;
-  private int pathColor;
+  private int pathColorIndex;
   private String varName;
   private double varValue;
   private String udcName;
@@ -22,13 +21,13 @@ public class CommandResultBuilder {
   private boolean penUp;
   private boolean turtleVis;
   private boolean turtleReset;
-  private String errorMessage;
-  private int backgroundColor;
-  private int newPaletteIndex;
+  private int bgColorIndex;
+  private List<Integer> newColor;
   private double penSize;
-  private List<Integer> newPaletteColor;
   private List<Integer> activeTurtles;
   private int shapeIndex;
+  private String errorMessage;
+  private int newPaletteIndex;
 
   public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition) {
     myRetVal = 0;
@@ -37,25 +36,26 @@ public class CommandResultBuilder {
     turtlePos = turtlePosition;
     turtleHeading = turtleFacing;
     startPos = null;
-    pathColor = 0;
+    pathColorIndex = 0;
     varName = null;
     varValue = 0;
     udcName = null;
     udcScript = null;
     clear = false;
-    penUp = true;
+    penUp = false; //TODO: change this so pen doesn't always go down
     turtleVis = true;
     turtleReset = false;
+    bgColorIndex = 0;
+    newColor = null;
+    penSize = 0;
+    activeTurtles = null;
+    shapeIndex = 0;
     errorMessage = "";
-    backgroundColor = 0; //TODO: change these so that stuff doesn't automatically get set to zero
+    //TODO: change these so that stuff doesn't automatically get set to zero
     newPaletteIndex = 0;
     activeTurtles = new ArrayList<>();
     activeTurtles.add(0);
     penSize = 1.0;
-    newPaletteColor = new ArrayList<>();
-    newPaletteColor.add(0);
-    newPaletteColor.add(0);
-    newPaletteColor.add(0);
     shapeIndex = 0;
   }
 
@@ -66,6 +66,22 @@ public class CommandResultBuilder {
 
   public void tokensParsed(int val) {
     myTokensParsed = val;
+  }
+
+  public void setTurtleID (int val) {
+    turtleID = val;
+  }
+
+  public void setTurtlePos(List<Double> pos) {
+    turtlePos = pos;
+  }
+
+  public void setPathStart(List<Double> pos) {
+    startPos = pos;
+  }
+
+  public void setPathColor(int index) {
+    pathColorIndex = index;
   }
 
   public void variableName(String name) {
@@ -84,10 +100,18 @@ public class CommandResultBuilder {
     udcScript = script;
   }
 
+  public void activeTurtleIDs(List<Integer> turtles) {
+    activeTurtles = new ArrayList<>(turtles);
+  }
+
+  public void setErrorMessage(String message) {
+    errorMessage = message;
+  }
+
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
-        startPos, pathColor, varName, varValue, udcName, udcScript,
-        clear, penUp, turtleVis, turtleReset, backgroundColor, newPaletteColor, penSize, activeTurtles,
-            shapeIndex, newPaletteIndex, errorMessage);
+        startPos, pathColorIndex, varName, varValue, udcName, udcScript,
+        clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles, newPaletteIndex,
+            shapeIndex, errorMessage);
   }
 }
