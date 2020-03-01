@@ -29,7 +29,7 @@ public class GoHomeCommand implements Command {
         double retVal = backEnd.getTurtles().get(0).setPos(0, 0);
         System.out.println("Went home \n " +
                 "Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-        CommandResultBuilder builder = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(),
+        CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),
             List.of(backEnd.getTurtles().get(0).getX(),
                 backEnd.getTurtles().get(0).getY()));
         return List.of(builder.buildCommandResult());

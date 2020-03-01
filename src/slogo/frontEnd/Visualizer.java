@@ -124,10 +124,11 @@ public class Visualizer extends Application implements FrontEndExternal{
   private boolean isReady = true;
   private boolean paused = false;
   private final Queue<CommandResult> resultQueue = new LinkedList<>();
-  private CommandResult previousResult = new CommandResult(0, 0, 0, 0,
-          List.of(0.0,0.0), null, 0, null, 0, null, null,
-          false, false, true, false, 0, Arrays.asList(0, 0, 0),
-          1.0, Collections.singletonList(0), 0, 0, "");
+  private CommandResult previousResult = null;
+//      new CommandResult(0, 0, 0, 0,
+//          List.of(0.0,0.0), null, 0, null, 0, null, null,
+//          false, false, true, false, 0, Arrays.asList(0, 0, 0),
+//          1.0, Collections.singletonList(0), 0, 0, "");
   private CommandResult currentResult = previousResult;
   private boolean undone = false;
   private String myCurrentlyHighlighted = null;

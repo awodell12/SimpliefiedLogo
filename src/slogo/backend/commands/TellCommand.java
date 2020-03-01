@@ -38,7 +38,7 @@ public class TellCommand implements Command {
       System.out.println(num);
     }
     backEnd.setActiveTurtles(activeTurtleNums);
-    CommandResultBuilder builder = new CommandResultBuilder(
+    CommandResultBuilder builder = backEnd.startCommandResult(
         backEnd.getTurtles().get(0).getHeading(),
         backEnd.getTurtles().get(0).getPosition());
     builder.retVal(lastTurtleNum);

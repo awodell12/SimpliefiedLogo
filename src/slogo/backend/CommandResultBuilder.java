@@ -29,8 +29,9 @@ public class CommandResultBuilder {
   private String errorMessage;
   private int newPaletteIndex;
   private List<Integer> newPaletteColor;
+  private boolean actualCommand;
 
-  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition) {
+  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers) {
     myRetVal = 0;
     myTokensParsed = 0;
     turtleID = 0;
@@ -49,20 +50,19 @@ public class CommandResultBuilder {
     bgColorIndex = 0;
     newColor = null;
     penSize = 0;
-    activeTurtles = null;
     shapeIndex = 0;
     errorMessage = "";
     //TODO: change these so that stuff doesn't automatically get set to zero
     newPaletteIndex = 0;
-    activeTurtles = new ArrayList<>();
-    activeTurtles.add(0);
+    activeTurtles = new ArrayList<>(activeTurtleNumbers);
     penSize = 1.0;
     shapeIndex = 0;
+    actualCommand = true;
   }
 
-  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp) {
-    this(turtleFacing,turtlePosition);
-    turtleID = turtleID;
+  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles) {
+    this(turtleFacing,turtlePosition, activeTurtles);
+    turtleID = turtleNumber;
     penUp = turtlePenUp;
   }
 
@@ -115,10 +115,14 @@ public class CommandResultBuilder {
     errorMessage = message;
   }
 
+  public void setIsActualCommand(boolean isCommand) {
+    actualCommand = isCommand;
+  }
+
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
         startPos, pathColorIndex, varName, varValue, udcName, udcScript,
         clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles, newPaletteIndex,
-            shapeIndex, errorMessage);
+            shapeIndex, errorMessage, actualCommand);
   }
 }
