@@ -305,6 +305,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         step(false);
       } /*catch (IOException ex) {
         System.out.println("Caught IO Exception");
+        showError("Please wait for the animation to finish");
       } */catch (Exception ex) {
         System.out.println("Caught Exception");
         ex.printStackTrace();
@@ -610,7 +611,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void executeInstruction(String instruction) {
     myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
-    if(instruction != myCurrentlyHighlighted) { // want to compare object references here
+    if(instruction != myCurrentlyHighlighted && isReady) { // want to compare object references here
       myHistory.highlightNext();
       myCurrentlyHighlighted = instruction;
     }
