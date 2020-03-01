@@ -102,5 +102,7 @@ public interface BackEndInternal {
    * @return List of turtles with these IDs
    */
   List<Turtle> getTurtles(List<Integer> ids);
+
+  List<Turtle> getActiveTurtles();
 }
 

@@ -94,4 +94,6 @@ public interface Turtle {
    */
   public int setVisible(boolean vis);
 
+  public int getId();
+
 }

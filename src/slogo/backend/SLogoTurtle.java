@@ -4,6 +4,7 @@ import java.util.List;
 
 public class SLogoTurtle implements Turtle {
 
+    private int myId;
     private double myX = 0;
     private double myY = 0;
     private double myHeading = 0;
@@ -115,5 +116,10 @@ public class SLogoTurtle implements Turtle {
         if(vis)
             return 1;
         return 0;
+    }
+
+    @Override
+    public int getId() {
+        return myId;
     }
 }

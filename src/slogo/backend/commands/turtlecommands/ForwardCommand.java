@@ -1,10 +1,12 @@
 package slogo.backend.commands.turtlecommands;
 
+import java.util.ArrayList;
 import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
+import slogo.backend.Turtle;
 
 public class ForwardCommand implements Command {
 
@@ -24,11 +26,18 @@ public class ForwardCommand implements Command {
   @Override
   public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd)
       throws ParseException {
-    List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
-    backEnd.getTurtles().get(0).moveForward(arguments.get(0));
-    System.out.println("Moved forward by " + arguments.get(0));
-    System.out.println("Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-    return List.of(backEnd.makeCommandResult(arguments.get(0),0,prevPos,"000000"));
+    List<CommandResult> results = new ArrayList<>();
+    for (Turtle turtle : backEnd.getActiveTurtles()) {
+      List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
+      backEnd.getTurtles().get(0).moveForward(arguments.get(0));
+      System.out.println("Moved forward by " + arguments.get(0));
+      System.out.println("Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
+      results.add(backEnd.makeCommandResult(arguments.get(0),0,prevPos,"000000"));
+    }
+    if (results.isEmpty()) {
+      results.add(backEnd.makeCommandResult(arguments.get(0),0));
+    }
+    return results;
   }
 
   @Override

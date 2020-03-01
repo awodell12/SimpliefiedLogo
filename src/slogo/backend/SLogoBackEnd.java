@@ -365,7 +365,16 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public void setActiveTurtles(List<Integer> turtleIDs) {
-
+    ArrayList<Turtle> active = new ArrayList<>();
+    for (Integer num : turtleIDs) {
+      for (Turtle turtle : myTurtles) {
+        if (turtle.getId() == num) {
+          active.add(turtle);
+        }
+      }
+    }
+    myActiveTurtles = active;
+    System.out.println("Active turtles: " + active.toString());
   }
 
   @Override
@@ -376,5 +385,10 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   @Override
   public List<Turtle> getTurtles(List<Integer> ids) {
     return null;
+  }
+
+  @Override
+  public List<Turtle> getActiveTurtles() {
+    return new ArrayList<>(myActiveTurtles);
   }
 }
