@@ -43,6 +43,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class Visualizer extends Application implements FrontEndExternal{
   private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
   private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
@@ -70,7 +71,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double BOTTOM_INSET = 0.15;
   private static final double MENU_LABEL_SIZE = 20;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
-  private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background", "PenUp", "TurtleImage"};
+  private static final List<String> MENU_NAMES = List.of("Color", "Language", "Background", "PenUp", "TurtleImage");
   private static final String[][] MENU_OPTIONS = new String[][]{{"0", "1", "2", "3", "4", "5", "6", "7", "8"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
           {"0", "1", "2", "3", "4", "5", "6", "7", "8"},
@@ -290,6 +291,15 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
     undone = false;
     myRightVBox.requestLayout(); // make sure everything is updated graphically
+    if (newColorRGB != null){
+      updateColorMenus(paletteIndex, Color.color(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
+    }
+  }
+
+  private void updateColorMenus(int paletteIndex, Color newColor) {
+      myColorPalette.put(Integer.toString(paletteIndex), newColor);
+      addMenuItem(MENU_NAMES.indexOf("Background"),  Integer.toString(paletteIndex), null);
+      addMenuItem(MENU_NAMES.indexOf("Color"), Integer.toString(paletteIndex), null);
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -576,8 +586,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpMenus(){
     myMenuBar = new MenuBar();
     myLeftVBox.getChildren().add(myMenuBar);
-    for(int i=0; i<MENU_NAMES.length; i++){
-      Menu menu = new Menu(MENU_NAMES[i]);
+    for(int i=0; i<MENU_NAMES.size(); i++){
+      Menu menu = new Menu(MENU_NAMES.get(i));
       myMenuBar.getMenus().add(menu);
       for(String entry : MENU_OPTIONS[i]){
         addMenuItem(i, entry, null);
@@ -587,7 +597,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void addMenuItem(int menuNameIndex, String menuItemName, ImageView imageView){
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
-    String menuName = MENU_NAMES[menuNameIndex];
+    String menuName = MENU_NAMES.get(menuNameIndex);
     MenuItem menuItem = new MenuItem(menuItemName);
     String methodName = myResources.getString(menuName);
     String labelGetterName = myResources.getString(menuName + "Label");
