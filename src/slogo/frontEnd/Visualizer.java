@@ -98,8 +98,11 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("Display Commands", "Display_Commands");
     put("Multiple Turtles", "Multiple_Turtle_Commands");
   }};
-  private static final List<Image> imageList = List.of(new Image(myResources.getString("Duke")),
-          new Image(myResources.getString("DefaultTurtle")), new Image(myResources.getString("Duval")));
+  private final List<Image> imageList = new ArrayList<>() {{
+    add(new Image(myResources.getString("DefaultTurtle")));
+    add(new Image(myResources.getString("Duke")));
+    add(new Image(myResources.getString("Duval")));
+  }};
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
@@ -300,8 +303,8 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void updateColorMenus(int paletteIndex, Color newColor) {
       myColorPalette.put(Integer.toString(paletteIndex), newColor);
-      addMenuItem(MENU_NAMES.indexOf("Background"),  Integer.toString(paletteIndex), null);
-      addMenuItem(MENU_NAMES.indexOf("Color"), Integer.toString(paletteIndex), null);
+      addMenuItem(MENU_NAMES.indexOf("Background"),  Integer.toString(paletteIndex));
+      addMenuItem(MENU_NAMES.indexOf("Color"), Integer.toString(paletteIndex));
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -592,12 +595,12 @@ public class Visualizer extends Application implements FrontEndExternal{
       Menu menu = new Menu(MENU_NAMES.get(i));
       myMenuBar.getMenus().add(menu);
       for(String entry : MENU_OPTIONS[i]){
-        addMenuItem(i, entry, null);
+        addMenuItem(i, entry);
       }
     }
   }
 
-  private void addMenuItem(int menuNameIndex, String menuItemName, ImageView imageView){
+  private void addMenuItem(int menuNameIndex, String menuItemName){
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
     String menuName = MENU_NAMES.get(menuNameIndex);
     MenuItem menuItem = new MenuItem(menuItemName);
@@ -608,8 +611,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     try {
       Method method = this.getClass().getDeclaredMethod(methodName, String.class);
       Method labelGetter = this.getClass().getDeclaredMethod(labelGetterName, String.class);
-      if(imageView == null) menuItem.setGraphic((Node) labelGetter.invoke(this, menuItemName));
-      else menuItem.setGraphic(imageView);
+      menuItem.setGraphic((Node) labelGetter.invoke(this, menuItemName));
       menuItem.setOnAction(event -> {
         try {
           method.invoke(this, menuItemName);
@@ -632,7 +634,9 @@ public class Visualizer extends Application implements FrontEndExternal{
         BufferedImage buffImage = ImageIO.read(file);
         WritableImage fximage = new WritableImage(buffImage.getWidth(), buffImage.getHeight());
         Image image = SwingFXUtils.toFXImage(buffImage, fximage);
-        myTurtleView.setTurtleImage(image);
+        imageList.add(image);
+        addMenuItem(MENU_NAMES.indexOf("TurtleImage"), Integer.toString(imageList.size()-1));
+        setTurtleImageIndex(Integer.toString(imageList.size()-1));
       } catch (IOException | NullPointerException ex) {
         showError(myResources.getString("LoadTurtle"));
       }
