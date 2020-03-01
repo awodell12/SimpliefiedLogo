@@ -236,6 +236,7 @@ public class TurtleView extends Group{
         myTurtles.get(id).setY(yOffset);
         myTurtles.get(id).setX(xOffset);
         myTurtles.get(id).setRotate(0);
+        unalteredTurtlePositions.put(id, new Point2D(0.0, 0.0));
     }
 
     private double boundX(double x){

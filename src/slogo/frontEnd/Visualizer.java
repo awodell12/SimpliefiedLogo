@@ -126,12 +126,15 @@ public class Visualizer extends Application implements FrontEndExternal{
   private boolean isReady = true;
   private boolean paused = false;
   private final Queue<CommandResult> resultQueue = new LinkedList<>();
-  private CommandResult previousResult = null;
-//      new CommandResult(0, 0, 0, 0,
-//          List.of(0.0,0.0), null, 0, null, 0, null, null,
-//          false, false, true, false, 0, Arrays.asList(0, 0, 0),
-//          1.0, Collections.singletonList(0), 0, 0, "");
+  private CommandResult previousResult = new CommandResult(0, 0, 0, 0,
+          List.of(0.0,0.0), null, 0, null, 0.0, null, null,
+          false, false, true, false, 0, Arrays.asList(0, 0, 0),
+          1.0, Collections.singletonList(0), 0, 0, "", true);
   private CommandResult currentResult = previousResult;
+  //private Map<String, Double> previousVariableMapping = new HashMap<>(); //TODO: move this to variable class?
+  //private Map<String, Double> currentVariableMapping = previousVariableMapping;
+  //private Map<String, Double> previousUDCMapping = new HashMap<>(); //TODO: move this to variable class?
+  //private Map<String, Double> currentUDCMapping = previousUDCMapping; // TODO: make a state class?
   private boolean undone = false;
   private String myCurrentlyHighlighted = null;
   private String myCurrentInstruction = null;
@@ -195,14 +198,18 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void dissectCommand(CommandResult result) {
     if(result.getMyOriginalInstruction() != myCurrentInstruction) {
       previousResult = currentResult;
+      //previousVariableMapping = currentVariableMapping;
+      //previousUDCMapping = currentUDCMapping;
       myCurrentInstruction = result.getMyOriginalInstruction();
     }
     currentResult = result;
+    //currentVariableMapping = myVariables.getMap();
+    //currentUDCMapping = myUserDefinedCommands.getMap();
     Point2D startPos = null;
     if(result.getPathStart() != null){
       startPos = new Point2D(result.getPathStart().get(0), -result.getPathStart().get(1));
     }
-    interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), -result.getMyPosition().get(1)),
+    interpretResult(result.getMyRotation(), new Point2D(result.getTurtlePosition().get(0), -result.getTurtlePosition().get(1)),
             startPos, result.getMyVariableName(),
             result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
             result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction(),
@@ -476,12 +483,22 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void resetAnimation() {
-    myTurtleView.clearPaths();
+    executeInstruction("clearscreen");
+    //myTurtleView.clearPaths(); // TODO: fix clear screen command
   }
 
   private void undoButton(){
     myHistory.addEntry("undo " + myCurrentInstruction, null, e->myCommandBox.setText(myCurrentInstruction));
+    /*myVariables.clearEntryBox();
+    for(Map.Entry<String, Double> entry : previousVariableMapping.entrySet()){
+      addVariable(entry.getKey(), entry.getValue());
+    }
+    myUserDefinedCommands.clearEntryBox();
+    for(Map.Entry<String, String> entry : previousUDCMapping.entrySet()){
+      addUserDefinedCommand(entry.getKey(), entry.getValue());
+    }*/
     processResult(previousResult);
+    // TODO: make this work for multiple turtles
     undone = true;
   }
 
