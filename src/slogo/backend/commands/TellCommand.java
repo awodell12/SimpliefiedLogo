@@ -10,6 +10,7 @@ import slogo.backend.Command;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.ParseException;
 import slogo.backend.SLogoBackEnd;
+import slogo.backend.Turtle;
 
 public class TellCommand implements Command {
 
@@ -39,14 +40,14 @@ public class TellCommand implements Command {
     }
     backEnd.setActiveTurtles(activeTurtleNums);
     List<CommandResult> results = new ArrayList<>();
-    for (Integer num : activeTurtleNums) {
+    for (Turtle newlyActive : backEnd.getActiveTurtles()) {
       CommandResultBuilder builder = backEnd.startCommandResult(
-          backEnd.getTurtles().get(num).getHeading(),
-          backEnd.getTurtles().get(num).getPosition());
+          newlyActive.getHeading(),
+          newlyActive.getPosition());
       builder.retVal(lastTurtleNum);
       builder.tokensParsed(programCounter+1);
       builder.activeTurtleIDs(activeTurtleNums);
-      builder.setTurtleID(num);
+      builder.setTurtleID(newlyActive.getId());
       results.add(builder.buildCommandResult());
     }
     if (results.isEmpty()) {
