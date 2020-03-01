@@ -378,7 +378,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setPenText(){
     String[] penState = myTurtleView.getPenState();
-    myPenText.setText("Pen Up: " + penState[0] + " Pen Color: " + penState[1] + " Pen Thickness: " + penState[2]);
+    double thick = Double.parseDouble(penState[2]);
+    String penThick = String.format("%.3f", thick);
+    myPenText.setText("Pen Up: " + penState[0] + " Pen Color: " + penState[1] + " Pen Thickness: " + penThick);
   }
 
   private void endPause(){
