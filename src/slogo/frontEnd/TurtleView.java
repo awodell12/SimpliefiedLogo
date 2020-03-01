@@ -200,8 +200,10 @@ public class TurtleView extends Group{
             turtle.setImage(myInactiveTurtleImage);
         }
         for(int id : activeTurtles){
-            myTurtles.get(id).setActive(true);
-            myTurtles.get(id).setImage(myActiveTurtleImage);
+            if(myTurtles.containsKey(id)) {
+                myTurtles.get(id).setActive(true);
+                myTurtles.get(id).setImage(myActiveTurtleImage);
+            }
         }
     }
 

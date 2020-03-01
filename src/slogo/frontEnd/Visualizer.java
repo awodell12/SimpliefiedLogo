@@ -56,7 +56,6 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(225, 125);
   private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(60, 40);
   private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(30, 30);
-  private static final Rectangle CLEAR_COMMAND_BOX_SHAPE = new Rectangle(60, 40);
   private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(75, 50);
@@ -69,11 +68,12 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MARGIN = 25;
   private static final double BOTTOM_INSET = 0.15;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
-  private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background", "PenUp"};
+  private static final String[] MENU_NAMES = new String[]{"Color", "Language", "Background", "PenUp", "TurtleImage"};
   private static final String[][] MENU_OPTIONS = new String[][]{{"Red", "Dark Salmon", "Billion Dollar Grass", "Black"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
           {"White", "Duke Blue", "Gray", "Red", "Azure", "LemonChiffon"},
-          {"penUp", "penDown"}};
+          {"penUp", "penDown"},
+          {"0", "1", "2"}};
   private static final Map<String, Color> COLOR_MAP = new HashMap<>(){{
     put("Red", Color.RED);
     put("White", Color.WHITE);
@@ -92,6 +92,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("Math Operations", "Math");
     put("Boolean Operations", "Booleans");
     put("Variables, Control Structures, and User-Defined Commands", "Variables_Control_UDC");
+    put("Display Commands", "Display_Commands");
+    put("Multiple Turtles", "Multiple_Turtle_Commands");
   }};
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
@@ -138,7 +140,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   private int myCurrentTurtleID;
   private Text myPenText;
   private TextFlow myTurtleInfo = new TextFlow();
-
+  private List<String> imageList = List.of(myResources.getString("Duke"), myResources.getString("DefaultTurtle"),
+          myResources.getString("Duval"));
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -306,6 +309,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         step(false);
       } /*catch (IOException ex) {
         System.out.println("Caught IO Exception");
+        showError("Please wait for the animation to finish");
       } */catch (Exception ex) {
         System.out.println("Caught Exception");
         ex.printStackTrace();
@@ -507,6 +511,22 @@ public class Visualizer extends Application implements FrontEndExternal{
     executeInstruction("language: " + language);
   }
 
+  private void setTurtleImageIndex(String num){
+    Image image = new Image(imageList.get(Integer.parseInt(num)));
+    myTurtleView.setTurtleImage(image);
+    //TODO: move the above 2 lines to interpretResult once this command is supported by backend
+    executeInstruction("setshape " + Integer.parseInt(num));
+  }
+
+  private void runButton(){
+    String instruction = myCommandBox.getContents();
+    executeInstruction(instruction);
+  }
+
+  private void clearButton(){
+    myCommandBox.clearContents();
+  }
+
   private void setUpMenus(){
     MenuBar menuBar = new MenuBar();
     myLeftVBox.getChildren().add(menuBar);
@@ -522,11 +542,11 @@ public class Visualizer extends Application implements FrontEndExternal{
             try {
               method.invoke(this, entry);
             } catch (IllegalAccessException | InvocationTargetException e) {
-              showError("");
+              showError("Error invoking the method");
             }
           });
         } catch (NoSuchMethodException e) {
-          showError("");
+          showError("Method doesn't exist");
         }
         menu.getItems().add(menuItem);
       }
@@ -604,23 +624,14 @@ public class Visualizer extends Application implements FrontEndExternal{
     myUserDefinedCommands.addEntry(name + ":\n" + command, name, e->myCommandBox.setText(name));
   }
 
-  private void runButton(){
-    String instruction = myCommandBox.getContents();
-    executeInstruction(instruction);
-  }
-
   private void executeInstruction(String instruction) {
     myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
-    if(instruction != myCurrentlyHighlighted) { // want to compare object references here
+    if(instruction != myCurrentlyHighlighted && isReady) { // want to compare object references here
       myHistory.highlightNext();
       myCurrentlyHighlighted = instruction;
     }
     myRightVBox.requestLayout(); // make sure everything is updated graphically
     myInstructionQueue.add(instruction);
-  }
-
-  private void clearButton(){
-    myCommandBox.clearContents();
   }
 
   private void displayHelp(){
