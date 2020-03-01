@@ -109,7 +109,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
   private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace"};
-  private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight", 
+  private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight",
           "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
 
   private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
