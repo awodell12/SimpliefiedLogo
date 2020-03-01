@@ -516,7 +516,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setPenColor(String colorName){
-    myTurtleView.setPenColor(COLOR_MAP.get(colorName));
+    myTurtleView.setPenColor(myColorPalette.get(colorName));
   }
 
   private void setPenUp(String menuName){
@@ -524,7 +524,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setBackGroundColor(String colorName){
-    myTurtleView.setBackGroundColor(COLOR_MAP.get(colorName));
+    myTurtleView.setBackGroundColor(myColorPalette.get(colorName));
   }
 
   private void setLanguage(String language){
