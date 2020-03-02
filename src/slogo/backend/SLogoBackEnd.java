@@ -113,13 +113,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       try {
         Command command = identifyCommand(tokenList[programCounter]);
         List<CommandResult> listResult;
+        String[] tokensToParse = Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length);
         if (command.runsPerTurtle()) {
-          listResult = parseCommandPerTurtle(command,
-              Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+          listResult = parseCommandPerTurtle(command,tokensToParse);
         }
         else {
-          listResult = parseCommand(command,
-              Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+          listResult = parseCommand(command,tokensToParse);
         }
         results.addAll(listResult);
         programCounter += results.get(results.size() - 1).getTokensParsed() + 1;
@@ -138,6 +137,29 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       retVal = results.get(results.size() - 1).getReturnVal();
     }
     return retVal;
+  }
+
+  public List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException {
+    int programCounter = 0;
+    List<CommandResult> results = new ArrayList<>();
+    String currentTokenType = getSymbol(tokenList[0]);
+    if (isValue(currentTokenType)) {
+      CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+      builder.retVal(parseValue(currentTokenType,tokenList[0]));
+      return List.of(builder.buildCommandResult());
+    }
+    Command command = identifyCommand(tokenList[0]);
+    List<CommandResult> listResult;
+    if (command.runsPerTurtle()) {
+      listResult = parseCommandPerTurtle(command,
+          Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+    }
+    else {
+      listResult = parseCommand(command,
+          Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+    }
+    results.addAll(listResult);
+    return results;
   }
 
   private Command identifyCommand(String rawToken) throws ParseException {
@@ -159,6 +181,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     List<CommandResult> results = new ArrayList<>();
     for (Turtle activeTurtle : myActiveTurtles) {
       myActiveTurtleID = activeTurtle.getId();
+      System.out.println("myA = " + myActiveTurtleID);
       results.addAll(parseCommand(command,tokenList));
     }
     myActiveTurtleID = null;

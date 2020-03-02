@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import slogo.backend.commands.AskCommand;
+import slogo.backend.commands.AskWithCommand;
 import slogo.backend.commands.IdCommand;
 import slogo.backend.commands.TellCommand;
 import slogo.backend.commands.booleancommands.AndCommand;
@@ -106,6 +107,7 @@ public class CommandFactory {
     newMap.put("Tell", new TellCommand());
     newMap.put("ID", new IdCommand());
     newMap.put("Ask", new AskCommand());
+    newMap.put("AskWith", new AskWithCommand());
     myCommands = Collections.unmodifiableMap(newMap);
   }
 
