@@ -100,14 +100,14 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MAX_SPEED = 10;
   private static final double DEFAULT_SPEED = 1;
 
-  private ResourceBundle myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.englishconfig");
+  private ResourceBundle myLanguageResources;
+  private ResourceBundle myWorkSpaceResources;
   private final List<Image> imageList = new ArrayList<>() {{
     add(new Image(myResources.getString("DefaultTurtle")));
     add(new Image(myResources.getString("Duke")));
     add(new Image(myResources.getString("Duval")));
   }};
   private List<String> myMenuNames;
-  private List<List<String>> myMenuOptions;
   private Map<String, Color> myColorPalette = new HashMap<>(){{
     put("0", Color.RED);
     put("1", Color.WHITE);
@@ -165,10 +165,13 @@ public class Visualizer extends Application implements FrontEndExternal{
    * @param instructionQueueListener listener for the instruction queue
    * @param onNewWorkSpaceClicked what happens when the create new workspace button is clicked
    */
-  public Visualizer(ListChangeListener<String> instructionQueueListener, Consumer<Integer> onNewWorkSpaceClicked) {
+  public Visualizer(ListChangeListener<String> instructionQueueListener, Consumer<Integer> onNewWorkSpaceClicked, int workspaceNum) {
     myInstructionQueue = new ObservableQueue();
     myInstructionQueue.addListener(instructionQueueListener);
     myOnNewWorkSpaceClicked = onNewWorkSpaceClicked;
+    myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace" + workspaceNum);
+    String startingLanguage = myWorkSpaceResources.getString("Language");
+    myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources." + startingLanguage + "config");
   }
 
   @Override
@@ -647,9 +650,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setUpMenus(){
     myMenuNames = Arrays.asList(myLanguageResources.getString("MenuNames").split(","));
-    myMenuOptions = new ArrayList<>();
+    List<List<String>> myMenuOptions = new ArrayList<>();
     for(String menuType : MENU_TYPES){
-      myMenuOptions.add(Arrays.asList(myResources.getString(menuType+"Options").split(",")));
+      myMenuOptions.add(Arrays.asList(myWorkSpaceResources.getString(menuType+"Options").split(",")));
     }
     myMenuBar = new MenuBar();
     myLeftVBox.getChildren().add(myMenuBar);

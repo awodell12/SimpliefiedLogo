@@ -46,7 +46,7 @@ public class Controller extends Application{
             } catch (Exception e) {
                 System.out.println("error creating new workspace");
             }
-        }));
+        }, thisWorkspace));
         myVisualizers.get(thisWorkspace).start(primaryStage);
         numWorkspaces++;
     }
