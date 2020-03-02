@@ -73,7 +73,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
   private static final double SMALLER_FONT_SIZE = 12;
   private static final double PEN_TEXT_WIDTH = 300;
-  private static final List<String> MENU_NAMES = List.of("PenColor", "Language", "Background", "PenUp", "TurtleImage");
+  private static final List<String> MENU_NAMES  = Arrays.asList(myResources.getString("Menus").split(","));
   private static final String[][] MENU_OPTIONS = new String[][]{{"0", "1", "2", "3", "4", "5", "6", "7", "8"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
           {"0", "1", "2", "3", "4", "5", "6", "7", "8"},
@@ -309,8 +309,8 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void updateColorMenus(int paletteIndex, Color newColor) {
       myColorPalette.put(Integer.toString(paletteIndex), newColor);
-      addMenuItem(MENU_NAMES.indexOf("Background"),  Integer.toString(paletteIndex));
-      addMenuItem(MENU_NAMES.indexOf("Color"), Integer.toString(paletteIndex));
+      addMenuItem(MENU_NAMES.indexOf(myResources.getString("BackgroundMenu")),  Integer.toString(paletteIndex));
+      addMenuItem(MENU_NAMES.indexOf(myResources.getString("PenColorMenu")), Integer.toString(paletteIndex));
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -346,7 +346,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         step(false);
       } catch (Exception ex) {
         System.out.println("Caught Exception");
-        ex.printStackTrace();
+        showError(ex.getMessage());
       }
     });
 
@@ -474,7 +474,6 @@ public class Visualizer extends Application implements FrontEndExternal{
       method = clazz.getClass().getDeclaredMethod(text);
     }
     catch (NoSuchMethodException e) {
-      e.printStackTrace();
       showError(e.getMessage());
     }
     Button button = new Button(myResources.getString(text));
@@ -487,7 +486,6 @@ public class Visualizer extends Application implements FrontEndExternal{
         assert finalMethod != null;
         finalMethod.invoke(clazz);
       } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
-        e.printStackTrace();
         showError(e.getMessage());
       }
     });
