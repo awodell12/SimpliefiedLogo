@@ -365,7 +365,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         step(false);
       } catch (Exception ex) {
         System.out.println("Caught Exception");
-        showError(ex.getMessage());
+        showError(ex.getMessage(), myLanguageResources);
       }
     });
 
@@ -412,9 +412,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setUpRightPane() {
     setUpTopButtons();
-    myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myLanguageResources.getString("HistoryLabel"), this);
-    myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myLanguageResources.getString("UDCLabel"), this);
-    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myLanguageResources.getString("VariablesLabel"), this);
+    myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myLanguageResources.getString("HistoryLabel"));
+    myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myLanguageResources.getString("UDCLabel"));
+    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myLanguageResources.getString("VariablesLabel"));
     myPenText = new Text();
     myPenText.setFont(new Font(SMALLER_FONT_SIZE));
     myPenText.setWrappingWidth(PEN_TEXT_WIDTH);
@@ -451,7 +451,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpTopCenterButtons() {
     List<Button> buttons = new ArrayList<>();
     for(String buttonName : TOP_CENTER_BUTTON_METHODS){
-      buttons.add(makeButton(buttonName, TURTLE_BUTTON_SHAPE, this));
+      buttons.add(makeButton(buttonName, TURTLE_BUTTON_SHAPE, this, myLanguageResources));
     }
     for(int i=0; i<NUM_TURTLE_MOVE_BUTTONS; i++){
       HBox hbox = new HBox(SPACING);
@@ -486,20 +486,20 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpTopButtons() {
     HBox topButtons = new HBox(SPACING);
     for(String methodName : TOP_RIGHT_BUTTON_METHODS){
-      topButtons.getChildren().add(makeButton(methodName, TOP_RIGHT_BUTTON_SHAPE, this));
+      topButtons.getChildren().add(makeButton(methodName, TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources));
     }
     myRightVBox.getChildren().add(topButtons);
   }
 
-  protected Button makeButton(String text, Rectangle shape, Object clazz){
+  protected static Button makeButton(String text, Rectangle shape, Object clazz, ResourceBundle languageResources){
     Method method = null;
     try {
       method = clazz.getClass().getDeclaredMethod(text);
     }
     catch (NoSuchMethodException e) {
-      showError(e.getMessage());
+      showError(e.getMessage(), languageResources);
     }
-    Button button = new Button(myLanguageResources.getString(text));
+    Button button = new Button(languageResources.getString(text));
     button.setLayoutY(shape.getY());
     button.setLayoutX(shape.getX());
     button.setMinSize(shape.getWidth(), shape.getHeight());
@@ -509,7 +509,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         assert finalMethod != null;
         finalMethod.invoke(clazz);
       } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
-        showError(e.getMessage());
+        showError(e.getMessage(), languageResources);
       }
     });
     return button;
@@ -578,7 +578,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setLanguage(String language){
-    executeInstruction("language: " + language); //TODO: figure out how to handle this magic value
+    executeInstruction("language: " + myLanguageResources.getString(language)); //TODO: figure out how to handle this magic value
   }
 
   private void setTurtleImageIndex(String num){
@@ -644,11 +644,11 @@ public class Visualizer extends Application implements FrontEndExternal{
         try {
           method.invoke(this, menuItemName);
         } catch (IllegalAccessException | InvocationTargetException e) {
-          showError(myLanguageResources.getString("InvokeError"));
+          showError(myLanguageResources.getString("InvokeError"), myLanguageResources);
         }
       });
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      showError(myLanguageResources.getString("NoMethodError"));
+      showError(myLanguageResources.getString("NoMethodError"), myLanguageResources);
     }
     menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(menuItemName));
     menu.getItems().add(menuItem);
@@ -666,14 +666,14 @@ public class Visualizer extends Application implements FrontEndExternal{
         addMenuItem(MENU_NAMES.indexOf(myLanguageResources.getString("TurtleImageMenu")), Integer.toString(imageList.size()-1));
         setTurtleImageIndex(Integer.toString(imageList.size()-1));
       } catch (IOException | NullPointerException ex) {
-        showError(myLanguageResources.getString("LoadTurtle"));
+        showError(myLanguageResources.getString("LoadTurtle"), myLanguageResources);
       }
     }
   }
 
-  private void showError(String message) {
+  private static void showError(String message, ResourceBundle languageResources) {
     Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(myLanguageResources.getString("IOError"));
+    alert.setTitle(languageResources.getString("IOError"));
     alert.setContentText(message);
     alert.showAndWait();
   }
@@ -683,7 +683,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     buttonGrid.setHgap(SPACING);
     buttonGrid.setVgap(SPACING);
     for(int i=0; i<BOTTOM_BUTTON_METHOD_NAMES.length; i++){
-      Button button = makeButton(BOTTOM_BUTTON_METHOD_NAMES[i], RUN_BUTTON_SHAPE, this);
+      Button button = makeButton(BOTTOM_BUTTON_METHOD_NAMES[i], RUN_BUTTON_SHAPE, this, myLanguageResources);
       button.setTooltip(new Tooltip(myLanguageResources.getString(BOTTOM_BUTTON_HOVER_NAMES[i])));
       buttonGrid.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
     }

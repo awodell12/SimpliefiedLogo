@@ -33,7 +33,7 @@ public class ClearableEntriesBox extends HBox {
 
     private static final double SPACING = 10;
 
-    public ClearableEntriesBox(Rectangle shape, Rectangle clearButtonShape, String description, Visualizer visualizer){
+    public ClearableEntriesBox(Rectangle shape, Rectangle clearButtonShape, String description){
         myTextFlow = new TextFlow();
         myTextFlow.setPrefWidth(shape.getWidth());
         myTextFlow.setPrefHeight(shape.getHeight());
@@ -42,8 +42,7 @@ public class ClearableEntriesBox extends HBox {
         scrollPane.setContent(myTextFlow);
         scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-        Button clearButton = visualizer.makeButton("clearEntryBox", clearButtonShape, this);
-        //TODO: figure out a way to avoid passing in visualizer
+        Button clearButton = Visualizer.makeButton("clearEntryBox", clearButtonShape, this, myLanguageResources);
         clearButton.setTooltip(new Tooltip(myLanguageResources.getString("HoverText")));
         clearButton.setOnAction(event -> clearEntryBox());
         rightSide = new VBox(SPACING);
