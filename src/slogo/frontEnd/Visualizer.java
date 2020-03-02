@@ -164,12 +164,18 @@ public class Visualizer extends Application implements FrontEndExternal{
    * Constructor for the visualizer class, which manages the display components and state
    * @param instructionQueueListener listener for the instruction queue
    * @param onNewWorkSpaceClicked what happens when the create new workspace button is clicked
+   * @param configFileNum this indicates we will set defults for this workspace using file workspaceX.properties
+   *                      default to workspace 0 if file not found
    */
-  public Visualizer(ListChangeListener<String> instructionQueueListener, Consumer<Integer> onNewWorkSpaceClicked, int workspaceNum) {
+  public Visualizer(ListChangeListener<String> instructionQueueListener, Consumer<Integer> onNewWorkSpaceClicked, int configFileNum) {
     myInstructionQueue = new ObservableQueue();
     myInstructionQueue.addListener(instructionQueueListener);
     myOnNewWorkSpaceClicked = onNewWorkSpaceClicked;
-    myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace" + workspaceNum);
+    try {
+      myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace" + configFileNum);
+    } catch(MissingResourceException ex){
+      myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace0");
+    }
     String startingLanguage = myWorkSpaceResources.getString("Language");
     myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources." + startingLanguage + "config");
   }
