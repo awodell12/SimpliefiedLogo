@@ -35,9 +35,6 @@ public class TellCommand implements Command {
       activeTurtleNums.add(Integer.parseInt(tokens[programCounter]));
       lastTurtleNum = Double.parseDouble(tokens[programCounter]);
     }
-    for (Integer num : activeTurtleNums) {
-      System.out.println(num);
-    }
     backEnd.setActiveTurtles(activeTurtleNums);
     List<CommandResult> results = new ArrayList<>();
     for (Turtle newlyActive : backEnd.getActiveTurtles()) {

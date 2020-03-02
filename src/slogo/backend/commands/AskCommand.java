@@ -33,15 +33,22 @@ public class AskCommand implements Command {
     for (programCounter = 1; programCounter <= numTokens; programCounter ++) {
       activeTurtleNums.add(Integer.parseInt(tokens[programCounter]));
     }
-    for (Integer num : activeTurtleNums) {
-      System.out.println(num);
-    }
     List<Integer> originalActives = backEnd.getActiveTurtleNumbers();
     backEnd.setActiveTurtles(activeTurtleNums);
+
     List<CommandResult> results = new ArrayList<>();
     int totalParsed = new BackEndUtil().distanceToEndBracket(Arrays.copyOfRange(tokens,numTokens+3,tokens.length))-1;
+    for (Turtle newlyActive : backEnd.getActiveTurtles()) {
+      CommandResultBuilder builder = backEnd.startCommandResult(
+          newlyActive.getHeading(),
+          newlyActive.getPosition());
+      builder.retVal(0);
+      builder.tokensParsed(programCounter+1);
+      builder.activeTurtleIDs(activeTurtleNums);
+      builder.setTurtleID(newlyActive.getId());
+      results.add(builder.buildCommandResult());
+    }
     results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,numTokens+3,tokens.length)));
-
     backEnd.setActiveTurtles(originalActives);
     CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition());
     builder.retVal(0);
