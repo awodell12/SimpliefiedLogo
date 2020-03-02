@@ -1,58 +1,21 @@
 package slogo.backend;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import slogo.backend.commands.TellCommand;
-import slogo.backend.commands.booleancommands.AndCommand;
-import slogo.backend.commands.booleancommands.EqualCommand;
-import slogo.backend.commands.booleancommands.GreaterCommand;
-import slogo.backend.commands.booleancommands.LessCommand;
-import slogo.backend.commands.booleancommands.NotCommand;
-import slogo.backend.commands.booleancommands.NotEqualCommand;
-import slogo.backend.commands.booleancommands.OrCommand;
-import slogo.backend.commands.controlandvariables.DoTimesCommand;
-import slogo.backend.commands.controlandvariables.ForLoopCommand;
-import slogo.backend.commands.controlandvariables.IfCommand;
-import slogo.backend.commands.controlandvariables.IfElseCommand;
-import slogo.backend.commands.controlandvariables.MakeCommand;
-import slogo.backend.commands.controlandvariables.RepeatCommand;
-import slogo.backend.commands.controlandvariables.ToCommand;
-import slogo.backend.commands.mathcommands.ArcTanCommand;
-import slogo.backend.commands.mathcommands.CosCommand;
-import slogo.backend.commands.mathcommands.DiffCommand;
-import slogo.backend.commands.mathcommands.MinusCommand;
-import slogo.backend.commands.mathcommands.MultCommand;
-import slogo.backend.commands.mathcommands.NatLogCommand;
-import slogo.backend.commands.mathcommands.PiCommand;
-import slogo.backend.commands.mathcommands.PowerCommand;
-import slogo.backend.commands.mathcommands.QuotientCommand;
-import slogo.backend.commands.mathcommands.RandomCommand;
-import slogo.backend.commands.mathcommands.RemainderCommand;
-import slogo.backend.commands.mathcommands.SinCommand;
-import slogo.backend.commands.mathcommands.SumCommand;
-import slogo.backend.commands.mathcommands.TanCommand;
-import slogo.backend.commands.turtlecommands.BackCommand;
-import slogo.backend.commands.turtlecommands.ClearScreenCommand;
-import slogo.backend.commands.turtlecommands.ForwardCommand;
-import slogo.backend.commands.turtlecommands.GoHomeCommand;
-import slogo.backend.commands.turtlecommands.HideTurtleCommand;
-import slogo.backend.commands.turtlecommands.LeftCommand;
-import slogo.backend.commands.turtlecommands.PenDownCommand;
-import slogo.backend.commands.turtlecommands.PenUpCommand;
-import slogo.backend.commands.turtlecommands.RightCommand;
-import slogo.backend.commands.turtlecommands.SetHeadingCommand;
-import slogo.backend.commands.turtlecommands.SetPosCommand;
-import slogo.backend.commands.turtlecommands.ShowTurtleCommand;
-import slogo.backend.commands.turtlecommands.TowardCommand;
-import slogo.backend.commands.turtlequeries.HeadingQuery;
-import slogo.backend.commands.turtlequeries.IsPenDownQuery;
-import slogo.backend.commands.turtlequeries.IsShowingQuery;
-import slogo.backend.commands.turtlequeries.XCorQuery;
-import slogo.backend.commands.turtlequeries.YCorQuery;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ResourceBundle;
+import static java.lang.Class.forName;
 
 public class CommandFactory {
-  private static final Map<String, Command> myCommands;
+  private static final String RESOURCES_PACKAGE = "slogo/backend/resources/commands";
+  private static final ResourceBundle RESOURCES = ResourceBundle.getBundle(RESOURCES_PACKAGE);
+  private static final String PATH_TO_CLASSES = "slogo.backend.commands.";
+  private static List<String> ALL_COMMANDS;
+
+
+ /* private static final Map<String, Command> myCommands;
   static {
     Map<String, Command> newMap = new HashMap<>();
     newMap.put("Forward", new ForwardCommand());
@@ -103,20 +66,34 @@ public class CommandFactory {
     newMap.put("IsShowing", new IsShowingQuery());
     newMap.put("Tell", new TellCommand());
     myCommands = Collections.unmodifiableMap(newMap);
-  }
-
+  } */
   private CommandFactory() {
     //This constructor exists to hide the implicit public constructor that would otherwise appear
+    ALL_COMMANDS = new ArrayList<>();
+    Enumeration<String> commands  = RESOURCES.getKeys();
+    while(commands.hasMoreElements()){
+      ALL_COMMANDS.add(commands.nextElement());
+    }
   }
 
+
   public static Command makeCommand(String type) throws ParseException {
-    if (myCommands.containsKey(type)) {
-      return myCommands.get(type);
+    try{
+      String className = RESOURCES.getString(type);
+      Class cls = forName(PATH_TO_CLASSES + className);
+      Constructor cons = cls.getConstructor();
+      Object obj = cons.newInstance();
+      return (Command) obj;
+    } catch(Exception e){
+      throw new ParseException("Don't know how to " + type);
     }
-    throw new ParseException("Don't know how to " + type);
   }
 
   public static boolean hasCommand(String type) {
-    return myCommands.containsKey(type);
+    return ALL_COMMANDS.contains(type);
+  }
+
+  public static void main(String[] args) throws ParseException {
+    CommandFactory.makeCommand("Forward");
   }
 }

@@ -32,4 +32,5 @@ public class AndCommand implements Command {
     public List<String> findVars(String[] tokenList) {
         return null;
     }
+
 }
