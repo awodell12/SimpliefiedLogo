@@ -35,12 +35,11 @@ public class BackCommand implements Command {
         }
         else {
             System.out.println(backEnd.getTurtles(List.of(0)));
-            System.out.println("Got your turtles");
             Turtle turtle = backEnd.getTurtles(List.of(id)).get(0);
             List<Double> prevPos = turtle.getPosition();
             turtle.moveBack(arguments.get(0));
             System.out.println("Moved BACK by " + arguments.get(0));
-            System.out.println("Turtle is now at x=" +  turtle.getX() + " y=" + turtle.getY());
+            System.out.println("Turtle " + turtle.getId() + " is now at x=" +  turtle.getX() + " y=" + turtle.getY());
             CommandResultBuilder builder = backEnd.startCommandResult(turtle.getHeading(),turtle.getPosition());
             builder.setTurtleID(id);
             builder.retVal(arguments.get(0));

@@ -460,7 +460,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
-    return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers());
+    CommandResultBuilder builder = new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers());
+    builder.setIsActualCommand(true);
+    return builder;
   }
 
   @Override

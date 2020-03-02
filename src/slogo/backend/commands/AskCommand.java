@@ -40,12 +40,10 @@ public class AskCommand implements Command {
     backEnd.setActiveTurtles(activeTurtleNums);
     List<CommandResult> results = new ArrayList<>();
     int totalParsed = new BackEndUtil().distanceToEndBracket(Arrays.copyOfRange(tokens,numTokens+3,tokens.length))-1;
-    for (String token : Arrays.copyOfRange(tokens,numTokens+3,tokens.length)) {
-      System.out.println(token);
-    }
     results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,numTokens+3,tokens.length)));
-    CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition());
+
     backEnd.setActiveTurtles(originalActives);
+    CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition());
     builder.retVal(0);
     builder.tokensParsed(numTokens + totalParsed +4);
     results.add(builder.buildCommandResult());
