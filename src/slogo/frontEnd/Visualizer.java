@@ -202,7 +202,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     if(result.getPathStart() != null){
       startPos = new Point2D(result.getPathStart().get(0), -result.getPathStart().get(1));
     }
-    interpretResult(result.getMyRotation(), new Point2D(result.getMyPosition().get(0), -result.getMyPosition().get(1)),
+    interpretResult(result.getMyRotation(), new Point2D(result.getTurtlePosition().get(0), -result.getTurtlePosition().get(1)),
             startPos, result.getMyVariableName(),
             result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
             result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction(),
