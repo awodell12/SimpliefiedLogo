@@ -397,7 +397,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     createTurtle(new Point2D(0,0), 0);
     myErrorMessage = new Text(myLanguageResources.getString("DefaultErrorMessage"));
     myErrorMessage.setFill(Color.RED);
-    myCommandBox = new CommandBox(COMMAND_BOX_SHAPE);
+    myCommandBox = new CommandBox(COMMAND_BOX_SHAPE, myLanguageResources);
     myLeftVBox.getChildren().addAll(myTurtleView, myErrorMessage, myCommandBox);
   }
 
@@ -412,9 +412,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setUpRightPane() {
     setUpTopButtons();
-    myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myLanguageResources.getString("HistoryLabel"));
-    myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myLanguageResources.getString("UDCLabel"));
-    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myLanguageResources.getString("VariablesLabel"));
+    myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myLanguageResources.getString("HistoryLabel"), myLanguageResources);
+    myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myLanguageResources.getString("UDCLabel"), myLanguageResources);
+    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myLanguageResources.getString("VariablesLabel"), myLanguageResources);
     myPenText = new Text();
     myPenText.setFont(new Font(SMALLER_FONT_SIZE));
     myPenText.setWrappingWidth(PEN_TEXT_WIDTH);

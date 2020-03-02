@@ -4,20 +4,32 @@ import javafx.scene.control.TextArea;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
+import java.io.DataInput;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-public class VariableBox extends ClearableEntriesBox {
+public class VariableBox extends ClearableEntriesBox implements DisplayableTextOwner{
 
-  private static final String LABEL_TEXT = myLanguageResources.getString("VariableChangerLabel");
   private static final Rectangle LABEL_SHAPE = new Rectangle(20, 20);
   private final TextArea valueText;
+  private final Text label;
 
-  public VariableBox(Rectangle shape, Rectangle clearButtonShape, String description) {
-    super(shape, clearButtonShape, description);
-    Text label = new Text(LABEL_TEXT);
+  public VariableBox(Rectangle shape, Rectangle clearButtonShape, String description, ResourceBundle languageResources) {
+    super(shape, clearButtonShape, description, languageResources);
+    String labelText = languageResources.getString("VariableChangerLabel");
+    label = new Text(labelText);
     valueText = new TextArea();
     valueText.setMaxSize(LABEL_SHAPE.getWidth(), LABEL_SHAPE.getHeight());
     rightSide.getChildren().addAll(label, valueText);
+  }
+
+  /**
+   * change the language and translate all displayable texts to the new language
+   * @param languageResources the new language config to translate to
+   */
+  @Override
+  protected void setChildDisplayableTexts(ResourceBundle languageResources) {
+    label.setText(languageResources.getString("VariableChangerLabel"));
   }
 
   /**

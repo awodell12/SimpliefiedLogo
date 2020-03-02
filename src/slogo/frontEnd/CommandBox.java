@@ -10,15 +10,14 @@ import java.util.ResourceBundle;
  * This class is used to manage the text box where the user can enter in their Slogo commands
  * It is able to extract a String of what is in the box to pass to the Back End when the Run button is pressed
  */
-public class CommandBox extends HBox {
+public class CommandBox extends HBox implements DisplayableTextOwner  {
 
-    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.frenchconfig";
-    private static final ResourceBundle myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
     private static final int SPACING = 10;
     private final TextArea inputArea;
-    private static final String prompt = myLanguageResources.getString("CommandBoxPrompt");
+    private String prompt;
 
-    public CommandBox(Rectangle commandBoxShape){
+    public CommandBox(Rectangle commandBoxShape, ResourceBundle languageResources){
+        prompt = languageResources.getString("CommandBoxPrompt");
         this.setSpacing(SPACING);
         inputArea = new TextArea(prompt);
         inputArea.setOnMouseClicked(event -> removePrompt());
@@ -26,6 +25,19 @@ public class CommandBox extends HBox {
         inputArea.maxHeight(commandBoxShape.getHeight());
         this.getChildren().add(inputArea);
         this.setStyle("-fx-border-color: black");
+    }
+
+    /**
+     * change the language and translate all displayable texts to the new language
+     * @param languageResources the new language to translate to
+     */
+    @Override
+    public void setDisplayableTexts(ResourceBundle languageResources) {
+        if(inputArea.getText().equals(prompt)){
+            prompt = languageResources.getString("CommandBoxPrompt");
+            inputArea.setText(prompt);
+        }
+        else prompt = languageResources.getString("CommandBoxPrompt");
     }
 
     /**
@@ -51,5 +63,4 @@ public class CommandBox extends HBox {
             inputArea.clear();
         }
     }
-
 }

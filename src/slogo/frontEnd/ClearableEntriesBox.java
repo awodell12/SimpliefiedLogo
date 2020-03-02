@@ -21,19 +21,17 @@ import java.util.function.Consumer;
 /**
  * This class is used to manage the display elements of the history, variables, and user defined commands
  */
-public class ClearableEntriesBox extends HBox {
-
-    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.frenchconfig";
-    protected static final ResourceBundle myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
 
     protected final TextFlow myTextFlow;
     protected final Text descriptionText;
     protected final List<String> entryList;
     protected final VBox rightSide;
+    protected final Button clearButton;
 
     private static final double SPACING = 10;
 
-    public ClearableEntriesBox(Rectangle shape, Rectangle clearButtonShape, String description){
+    public ClearableEntriesBox(Rectangle shape, Rectangle clearButtonShape, String description, ResourceBundle languageResources){
         myTextFlow = new TextFlow();
         myTextFlow.setPrefWidth(shape.getWidth());
         myTextFlow.setPrefHeight(shape.getHeight());
@@ -42,8 +40,8 @@ public class ClearableEntriesBox extends HBox {
         scrollPane.setContent(myTextFlow);
         scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-        Button clearButton = Visualizer.makeButton("clearEntryBox", clearButtonShape, this, myLanguageResources);
-        clearButton.setTooltip(new Tooltip(myLanguageResources.getString("HoverText")));
+        clearButton = Visualizer.makeButton("clearEntryBox", clearButtonShape, this, languageResources);
+        clearButton.setTooltip(new Tooltip(languageResources.getString("HoverText")));
         clearButton.setOnAction(event -> clearEntryBox());
         rightSide = new VBox(SPACING);
         rightSide.getChildren().add(clearButton);
@@ -55,6 +53,24 @@ public class ClearableEntriesBox extends HBox {
         myTextFlow.getChildren().add(descriptionText);
         myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
         entryList = new ArrayList<>();
+    }
+
+    /**
+     * change the language and translate all displayable texts to the new language
+     * @param languageResources the new language config to translate with
+     */
+    @Override
+    public void setDisplayableTexts(ResourceBundle languageResources){
+        clearButton.setTooltip(new Tooltip(languageResources.getString("HoverText")));
+        setChildDisplayableTexts(languageResources);
+    }
+
+    /**
+     * Subclasses should override this method. This method exists because subclasses can't override setDisplayableTexts
+     * @param languageResources the new language config to translate with
+     */
+    protected void setChildDisplayableTexts(ResourceBundle languageResources){
+
     }
 
     /**

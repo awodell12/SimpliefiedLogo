@@ -4,12 +4,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
+import java.util.ResourceBundle;
+
 public class History extends ClearableEntriesBox{
 
   private int currentlyHighlighted = 0;
 
-  public History(Rectangle shape, Rectangle clearButtonShape, String description) {
-    super(shape, clearButtonShape, description);
+  public History(Rectangle shape, Rectangle clearButtonShape, String description, ResourceBundle languageResources) {
+    super(shape, clearButtonShape, description, languageResources);
   }
 
   /**
