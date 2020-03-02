@@ -33,6 +33,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<Turtle> myTurtles;
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
+  private int myActiveTurtleID;
 
   public SLogoBackEnd() {
     myLanguage = new ArrayList<>();
@@ -43,6 +44,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     myActiveTurtles = List.of(myTurtles.get(0));
     myLanguage = interpretPatterns("English");
     mySyntax = interpretPatterns("Syntax");
+    myActiveTurtleID = 0;
   }
 
   public List<Entry<String, Pattern>> interpretPatterns(String syntax) {
@@ -110,8 +112,15 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     while (programCounter < tokenList.length) {
       try {
         Command command = identifyCommand(tokenList[programCounter]);
-        List<CommandResult> listResult = parseCommand(command,
-            Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+        List<CommandResult> listResult;
+        if (command.runsPerTurtle()) {
+          listResult = parseCommandPerTurtle(command,
+              Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+        }
+        else {
+          listResult = parseCommand(command,
+              Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+        }
         results.addAll(listResult);
         programCounter += results.get(results.size() - 1).getTokensParsed() + 1;
       } catch (ParseException e) {
@@ -143,6 +152,19 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       }
       throw new ParseException("Don't know how to " + rawToken.toUpperCase());
     }
+  }
+
+  private List<CommandResult> parseCommandPerTurtle(Command command, String[] tokenList) throws ParseException {
+    System.out.println("Running PER TURTLE");
+    List<CommandResult> results = new ArrayList<>();
+    for (Turtle activeTurtle : myActiveTurtles) {
+      myActiveTurtleID = activeTurtle.getId();
+      results.addAll(parseCommand(command,tokenList));
+    }
+    if (results.isEmpty()) {
+       results.add(startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition()).buildCommandResult());
+    }
+    return results;
   }
 
   private List<CommandResult> parseCommand(Command command, String[] tokenList)
@@ -318,7 +340,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public void setLanguage(String language) {
-    ResourceBundle resources = ResourceBundle.getBundle(RESOURCES_PACKAGE + language);
     myLanguage = interpretPatterns(language);
   }
 
@@ -374,7 +395,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   private Turtle getTurtleWithID(Integer num) {
-    boolean exists = false;
     for (Turtle turtle : myTurtles) {
       if (turtle.getId() == num) {
         return turtle;
@@ -392,7 +412,11 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public List<Turtle> getTurtles(List<Integer> ids) {
-    return null;
+    List<Turtle> ret = new ArrayList<>();
+    for (int num : ids) {
+      ret.add(getTurtleWithID(num));
+    }
+    return ret;
   }
 
   @Override
@@ -411,5 +435,10 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
     return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers());
+  }
+
+  @Override
+  public int getActiveTurtleID() {
+    return myActiveTurtleID;
   }
 }

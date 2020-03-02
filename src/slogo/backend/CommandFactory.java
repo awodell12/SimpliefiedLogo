@@ -3,6 +3,7 @@ package slogo.backend;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import slogo.backend.commands.IdCommand;
 import slogo.backend.commands.TellCommand;
 import slogo.backend.commands.booleancommands.AndCommand;
 import slogo.backend.commands.booleancommands.EqualCommand;
@@ -102,6 +103,7 @@ public class CommandFactory {
     newMap.put("IsPenDown", new IsPenDownQuery());
     newMap.put("IsShowing", new IsShowingQuery());
     newMap.put("Tell", new TellCommand());
+    newMap.put("ID", new IdCommand());
     myCommands = Collections.unmodifiableMap(newMap);
   }
 
@@ -110,6 +112,7 @@ public class CommandFactory {
   }
 
   public static Command makeCommand(String type) throws ParseException {
+
     if (myCommands.containsKey(type)) {
       return myCommands.get(type);
     }
