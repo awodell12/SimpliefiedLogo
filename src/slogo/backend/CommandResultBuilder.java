@@ -90,6 +90,8 @@ public class CommandResultBuilder {
     pathColorIndex = index;
   }
 
+  public void setPenSize(double size) { penSize = size; }
+
   public void variableName(String name) {
     varName = name;
   }
