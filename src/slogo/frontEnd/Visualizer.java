@@ -49,6 +49,7 @@ import java.util.function.Consumer;
 public class Visualizer extends Application implements FrontEndExternal{
   private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
   private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+  private static final List<String> MENU_TYPES = Arrays.asList(myResources.getString("MenuTypes").split(","));
   private static final double HEIGHT = Double.parseDouble(myResources.getString("WindowHeight"));
   private static final double ASPECT_RATIO = (16.0/9.0);
   private static final double WIDTH = HEIGHT * ASPECT_RATIO;
@@ -317,8 +318,8 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void updateColorMenus(int paletteIndex, Color newColor) {
       myColorPalette.put(Integer.toString(paletteIndex), newColor);
-      addMenuItem(myMenuNames.indexOf(myLanguageResources.getString("BackgroundMenu")),  Integer.toString(paletteIndex));
-      addMenuItem(myMenuNames.indexOf(myLanguageResources.getString("PenColorMenu")), Integer.toString(paletteIndex));
+      addMenuItem(MENU_TYPES.indexOf("Background"),  Integer.toString(paletteIndex));
+      addMenuItem(myMenuNames.indexOf("PenColor"), Integer.toString(paletteIndex));
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -645,30 +646,30 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setUpMenus(){
-    myMenuNames = Arrays.asList(myLanguageResources.getString("Menus").split(","));
+    myMenuNames = Arrays.asList(myLanguageResources.getString("MenuNames").split(","));
     myMenuOptions = new ArrayList<>();
-    for(String menuName : myMenuNames){
-      myMenuOptions.add(Arrays.asList(myLanguageResources.getString(menuName+"Options").split(",")));
+    for(String menuType : MENU_TYPES){
+      myMenuOptions.add(Arrays.asList(myResources.getString(menuType+"Options").split(",")));
     }
     myMenuBar = new MenuBar();
     myLeftVBox.getChildren().add(myMenuBar);
     for(int i=0; i<myMenuNames.size(); i++){
       Menu menu = new Menu(myMenuNames.get(i));
       myMenuBar.getMenus().add(menu);
-      //myDisplayableTextHolder.addMenu(menu, myMenuNames.get(i)); //TODO: figure out a better way to change menu display names
+      myDisplayableTextHolder.addMenu(menu, MENU_TYPES.get(i));
       for(String entry : myMenuOptions.get(i)){
         addMenuItem(i, entry);
-        //TODO: figure out how to change menu item display names
       }
     }
   }
 
   private void addMenuItem(int menuNameIndex, String menuItemName){
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
-    String menuName = myMenuNames.get(menuNameIndex);
-    MenuItem menuItem = new MenuItem(menuItemName);
-    String methodName = myLanguageResources.getString(menuName);
-    String labelGetterName = myLanguageResources.getString(menuName + "Label");
+    String menuType = MENU_TYPES.get(menuNameIndex);
+    MenuItem menuItem = new MenuItem(myLanguageResources.getString(menuItemName));
+    myDisplayableTextHolder.addMenuItem(menuItem, menuItemName);
+    String methodName = myResources.getString(menuType);
+    String labelGetterName = myResources.getString(menuType + "Label");
     // get another method name that will give us the label corresponding to this menu name
     // the method should return a node object
     try {
@@ -685,7 +686,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       showError(myLanguageResources.getString("NoMethodError"), myLanguageResources);
     }
-    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(menuItemName));
+    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(myLanguageResources.getString(menuItemName)));
     menu.getItems().add(menuItem);
   }
 
