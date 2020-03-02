@@ -99,20 +99,14 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MAX_SPEED = 10;
   private static final double DEFAULT_SPEED = 1;
 
-  private ResourceBundle myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.frenchconfig");
+  private ResourceBundle myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.englishconfig");
   private final List<Image> imageList = new ArrayList<>() {{
     add(new Image(myResources.getString("DefaultTurtle")));
     add(new Image(myResources.getString("Duke")));
     add(new Image(myResources.getString("Duval")));
   }};
-  private List<String> MENU_NAMES  = Arrays.asList(myLanguageResources.getString("Menus").split(","));
-  private List<List<String>> MENU_OPTIONS = Arrays.asList(
-          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(0)+"Options").split(",")),
-          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(1)+"Options").split(",")),
-          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(2)+"Options").split(",")),
-          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(3)+"Options").split(",")),
-          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(4)+"Options").split(",")));
-  //TODO: refactor the above into a loop somehow
+  private List<String> myMenuNames;
+  private List<List<String>> myMenuOptions;
   private Map<String, Color> myColorPalette = new HashMap<>(){{
     put("0", Color.RED);
     put("1", Color.WHITE);
@@ -163,6 +157,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private TextFlow myTurtleInfo = new TextFlow();
   private MenuBar myMenuBar;
   private Consumer<Integer> myOnNewWorkSpaceClicked;
+  private final DisplayableTextHolder myDisplayableTextHolder = new DisplayableTextHolder();
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -304,9 +299,13 @@ public class Visualizer extends Application implements FrontEndExternal{
     if (newColorRGB != null){
       updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
-    //TODO: show error if the requested color index is not in color palette?
-    myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
-    myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
+    // nothing happens if the requested color is not in color palette
+    if(myColorPalette.containsKey(Integer.toString(backgroundColorIndex))) {
+      myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
+    }
+    if(myColorPalette.containsKey(Integer.toString(penColorIndex))) {
+      myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
+    }
     setPenText();
     if(originalInstruction != myCurrentlyHighlighted) {
       myHistory.highlightNext();
@@ -318,8 +317,8 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void updateColorMenus(int paletteIndex, Color newColor) {
       myColorPalette.put(Integer.toString(paletteIndex), newColor);
-      addMenuItem(MENU_NAMES.indexOf(myLanguageResources.getString("BackgroundMenu")),  Integer.toString(paletteIndex));
-      addMenuItem(MENU_NAMES.indexOf(myLanguageResources.getString("PenColorMenu")), Integer.toString(paletteIndex));
+      addMenuItem(myMenuNames.indexOf(myLanguageResources.getString("BackgroundMenu")),  Integer.toString(paletteIndex));
+      addMenuItem(myMenuNames.indexOf(myLanguageResources.getString("PenColorMenu")), Integer.toString(paletteIndex));
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -327,6 +326,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.getExistingTurtleIDs().add(turtleID);
     myTurtleView.getUnalteredTurtlePositions().put(turtleID, turtlePos);
     myTurtleInfo.getChildren().add(new Text(buildTurtleInfoString(myCurrentTurtleID)));
+    //TODO: add these to displayabletextholder or update them directly
   }
 
   private String buildTurtleInfoString(int turtleID){
@@ -397,6 +397,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     createTurtle(new Point2D(0,0), 0);
     myErrorMessage = new Text(myLanguageResources.getString("DefaultErrorMessage"));
     myErrorMessage.setFill(Color.RED);
+    myDisplayableTextHolder.addText(myErrorMessage, "DefaultErrorMessage");
     myCommandBox = new CommandBox(COMMAND_BOX_SHAPE, myLanguageResources);
     myLeftVBox.getChildren().addAll(myTurtleView, myErrorMessage, myCommandBox);
   }
@@ -412,9 +413,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setUpRightPane() {
     setUpTopButtons();
-    myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myLanguageResources.getString("HistoryLabel"), myLanguageResources);
-    myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myLanguageResources.getString("UDCLabel"), myLanguageResources);
-    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myLanguageResources.getString("VariablesLabel"), myLanguageResources);
+    myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, "HistoryLabel", myLanguageResources);
+    myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, "UDCLabel", myLanguageResources);
+    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE,"VariablesLabel", myLanguageResources);
     myPenText = new Text();
     myPenText.setFont(new Font(SMALLER_FONT_SIZE));
     myPenText.setWrappingWidth(PEN_TEXT_WIDTH);
@@ -451,7 +452,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpTopCenterButtons() {
     List<Button> buttons = new ArrayList<>();
     for(String buttonName : TOP_CENTER_BUTTON_METHODS){
-      buttons.add(makeButton(buttonName, TURTLE_BUTTON_SHAPE, this, myLanguageResources));
+      Button button = makeButton(buttonName, TURTLE_BUTTON_SHAPE, this, myLanguageResources);
+      buttons.add(button);
+      myDisplayableTextHolder.addButton(button, buttonName);
     }
     for(int i=0; i<NUM_TURTLE_MOVE_BUTTONS; i++){
       HBox hbox = new HBox(SPACING);
@@ -469,6 +472,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     speedSlider.setShowTickMarks(true);
     speedSlider.setShowTickLabels(true);
     Text sliderLabel = new Text(myLanguageResources.getString("AnimationSpeed"));
+    myDisplayableTextHolder.addText(sliderLabel, "AnimationSpeed");
     sliderLabel.setUnderline(true);
     Slider penSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
     penSlider.valueProperty().addListener((ov, old_val, new_val) -> {
@@ -479,6 +483,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
     Text penSliderLabel = new Text(myLanguageResources.getString("PenThicknessString"));
+    myDisplayableTextHolder.addText(penSliderLabel, "PenThicknessString");
     penSliderLabel.setUnderline(true);
     myCenterVBox.getChildren().addAll(sliderLabel, speedSlider, penSliderLabel, penSlider);
   }
@@ -486,7 +491,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpTopButtons() {
     HBox topButtons = new HBox(SPACING);
     for(String methodName : TOP_RIGHT_BUTTON_METHODS){
-      topButtons.getChildren().add(makeButton(methodName, TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources));
+      Button button = makeButton(methodName, TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources);
+      topButtons.getChildren().add(button);
+      myDisplayableTextHolder.addButton(button, methodName);
     }
     myRightVBox.getChildren().add(topButtons);
   }
@@ -578,7 +585,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setLanguage(String language){
-    executeInstruction("language: " + myLanguageResources.getString(language)); //TODO: figure out how to handle this magic value
+    String languageTranslatedToEnglish = myLanguageResources.getString(language);
+    setDisplayableTexts(languageTranslatedToEnglish);
+    executeInstruction("language: " + languageTranslatedToEnglish); //TODO: figure out how to handle this magic value
   }
 
   private void setTurtleImageIndex(String num){
@@ -616,21 +625,47 @@ public class Visualizer extends Application implements FrontEndExternal{
     return null;
   }
 
+  /**
+   * this method updates all displayable text to the new language. It tries to use the DisplayableTextHolder as much
+   *  as possible but it is difficult to do for some items, like those with text that needs to be assembled from pieces
+   * @param language the language to translate to (language name must be in english)
+   */
+  private void setDisplayableTexts(String language){
+    myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources." + language + "config");
+    myDisplayableTextHolder.setDisplayableTexts(myLanguageResources);
+    setPenText();
+    for(int id : myTurtleView.getExistingTurtleIDs()){
+      updateTurtleInfo(id);
+    }
+    myStage.setTitle(myLanguageResources.getString("AppTitle"));
+    myHistory.setDisplayableTexts(myLanguageResources);
+    myVariables.setDisplayableTexts(myLanguageResources);
+    myUserDefinedCommands.setDisplayableTexts(myLanguageResources);
+    myCommandBox.setDisplayableTexts(myLanguageResources);
+  }
+
   private void setUpMenus(){
+    myMenuNames = Arrays.asList(myLanguageResources.getString("Menus").split(","));
+    myMenuOptions = new ArrayList<>();
+    for(String menuName : myMenuNames){
+      myMenuOptions.add(Arrays.asList(myLanguageResources.getString(menuName+"Options").split(",")));
+    }
     myMenuBar = new MenuBar();
     myLeftVBox.getChildren().add(myMenuBar);
-    for(int i=0; i<MENU_NAMES.size(); i++){
-      Menu menu = new Menu(MENU_NAMES.get(i));
+    for(int i=0; i<myMenuNames.size(); i++){
+      Menu menu = new Menu(myMenuNames.get(i));
       myMenuBar.getMenus().add(menu);
-      for(String entry : MENU_OPTIONS.get(i)){
+      //myDisplayableTextHolder.addMenu(menu, myMenuNames.get(i)); //TODO: figure out a better way to change menu display names
+      for(String entry : myMenuOptions.get(i)){
         addMenuItem(i, entry);
+        //TODO: figure out how to change menu item display names
       }
     }
   }
 
   private void addMenuItem(int menuNameIndex, String menuItemName){
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
-    String menuName = MENU_NAMES.get(menuNameIndex);
+    String menuName = myMenuNames.get(menuNameIndex);
     MenuItem menuItem = new MenuItem(menuItemName);
     String methodName = myLanguageResources.getString(menuName);
     String labelGetterName = myLanguageResources.getString(menuName + "Label");
@@ -663,7 +698,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         WritableImage fximage = new WritableImage(buffImage.getWidth(), buffImage.getHeight());
         Image image = SwingFXUtils.toFXImage(buffImage, fximage);
         imageList.add(image);
-        addMenuItem(MENU_NAMES.indexOf(myLanguageResources.getString("TurtleImageMenu")), Integer.toString(imageList.size()-1));
+        addMenuItem(myMenuNames.indexOf(myLanguageResources.getString("TurtleImageMenu")), Integer.toString(imageList.size()-1));
         setTurtleImageIndex(Integer.toString(imageList.size()-1));
       } catch (IOException | NullPointerException ex) {
         showError(myLanguageResources.getString("LoadTurtle"), myLanguageResources);
@@ -686,6 +721,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       Button button = makeButton(BOTTOM_BUTTON_METHOD_NAMES[i], RUN_BUTTON_SHAPE, this, myLanguageResources);
       button.setTooltip(new Tooltip(myLanguageResources.getString(BOTTOM_BUTTON_HOVER_NAMES[i])));
       buttonGrid.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
+      myDisplayableTextHolder.addButton(button, BOTTOM_BUTTON_METHOD_NAMES[i]);
     }
     myCenterVBox.getChildren().add(buttonGrid);
   }

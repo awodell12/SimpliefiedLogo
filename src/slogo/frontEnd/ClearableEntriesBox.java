@@ -28,10 +28,11 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
     protected final List<String> entryList;
     protected final VBox rightSide;
     protected final Button clearButton;
+    private final String myDescriptionKey;
 
     private static final double SPACING = 10;
 
-    public ClearableEntriesBox(Rectangle shape, Rectangle clearButtonShape, String description, ResourceBundle languageResources){
+    public ClearableEntriesBox(Rectangle shape, Rectangle clearButtonShape, String descriptionKey, ResourceBundle languageResources){
         myTextFlow = new TextFlow();
         myTextFlow.setPrefWidth(shape.getWidth());
         myTextFlow.setPrefHeight(shape.getHeight());
@@ -47,7 +48,8 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
         rightSide.getChildren().add(clearButton);
         this.setSpacing(SPACING);
         this.getChildren().addAll(scrollPane, rightSide);
-        descriptionText = new Text(description + "\n");
+        myDescriptionKey = descriptionKey;
+        descriptionText = new Text(languageResources.getString(descriptionKey) + "\n");
         descriptionText.setUnderline(true);
         descriptionText.setFill(Color.BLUE);
         myTextFlow.getChildren().add(descriptionText);
@@ -61,7 +63,9 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
      */
     @Override
     public void setDisplayableTexts(ResourceBundle languageResources){
+        clearButton.setText(languageResources.getString("clearButton"));
         clearButton.setTooltip(new Tooltip(languageResources.getString("HoverText")));
+        descriptionText.setText(languageResources.getString(myDescriptionKey) + "\n");
         setChildDisplayableTexts(languageResources);
     }
 
