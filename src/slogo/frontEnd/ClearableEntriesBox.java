@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 public class ClearableEntriesBox extends HBox {
 
     private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
-    private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+    protected static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
 
     protected final TextFlow myTextFlow;
     protected final Text descriptionText;
