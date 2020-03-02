@@ -21,6 +21,7 @@ public class IdCommand implements Command {
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd) throws ParseException {
+    if (backEnd.getActiveTurtleID() == null) { throw new ParseException("Can't use ID unless issuing turtle commands"); }
     return List.of(backEnd.makeCommandResult(backEnd.getActiveTurtleID(),0));
   }
 

@@ -108,6 +108,6 @@ public interface BackEndInternal {
 
   CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition);
 
-  int getActiveTurtleID();
+  Integer getActiveTurtleID();
 }
 

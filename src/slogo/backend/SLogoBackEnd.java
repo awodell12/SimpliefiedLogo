@@ -33,7 +33,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<Turtle> myTurtles;
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
-  private int myActiveTurtleID;
+  private Integer myActiveTurtleID;
 
   public SLogoBackEnd() {
     myLanguage = new ArrayList<>();
@@ -44,7 +44,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     myActiveTurtles = List.of(myTurtles.get(0));
     myLanguage = interpretPatterns("English");
     mySyntax = interpretPatterns("Syntax");
-    myActiveTurtleID = 0;
+    myActiveTurtleID = null;
   }
 
   public List<Entry<String, Pattern>> interpretPatterns(String syntax) {
@@ -164,6 +164,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     if (results.isEmpty()) {
        results.add(startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition()).buildCommandResult());
     }
+    myActiveTurtleID = null;
     return results;
   }
 
@@ -438,7 +439,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   @Override
-  public int getActiveTurtleID() {
+  public Integer getActiveTurtleID() {
     return myActiveTurtleID;
   }
 }

@@ -5,6 +5,7 @@ import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
+import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
 public class BackCommand implements Command {
@@ -24,7 +25,7 @@ public class BackCommand implements Command {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
-        int id = backEnd.getActiveTurtleID();
+        Integer id = backEnd.getActiveTurtleID();
         System.out.println("id = " + id);
         System.out.println(backEnd.getTurtles(List.of(0)));
         System.out.println("Got your turtles");
