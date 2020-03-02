@@ -33,6 +33,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<Turtle> myTurtles;
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
+  private int myPathColor = 0;
 
   public SLogoBackEnd() {
     myLanguage = new ArrayList<>();
@@ -412,4 +413,10 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
     return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers());
   }
+
+  @Override
+  public int getPathColor(){ return myPathColor; }
+
+  @Override
+  public void setPathColor(int index){ myPathColor = index; }
 }

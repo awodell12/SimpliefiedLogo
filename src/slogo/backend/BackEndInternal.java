@@ -107,5 +107,9 @@ public interface BackEndInternal {
   List<Integer> getActiveTurtleNumbers();
 
   CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition);
+
+  int getPathColor();
+
+  void setPathColor(int index);
 }
 

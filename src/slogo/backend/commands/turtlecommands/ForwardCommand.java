@@ -41,7 +41,7 @@ public class ForwardCommand implements Command {
       );
       builder.retVal(arguments.get(0));
       builder.setPathStart(prevPos);
-      builder.setPathColor(0); //TODO: Make this based on some data stored in the back end or passed to us.
+      builder.setPathColor(backEnd.getPathColor());
       results.add(builder.buildCommandResult());
     }
     if (results.isEmpty()) {
