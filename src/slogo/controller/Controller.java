@@ -1,6 +1,7 @@
 package slogo.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
@@ -12,9 +13,12 @@ import slogo.frontEnd.Visualizer;
 
 public class Controller extends Application{
 
-    private static Visualizer myVisualizer;
     private static final String LANGUAGE_INSTRUCTION = "language:";
     private static final int LI_LENGTH = LANGUAGE_INSTRUCTION.length();
+
+    private final List<Visualizer> myVisualizers = new ArrayList<>();
+    private final List<SLogoBackEnd> myModels = new ArrayList<>();
+    private int numWorkspaces = 0;
 
     public static void main (String[] args) {
         launch(Controller.class, args);
@@ -33,26 +37,40 @@ public class Controller extends Application{
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        SLogoBackEnd myModel = new SLogoBackEnd();
-        ListChangeListener<String> instructionQueueListener = c -> {
-            String input = myVisualizer.popInstructionQueue();
-
-            if(input.length() >= LI_LENGTH && input.substring(0, LI_LENGTH).equals(LANGUAGE_INSTRUCTION)){
-                SLogoLanguageChanger languageChanger = new SLogoLanguageChanger(input.substring(LI_LENGTH+1));
-                myModel.applyChanger(languageChanger);
+        myModels.add(new SLogoBackEnd());
+        int thisWorkspace = numWorkspaces; // need this variable because we don't want to pass in a dynamic value!
+        ListChangeListener<String> instructionQueueListener = c -> processInstructionQueueEvent(thisWorkspace);
+        myVisualizers.add(new Visualizer(instructionQueueListener, c-> {
+            try {
+                createNewWorkspace();
+            } catch (Exception e) {
+                System.out.println("error creating new workspace");
             }
-            else {
-                ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModel.parseScript(input);
-                for (CommandResult result : resultList) {
-                    if(result.isActualCommand()) {
-                        result.setMyOriginalInstruction(input);
-                        myVisualizer.processResult(result);
-                    }
+        }));
+        myVisualizers.get(thisWorkspace).start(primaryStage);
+        numWorkspaces++;
+    }
+
+    private void createNewWorkspace() throws Exception {
+        start(new Stage());
+    }
+
+    private void processInstructionQueueEvent(int workspace){
+        System.out.println(workspace);
+        String input = myVisualizers.get(workspace).popInstructionQueue();
+        if(input.length() >= LI_LENGTH && input.substring(0, LI_LENGTH).equals(LANGUAGE_INSTRUCTION)){
+            SLogoLanguageChanger languageChanger = new SLogoLanguageChanger(input.substring(LI_LENGTH+1));
+            myModels.get(workspace).applyChanger(languageChanger);
+        }
+        else {
+            ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModels.get(workspace).parseScript(input);
+            for (CommandResult result : resultList) {
+                if(result.isActualCommand()) {
+                    result.setMyOriginalInstruction(input);
+                    myVisualizers.get(workspace).processResult(result);
                 }
             }
-        };
-        myVisualizer = new Visualizer(instructionQueueListener);
-        myVisualizer.start(primaryStage);
+        }
     }
 
 }
