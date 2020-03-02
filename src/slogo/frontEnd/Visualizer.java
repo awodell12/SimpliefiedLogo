@@ -595,10 +595,13 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.setBackGroundColor(myColorPalette.get(colorIndex));
   }
 
+  /**
+   * changes the language
+   * @param language the language to change to, IN ENGLISH
+   */
   private void setLanguage(String language){
-    String languageTranslatedToEnglish = myLanguageResources.getString(language);
-    setDisplayableTexts(languageTranslatedToEnglish);
-    executeInstruction("language: " + languageTranslatedToEnglish); //TODO: figure out how to handle this magic value
+    setDisplayableTexts(language);
+    executeInstruction("language: " + language); //TODO: figure out how to handle this magic value
   }
 
   private void setTurtleImageIndex(String num){
