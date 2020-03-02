@@ -30,12 +30,10 @@ public class IfCommand implements Command {
     List<CommandResult> results = new ArrayList<>();
     int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,0,tokens.length));
     if (arguments.get(0) != 0) {
-      System.out.println("IF evaluated to TRUE");
       results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength-1)));
       returnVal = results.get(results.size()-1).getReturnVal();
     }
     else {
-      System.out.println("IF evaluated to FALSE");
     }
     results.add(backEnd.makeCommandResult(returnVal,listLength));
     return results;

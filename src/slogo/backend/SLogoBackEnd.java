@@ -161,10 +161,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       myActiveTurtleID = activeTurtle.getId();
       results.addAll(parseCommand(command,tokenList));
     }
-    if (results.isEmpty()) {
-       results.add(startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition()).buildCommandResult());
-    }
     myActiveTurtleID = null;
+    if (results.isEmpty()) {
+      List<CommandResult> dummy = (parseCommand(command,tokenList));
+      results.addAll(dummy);
+//       results.add(startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition()).buildCommandResult());
+    }
     return results;
   }
 
