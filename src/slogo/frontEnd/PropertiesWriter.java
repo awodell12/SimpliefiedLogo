@@ -11,7 +11,7 @@ import javafx.scene.control.Alert.AlertType;
 /**
  * The purpose of this class is to be able to save properties to a .properties file for later use.
  * Assuming all the necessary properties are passed as a map into the constructor it will work.
- * Might adjust so there is defaults and then the passed Map can override the defaults. 
+ * Might adjust so there is defaults and then the passed Map can override the defaults.
  */
 public class PropertiesWriter {
 
