@@ -141,7 +141,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final Queue<CommandResult> resultQueue = new LinkedList<>();
   private CommandResult previousResult = new CommandResult(0, 0, 0, 0,
           List.of(0.0,0.0), null, 0, null, 0.0, null, null,
-          false, false, true, false, 0, Arrays.asList(0, 0, 0),
+          false, false, true, false, 0, null,
           1.0, Collections.singletonList(0), 0, 0, "", true);
   private CommandResult currentResult = previousResult;
   //private Map<String, Double> previousVariableMapping = new HashMap<>(); //TODO: move this to variable class?
@@ -489,6 +489,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       myTurtleView.setPenThickness(penSlider.getValue());
       setPenText();
       myRightVBox.requestLayout(); // make sure everything is updated graphically
+      //TODO: make this also change pen thickness in backend
     });
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
@@ -586,7 +587,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setPenUp(String menuName){
-    executeInstruction(menuName + ""); // need the blank string so it registers as a new distinct string object
+    executeInstruction(myLanguageResources.getString(menuName) + ""); // need the blank string so it registers as a new distinct string object
   }
 
   private void setBackGroundColor(String colorIndex){
