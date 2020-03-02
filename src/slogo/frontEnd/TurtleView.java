@@ -17,16 +17,16 @@ public class TurtleView extends Group{
     private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
     private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
     private static final Image myActiveTurtleImage = new Image("slogo/frontEnd/Resources/activeTurtle.png");
-    private static final Image myInactiveTurtleImage = new Image("slogo/frontEnd/Resources/turtle.png");
     private static final double TURTLE_SIZE = 50;
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;
-    private static final double UNHIGHLIGHTED_OPACITY = 0.1;
+    private static final double UNHIGHLIGHTED_OPACITY = 0.4;
     private static final double HIGHLIGHTED_OPACITY = 1.0;
 
     private final Map<Integer, Turtle> myTurtles = new HashMap<>();
     private Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
     private List<Integer> existingTurtleIDs = new ArrayList<>();
     private Color myPenColor = Color.BLACK;
+    private int myPenColorIndex = 8;
     private double myPenThickness = 1;
     private final Rectangle myBackground;
     private boolean isPenUp = false;
@@ -80,7 +80,10 @@ public class TurtleView extends Group{
      * set the pen color (color of paths)
      * @param color color to set to
      */
-    protected void setPenColor(Color color){ myPenColor = color; }
+    protected void setPenColor(Color color, int index){
+        myPenColor = color;
+        myPenColorIndex = index;
+    }
 
     /**
      * Updates the position of the turtle in the Display to the desired set of coordinates. Offsets so that 0, 0 is center of screen
@@ -144,9 +147,7 @@ public class TurtleView extends Group{
         if(numChildren >= 2) this.getChildren().remove(1, numChildren);
         for(Map.Entry<Integer, Turtle> turtle : myTurtles.entrySet()){
             if(turtle.getValue().getVisibility()) this.getChildren().add(turtle.getValue());
-            resetTurtle(turtle.getKey());
         }
-        //TODO: decide if this should only clear paths/reset a specific turtle
     }
 
     /**
@@ -179,6 +180,7 @@ public class TurtleView extends Group{
     }
 
     protected void setPenThickness(double value) {
+        assert value <= 10.0;
         myPenThickness = value;
     }
 
@@ -197,19 +199,18 @@ public class TurtleView extends Group{
     protected void activateTurtles(List<Integer> activeTurtles) {
         for(Turtle turtle : myTurtles.values()){
             turtle.setActive(false);
-            turtle.setImage(myInactiveTurtleImage);
+            turtle.setOpacity(UNHIGHLIGHTED_OPACITY);
         }
         for(int id : activeTurtles){
             if(myTurtles.containsKey(id)) {
                 myTurtles.get(id).setActive(true);
-                myTurtles.get(id).setImage(myActiveTurtleImage);
+                myTurtles.get(id).setOpacity(HIGHLIGHTED_OPACITY);
             }
         }
     }
 
     protected String[] getPenState(){
-        //TODO: replace 0 with myPenColor.toString() or pen color index
-        return new String[]{Boolean.toString(isPenUp), "0", Double.toString(myPenThickness)};
+        return new String[]{Boolean.toString(isPenUp), Integer.toString(myPenColorIndex), Double.toString(myPenThickness)};
     }
 
     protected String[] getTurtleInfo(int turtleID) {
@@ -217,14 +218,22 @@ public class TurtleView extends Group{
         return new String[]{Boolean.toString(turtle.isActive()), Integer.toString((int)turtle.getRotate())};
     }
 
+    /**
+     * Return the image of a turtle. Assumes turtle 0 always exists and all turtles have same image.
+     * @return Image object of the turtle
+     */
+    protected Image getTurtleImage() {
+        return myTurtles.get(0).getImage();
+    }
+
     private void toggleActive(int id, Consumer<Boolean> onClicked) {
         if(myTurtles.get(id).isActive()){
             myTurtles.get(id).setActive(false);
-            myTurtles.get(id).setImage(myInactiveTurtleImage); //TODO: maybe just use opacity
+            myTurtles.get(id).setOpacity(UNHIGHLIGHTED_OPACITY);
             onClicked.accept(false);
         }else{
             myTurtles.get(id).setActive(true);
-            myTurtles.get(id).setImage(myActiveTurtleImage);
+            myTurtles.get(id).setOpacity(HIGHLIGHTED_OPACITY);
             onClicked.accept(true);
         }
     }
@@ -236,6 +245,7 @@ public class TurtleView extends Group{
         myTurtles.get(id).setY(yOffset);
         myTurtles.get(id).setX(xOffset);
         myTurtles.get(id).setRotate(0);
+        unalteredTurtlePositions.put(id, new Point2D(0.0, 0.0));
     }
 
     private double boundX(double x){

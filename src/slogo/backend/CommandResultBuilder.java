@@ -28,7 +28,6 @@ public class CommandResultBuilder {
   private int shapeIndex;
   private String errorMessage;
   private int newPaletteIndex;
-  private List<Integer> newPaletteColor;
   private boolean actualCommand;
 
   public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers) {
@@ -118,6 +117,10 @@ public class CommandResultBuilder {
   public void setIsActualCommand(boolean isCommand) {
     actualCommand = isCommand;
   }
+
+  public void setTurtleReset(boolean isReset){ turtleReset = isReset; }
+
+  public void setMyScreenClear(boolean value){ clear = value; }
 
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
