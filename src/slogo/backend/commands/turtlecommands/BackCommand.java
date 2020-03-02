@@ -4,6 +4,9 @@ import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
+import slogo.backend.CommandResultBuilder;
+import slogo.backend.ParseException;
+import slogo.backend.Turtle;
 
 public class BackCommand implements Command {
 
@@ -22,11 +25,22 @@ public class BackCommand implements Command {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
-        List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
-        backEnd.getTurtles().get(0).moveBack(arguments.get(0));
+        Integer id = backEnd.getActiveTurtleID();
+        System.out.println("id = " + id);
+        System.out.println(backEnd.getTurtles(List.of(0)));
+        System.out.println("Got your turtles");
+        Turtle turtle = backEnd.getTurtles(List.of(id)).get(0);
+        List<Double> prevPos = turtle.getPosition();
+        turtle.moveBack(arguments.get(0));
         System.out.println("Moved BACK by " + arguments.get(0));
-        System.out.println("Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-        return List.of(backEnd.makeCommandResult(arguments.get(0),0,prevPos,0));
+        System.out.println("Turtle is now at x=" +  turtle.getX() + " y=" + turtle.getY());
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getHeading(),turtle.getPosition());
+            builder.setTurtleID(id);
+            builder.retVal(arguments.get(0));
+            builder.tokensParsed(0);
+            builder.setPathColor(0);
+            builder.setPathStart(prevPos);
+        return List.of(builder.buildCommandResult());
     }
 
     @Override
@@ -37,5 +51,10 @@ public class BackCommand implements Command {
     @Override
     public String toString() {
         return COMMAND_NAME;
+    }
+
+    @Override
+    public boolean runsPerTurtle() {
+        return true;
     }
 }

@@ -111,5 +111,8 @@ public interface BackEndInternal {
   int getPathColor();
 
   void setPathColor(int index);
+
+  Integer getActiveTurtleID();
+
 }
 
