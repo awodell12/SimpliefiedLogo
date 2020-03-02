@@ -43,6 +43,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public class Visualizer extends Application implements FrontEndExternal{
@@ -157,13 +158,17 @@ public class Visualizer extends Application implements FrontEndExternal{
   private Text myPenText;
   private TextFlow myTurtleInfo = new TextFlow();
   private MenuBar myMenuBar;
+  private Consumer<Integer> myOnNewWorkSpaceClicked;
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
+   * @param instructionQueueListener listener for the instruction queue
+   * @param onNewWorkSpaceClicked what happens when the create new workspace button is clicked
    */
-  public Visualizer(ListChangeListener<String> instructionQueueListener) {
+  public Visualizer(ListChangeListener<String> instructionQueueListener, Consumer<Integer> onNewWorkSpaceClicked) {
     myInstructionQueue = new ObservableQueue();
     myInstructionQueue.addListener(instructionQueueListener);
+    myOnNewWorkSpaceClicked = onNewWorkSpaceClicked;
   }
 
   @Override
@@ -516,7 +521,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void newWorkspace(){
-    //TODO: implement this
+    myOnNewWorkSpaceClicked.accept(0);
   }
 
   private void undoButton(){
