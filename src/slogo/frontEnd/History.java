@@ -15,7 +15,8 @@ public class History extends ClearableEntriesBox{
   }
 
   /**
-   * Removes all entries from the box and its display
+   * Removes all entries from the box and its display. Only clears if all commands present have been executed (that is,
+   *    highlighted command must be the last command present
    */
   @Override
   protected void clearEntryBox(){

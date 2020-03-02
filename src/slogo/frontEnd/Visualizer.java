@@ -99,6 +99,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MIN_SPEED = 0.1;
   private static final double MAX_SPEED = 10;
   private static final double DEFAULT_SPEED = 1;
+  private static final String LANGUAGE_INSTRUCTION_STRING = "language: ";
 
   private ResourceBundle myLanguageResources;
   private ResourceBundle myWorkSpaceResources;
@@ -118,6 +119,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("6", Color.LAWNGREEN);
     put("7", Color.DARKSALMON);
     put("8", Color.BLACK);
+    put("9", Color.MAGENTA);
+    put("10", Color.ORANGE);
   }};
 
   private CommandBox myCommandBox;
@@ -159,6 +162,11 @@ public class Visualizer extends Application implements FrontEndExternal{
   private MenuBar myMenuBar;
   private Consumer<Integer> myOnNewWorkSpaceClicked;
   private final DisplayableTextHolder myDisplayableTextHolder = new DisplayableTextHolder();
+  private final String myStartingLanguage;
+  private final int myStartingNumTurtles;
+  private final int myStartingPenColor;
+  private final int myStartingBackgroundColor;
+  private boolean clearedAtStart = true;
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -176,8 +184,11 @@ public class Visualizer extends Application implements FrontEndExternal{
     } catch(MissingResourceException ex){
       myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace0");
     }
-    String startingLanguage = myWorkSpaceResources.getString("Language");
-    myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources." + startingLanguage + "config");
+    myStartingLanguage = myWorkSpaceResources.getString("Language");
+    myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources." + myStartingLanguage + "config");
+    myStartingNumTurtles = Integer.parseInt(myWorkSpaceResources.getString("numTurtles"));
+    myStartingPenColor = Integer.parseInt(myWorkSpaceResources.getString("startingPenColor"));
+    myStartingBackgroundColor = Integer.parseInt(myWorkSpaceResources.getString("startingBGColor"));
   }
 
   @Override
@@ -336,7 +347,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.getExistingTurtleIDs().add(turtleID);
     myTurtleView.getUnalteredTurtlePositions().put(turtleID, turtlePos);
     myTurtleInfo.getChildren().add(new Text(buildTurtleInfoString(myCurrentTurtleID)));
-    //TODO: add these to displayabletextholder or update them directly
   }
 
   private String buildTurtleInfoString(int turtleID){
@@ -375,7 +385,8 @@ public class Visualizer extends Application implements FrontEndExternal{
         step(false);
       } catch (Exception ex) {
         System.out.println("Caught Exception");
-        showError(ex.getMessage(), myLanguageResources);
+        ex.printStackTrace();
+        //showError(ex.getMessage(), myLanguageResources);
       }
     });
 
@@ -388,7 +399,27 @@ public class Visualizer extends Application implements FrontEndExternal{
     animation.setCycleCount(Timeline.INDEFINITE);
     animation.getKeyFrames().add(frame);
     animation.play();
+
+    setUpDefaults();
+
     return new Scene(myRoot, WIDTH, HEIGHT , BACKGROUND);
+  }
+
+  /**
+   * execute instructions to make the starting setup much the setup specified by the workspace config file
+   */
+  private void setUpDefaults(){
+    executeInstruction("setpencolor " + myStartingPenColor);
+    executeInstruction("setbackgroundcolor " + myStartingBackgroundColor);
+    StringBuilder instruction = new StringBuilder("tell" + " [ ");
+    for(int id=0; id<myStartingNumTurtles; id++){
+      instruction.append(id).append(" ");
+    }
+    instruction.append("]");
+    executeInstruction(instruction.toString());
+    myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + myStartingLanguage);
+    // now schedule clear history so the user isn't confused by the commands we used to set up defaults
+    clearedAtStart = false;
   }
 
   private void setUpCenterPane() {
@@ -489,7 +520,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       myTurtleView.setPenThickness(penSlider.getValue());
       setPenText();
       myRightVBox.requestLayout(); // make sure everything is updated graphically
-      //TODO: make this also change pen thickness in backend
+      //TODO: make this also change pen thickness in backend?
     });
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
@@ -535,7 +566,6 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void moveForward(){
     executeInstruction(myLanguageResources.getString("fd") + " " + turtleMovementButtons.get(0).getText());
-    //TODO: make this work for different languages
   }
 
   private void moveBackward(){
@@ -596,12 +626,13 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   /**
-   * changes the language
+   * changes the language. doesn't use executeInstruction because we don't want this showing up in history, since no
+   *    command results will be returned
    * @param language the language to change to, IN ENGLISH
    */
   private void setLanguage(String language){
     setDisplayableTexts(language);
-    executeInstruction("language: " + language); //TODO: figure out how to handle this magic value
+    myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + language);
   }
 
   private void setTurtleImageIndex(String num){
@@ -741,6 +772,11 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void step(boolean overridePause){
+    if(!clearedAtStart && isReady){
+      myCurrentlyHighlighted = null;
+      myHistory.clearEntryBox();
+      clearedAtStart = true;
+    }
     if(!paused || overridePause) {
       if (myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX() - myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||
               Math.abs(myCurrentTurtlePosition.getY() - myDesiredTurtlePosition.getY()) >= SIGNIFICANT_DIFFERENCE)) {
