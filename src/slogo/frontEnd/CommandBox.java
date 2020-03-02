@@ -12,11 +12,11 @@ import java.util.ResourceBundle;
  */
 public class CommandBox extends HBox {
 
-    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
-    private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.englishconfig";
+    private static final ResourceBundle myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
     private static final int SPACING = 10;
     private final TextArea inputArea;
-    private static final String prompt = myResources.getString("CommandBoxPrompt");
+    private static final String prompt = myLanguageResources.getString("CommandBoxPrompt");
 
     public CommandBox(Rectangle commandBoxShape){
         this.setSpacing(SPACING);

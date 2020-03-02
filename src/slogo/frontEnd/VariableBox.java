@@ -12,8 +12,8 @@ public class VariableBox extends ClearableEntriesBox {
   private static final Rectangle LABEL_SHAPE = new Rectangle(20, 20);
   private final TextArea valueText;
 
-  public VariableBox(Rectangle shape, Rectangle clearButtonShape, String description) {
-    super(shape, clearButtonShape, description);
+  public VariableBox(Rectangle shape, Rectangle clearButtonShape, String description, Visualizer visualizer) {
+    super(shape, clearButtonShape, description, visualizer);
     Text label = new Text(LABEL_TEXT);
     valueText = new TextArea();
     valueText.setMaxSize(LABEL_SHAPE.getWidth(), LABEL_SHAPE.getHeight());

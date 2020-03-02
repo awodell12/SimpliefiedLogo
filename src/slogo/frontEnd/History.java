@@ -8,8 +8,8 @@ public class History extends ClearableEntriesBox{
 
   private int currentlyHighlighted = 0;
 
-  public History(Rectangle shape, Rectangle clearButtonShape, String description) {
-    super(shape, clearButtonShape, description);
+  public History(Rectangle shape, Rectangle clearButtonShape, String description, Visualizer visualizer) {
+    super(shape, clearButtonShape, description, visualizer);
   }
 
   /**

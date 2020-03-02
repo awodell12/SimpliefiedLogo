@@ -23,8 +23,8 @@ import java.util.function.Consumer;
  */
 public class ClearableEntriesBox extends HBox {
 
-    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
-    protected static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.englishconfig";
+    protected static final ResourceBundle myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
 
     protected final TextFlow myTextFlow;
     protected final Text descriptionText;
@@ -33,18 +33,18 @@ public class ClearableEntriesBox extends HBox {
 
     private static final double SPACING = 10;
 
-    public ClearableEntriesBox(Rectangle shape, Rectangle clearButtonShape, String description){
+    public ClearableEntriesBox(Rectangle shape, Rectangle clearButtonShape, String description, Visualizer visualizer){
         myTextFlow = new TextFlow();
         myTextFlow.setPrefWidth(shape.getWidth());
         myTextFlow.setPrefHeight(shape.getHeight());
-        //myTextFlow.setMinSize(Control.USE_PREF_SIZE-1, Control.USE_PREF_SIZE-1);
         myTextFlow.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(myTextFlow);
         scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-        Button clearButton = Visualizer.makeButton("clearEntryBox", clearButtonShape, this);
-        clearButton.setTooltip(new Tooltip(myResources.getString("HoverText")));
+        Button clearButton = visualizer.makeButton("clearEntryBox", clearButtonShape, this);
+        //TODO: figure out a way to avoid passing in visualizer
+        clearButton.setTooltip(new Tooltip(myLanguageResources.getString("HoverText")));
         clearButton.setOnAction(event -> clearEntryBox());
         rightSide = new VBox(SPACING);
         rightSide.getChildren().add(clearButton);

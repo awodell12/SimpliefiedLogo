@@ -74,25 +74,6 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
   private static final double SMALLER_FONT_SIZE = 12;
   private static final double PEN_TEXT_WIDTH = 300;
-  private static final List<String> MENU_NAMES  = Arrays.asList(myResources.getString("Menus").split(","));
-  private static final List<List<String>> MENU_OPTIONS = Arrays.asList(
-          Arrays.asList(myResources.getString(MENU_NAMES.get(0)+"Options").split(",")),
-          Arrays.asList(myResources.getString(MENU_NAMES.get(1)+"Options").split(",")),
-          Arrays.asList(myResources.getString(MENU_NAMES.get(2)+"Options").split(",")),
-          Arrays.asList(myResources.getString(MENU_NAMES.get(3)+"Options").split(",")),
-          Arrays.asList(myResources.getString(MENU_NAMES.get(4)+"Options").split(",")));
-  //TODO: refactor the above into a loop somehow
-  private Map<String, Color> myColorPalette = new HashMap<>(){{
-    put("0", Color.RED);
-    put("1", Color.WHITE);
-    put("2", Color.GRAY);
-    put("3", Color.AZURE);
-    put("4", Color.LEMONCHIFFON);
-    put("5", Color.ROYALBLUE);
-    put("6", Color.LAWNGREEN);
-    put("7", Color.DARKSALMON);
-    put("8", Color.BLACK);
-  }};
   private static final Map<String, String> HELP_CATEGORIES = new HashMap<>(){{
     put("Basic Syntax", "Basic_Syntax");
     put("Turtle Commands", "Turtle_Commands");
@@ -103,11 +84,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("Display Commands", "Display_Commands");
     put("Multiple Turtles", "Multiple_Turtle_Commands");
   }}; //TODO: put this into the config file. A bit pointless though since all the help images are in english.
-  private final List<Image> imageList = new ArrayList<>() {{
-    add(new Image(myResources.getString("DefaultTurtle")));
-    add(new Image(myResources.getString("Duke")));
-    add(new Image(myResources.getString("Duval")));
-  }};
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
@@ -122,6 +98,32 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MIN_SPEED = 0.1;
   private static final double MAX_SPEED = 10;
   private static final double DEFAULT_SPEED = 1;
+
+  private ResourceBundle myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.englishconfig");
+  private final List<Image> imageList = new ArrayList<>() {{
+    add(new Image(myResources.getString("DefaultTurtle")));
+    add(new Image(myResources.getString("Duke")));
+    add(new Image(myResources.getString("Duval")));
+  }};
+  private List<String> MENU_NAMES  = Arrays.asList(myLanguageResources.getString("Menus").split(","));
+  private List<List<String>> MENU_OPTIONS = Arrays.asList(
+          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(0)+"Options").split(",")),
+          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(1)+"Options").split(",")),
+          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(2)+"Options").split(",")),
+          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(3)+"Options").split(",")),
+          Arrays.asList(myLanguageResources.getString(MENU_NAMES.get(4)+"Options").split(",")));
+  //TODO: refactor the above into a loop somehow
+  private Map<String, Color> myColorPalette = new HashMap<>(){{
+    put("0", Color.RED);
+    put("1", Color.WHITE);
+    put("2", Color.GRAY);
+    put("3", Color.AZURE);
+    put("4", Color.LEMONCHIFFON);
+    put("5", Color.ROYALBLUE);
+    put("6", Color.LAWNGREEN);
+    put("7", Color.DARKSALMON);
+    put("8", Color.BLACK);
+  }};
 
   private CommandBox myCommandBox;
   private History myHistory;
@@ -178,7 +180,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     myStage = primaryStage;
     Scene display = setUpDisplay();
     myStage.setScene(display);
-    myStage.setTitle(myResources.getString("AppTitle"));
+    myStage.setTitle(myLanguageResources.getString("AppTitle"));
     myStage.show();
   }
 
@@ -316,8 +318,8 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void updateColorMenus(int paletteIndex, Color newColor) {
       myColorPalette.put(Integer.toString(paletteIndex), newColor);
-      addMenuItem(MENU_NAMES.indexOf(myResources.getString("BackgroundMenu")),  Integer.toString(paletteIndex));
-      addMenuItem(MENU_NAMES.indexOf(myResources.getString("PenColorMenu")), Integer.toString(paletteIndex));
+      addMenuItem(MENU_NAMES.indexOf(myLanguageResources.getString("BackgroundMenu")),  Integer.toString(paletteIndex));
+      addMenuItem(MENU_NAMES.indexOf(myLanguageResources.getString("PenColorMenu")), Integer.toString(paletteIndex));
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -329,10 +331,10 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private String buildTurtleInfoString(int turtleID){
     String[] activityAndHeading = myTurtleView.getTurtleInfo(turtleID);
-    String turtleString = myResources.getString("Turtle");
-    String activeString = myResources.getString("Active");
-    String positionString = myResources.getString("Position");
-    String headingString = myResources.getString("Heading");
+    String turtleString = myLanguageResources.getString("Turtle");
+    String activeString = myLanguageResources.getString("Active");
+    String positionString = myLanguageResources.getString("Position");
+    String headingString = myLanguageResources.getString("Heading");
     return turtleString + " " + turtleID + ": \n" + activeString + ": " +
             activityAndHeading[0] + "  " + positionString + ": ("
             + (int)myTurtleView.getUnalteredTurtlePositions().get(turtleID).getX() + ","
@@ -393,7 +395,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     setUpMenus();
     myTurtleView = new TurtleView(TURTLE_VIEW_SHAPE.getWidth(), TURTLE_VIEW_SHAPE.getHeight());
     createTurtle(new Point2D(0,0), 0);
-    myErrorMessage = new Text(myResources.getString("DefaultErrorMessage"));
+    myErrorMessage = new Text(myLanguageResources.getString("DefaultErrorMessage"));
     myErrorMessage.setFill(Color.RED);
     myCommandBox = new CommandBox(COMMAND_BOX_SHAPE);
     myLeftVBox.getChildren().addAll(myTurtleView, myErrorMessage, myCommandBox);
@@ -410,9 +412,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setUpRightPane() {
     setUpTopButtons();
-    myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myResources.getString("HistoryLabel"));
-    myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("UDCLabel"));
-    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
+    myHistory = new History(HISTORY_VIEW_SHAPE, CLEAR_HISTORY_BUTTON_SHAPE, myLanguageResources.getString("HistoryLabel"), this);
+    myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myLanguageResources.getString("UDCLabel"), this);
+    myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myLanguageResources.getString("VariablesLabel"), this);
     myPenText = new Text();
     myPenText.setFont(new Font(SMALLER_FONT_SIZE));
     myPenText.setWrappingWidth(PEN_TEXT_WIDTH);
@@ -429,9 +431,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     String[] penState = myTurtleView.getPenState();
     double thick = Double.parseDouble(penState[2]);
     String penThick = String.format("%.2f", thick);
-    String penUpString = myResources.getString("PenUpString");
-    String penColorString = myResources.getString("PenColorString");
-    String penThicknessString = myResources.getString("PenThicknessString");
+    String penUpString = myLanguageResources.getString("PenUpString");
+    String penColorString = myLanguageResources.getString("PenColorString");
+    String penThicknessString = myLanguageResources.getString("PenThicknessString");
     myPenText.setText(penUpString + ": " + penState[0] + " " + penColorString + ": " + penState[1] + " " +
             penThicknessString + ": " + penThick);
   }
@@ -466,7 +468,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     speedSlider.valueProperty().addListener((ov, old_val, new_val) -> animation.setRate(speedSlider.getValue()));
     speedSlider.setShowTickMarks(true);
     speedSlider.setShowTickLabels(true);
-    Text sliderLabel = new Text(myResources.getString("AnimationSpeed"));
+    Text sliderLabel = new Text(myLanguageResources.getString("AnimationSpeed"));
     sliderLabel.setUnderline(true);
     Slider penSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
     penSlider.valueProperty().addListener((ov, old_val, new_val) -> {
@@ -476,7 +478,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     });
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
-    Text penSliderLabel = new Text(myResources.getString("PenThicknessString"));
+    Text penSliderLabel = new Text(myLanguageResources.getString("PenThicknessString"));
     penSliderLabel.setUnderline(true);
     myCenterVBox.getChildren().addAll(sliderLabel, speedSlider, penSliderLabel, penSlider);
   }
@@ -489,7 +491,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     myRightVBox.getChildren().add(topButtons);
   }
 
-  protected static Button makeButton(String text, Rectangle shape, Object clazz){
+  protected Button makeButton(String text, Rectangle shape, Object clazz){
     Method method = null;
     try {
       method = clazz.getClass().getDeclaredMethod(text);
@@ -497,7 +499,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     catch (NoSuchMethodException e) {
       showError(e.getMessage());
     }
-    Button button = new Button(myResources.getString(text));
+    Button button = new Button(myLanguageResources.getString(text));
     button.setLayoutY(shape.getY());
     button.setLayoutX(shape.getX());
     button.setMinSize(shape.getWidth(), shape.getHeight());
@@ -514,24 +516,24 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void moveForward(){
-    executeInstruction(myResources.getString("fd") + " " + turtleMovementButtons.get(0).getText());
+    executeInstruction(myLanguageResources.getString("fd") + " " + turtleMovementButtons.get(0).getText());
     //TODO: make this work for different languages
   }
 
   private void moveBackward(){
-    executeInstruction(myResources.getString("bk") + " " + turtleMovementButtons.get(1).getText());
+    executeInstruction(myLanguageResources.getString("bk") + " " + turtleMovementButtons.get(1).getText());
   }
 
   private void rotateRight(){
-    executeInstruction(myResources.getString("rt") + " " + turtleMovementButtons.get(2).getText());
+    executeInstruction(myLanguageResources.getString("rt") + " " + turtleMovementButtons.get(2).getText());
   }
 
   private void rotateLeft(){
-    executeInstruction(myResources.getString("lt") + " " + turtleMovementButtons.get(3).getText());
+    executeInstruction(myLanguageResources.getString("lt") + " " + turtleMovementButtons.get(3).getText());
   }
 
   private void resetAnimation() {
-    executeInstruction(myResources.getString("clearscreen"));
+    executeInstruction(myLanguageResources.getString("clearscreen"));
   }
 
   private void newWorkspace(){
@@ -539,7 +541,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void undoButton(){
-    myHistory.addEntry(myResources.getString("undo") + " " + myCurrentInstruction, null, e->myCommandBox.setText(myCurrentInstruction));
+    myHistory.addEntry(myLanguageResources.getString("undo") + " " + myCurrentInstruction, null, e->myCommandBox.setText(myCurrentInstruction));
     /*myVariables.clearEntryBox();
     for(Map.Entry<String, Double> entry : previousVariableMapping.entrySet()){
       addVariable(entry.getKey(), entry.getValue());
@@ -555,13 +557,13 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void redoButton(){
     if(undone) {
-      myHistory.addEntry(myResources.getString("redo") + " " + myCurrentInstruction, null, e->myCommandBox.setText(myCurrentInstruction));
+      myHistory.addEntry(myLanguageResources.getString("redo") + " " + myCurrentInstruction, null, e->myCommandBox.setText(myCurrentInstruction));
       processResult(previousResult);
     }
   }
 
   private void setPenColor(String colorIndex){
-    //executeInstruction(myResources.getString("setpencolor") + " " + colorIndex); // TODO: uncomment out when implemented in backend
+    //executeInstruction(myLanguageResources.getString("setpencolor") + " " + colorIndex); // TODO: uncomment out when implemented in backend
     myTurtleView.setPenColor(myColorPalette.get(colorIndex), Integer.parseInt(colorIndex));
     setPenText();
   }
@@ -571,7 +573,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setBackGroundColor(String colorIndex){
-    //executeInstruction(myResources.getString("setbackgroundcolor") + " " + colorIndex); // TODO: uncomment out when implemented in backend
+    //executeInstruction(myLanguageResources.getString("setbackgroundcolor") + " " + colorIndex); // TODO: uncomment out when implemented in backend
     myTurtleView.setBackGroundColor(myColorPalette.get(colorIndex));
   }
 
@@ -583,7 +585,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     Image image = imageList.get(Integer.parseInt(num));
     myTurtleView.setTurtleImage(image);
     //TODO: move the above 2 lines to interpretResult once this command is supported by backend
-    //executeInstruction("setshape " + Integer.parseInt(num));
+    //executeInstruction(myLanguageResources.getString("setshape") + " " + Integer.parseInt(num));
   }
 
   private void runButton(){
@@ -642,11 +644,11 @@ public class Visualizer extends Application implements FrontEndExternal{
         try {
           method.invoke(this, menuItemName);
         } catch (IllegalAccessException | InvocationTargetException e) {
-          showError(myResources.getString("InvokeError"));
+          showError(myLanguageResources.getString("InvokeError"));
         }
       });
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      showError(myResources.getString("NoMethodError"));
+      showError(myLanguageResources.getString("NoMethodError"));
     }
     menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(menuItemName));
     menu.getItems().add(menuItem);
@@ -661,17 +663,17 @@ public class Visualizer extends Application implements FrontEndExternal{
         WritableImage fximage = new WritableImage(buffImage.getWidth(), buffImage.getHeight());
         Image image = SwingFXUtils.toFXImage(buffImage, fximage);
         imageList.add(image);
-        addMenuItem(MENU_NAMES.indexOf(myResources.getString("TurtleImageMenu")), Integer.toString(imageList.size()-1));
+        addMenuItem(MENU_NAMES.indexOf(myLanguageResources.getString("TurtleImageMenu")), Integer.toString(imageList.size()-1));
         setTurtleImageIndex(Integer.toString(imageList.size()-1));
       } catch (IOException | NullPointerException ex) {
-        showError(myResources.getString("LoadTurtle"));
+        showError(myLanguageResources.getString("LoadTurtle"));
       }
     }
   }
 
-  private static void showError(String message) {
+  private void showError(String message) {
     Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(myResources.getString("IOError"));
+    alert.setTitle(myLanguageResources.getString("IOError"));
     alert.setContentText(message);
     alert.showAndWait();
   }
@@ -682,7 +684,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     buttonGrid.setVgap(SPACING);
     for(int i=0; i<BOTTOM_BUTTON_METHOD_NAMES.length; i++){
       Button button = makeButton(BOTTOM_BUTTON_METHOD_NAMES[i], RUN_BUTTON_SHAPE, this);
-      button.setTooltip(new Tooltip(myResources.getString(BOTTOM_BUTTON_HOVER_NAMES[i])));
+      button.setTooltip(new Tooltip(myLanguageResources.getString(BOTTOM_BUTTON_HOVER_NAMES[i])));
       buttonGrid.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
     }
     myCenterVBox.getChildren().add(buttonGrid);
@@ -720,7 +722,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void addVariable(String name, double value){
-    myVariables.addEntry(name + " : " + value, name, newValue->executeInstruction(myResources.getString("make")
+    myVariables.addEntry(name + " : " + value, name, newValue->executeInstruction(myLanguageResources.getString("make")
             + " :"+name+" "+newValue));
   }
 
@@ -740,11 +742,11 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void displayHelp(){
     Stage stage = new Stage();
-    stage.setTitle(myResources.getString("HelpWindowTitle"));
+    stage.setTitle(myLanguageResources.getString("HelpWindowTitle"));
     VBox vBox = new VBox(SPACING);
     MenuBar menuBar = new MenuBar();
     vBox.getChildren().add(menuBar);
-    Menu menu = new Menu(myResources.getString("HelpMenu"));
+    Menu menu = new Menu(myLanguageResources.getString("HelpMenu"));
     menuBar.getMenus().add(menu);
     for(Map.Entry<String, String> helpCategory : HELP_CATEGORIES.entrySet()){
       MenuItem menuItem = new Menu(helpCategory.getKey());
