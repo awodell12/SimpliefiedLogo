@@ -29,6 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
@@ -42,6 +43,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public class Visualizer extends Application implements FrontEndExternal{
@@ -56,12 +58,11 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(225, 125);
   private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(225, 125);
   private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(225, 125);
-  private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(60, 40);
+  private static final Rectangle RUN_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(30, 30);
-  private static final Rectangle HELP_BUTTON_SHAPE = new Rectangle(75, 50);
-  private static final Rectangle SET_TURTLE_IMAGE_BUTTON_SHAPE = new Rectangle(75, 50);
+  private static final Rectangle TOP_RIGHT_BUTTON_SHAPE = new Rectangle(75, 50);
   private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
   private static final Rectangle TURTLE_MOVEMENT_LABEL_SHAPE = new Rectangle(20, 5);
@@ -71,7 +72,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double BOTTOM_INSET = 0.15;
   private static final double MENU_LABEL_SIZE = 20;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
-  private static final List<String> MENU_NAMES = List.of("Color", "Language", "Background", "PenUp", "TurtleImage");
+  private static final double SMALLER_FONT_SIZE = 12;
+  private static final double PEN_TEXT_WIDTH = 300;
+  private static final List<String> MENU_NAMES  = Arrays.asList(myResources.getString("Menus").split(","));
   private static final String[][] MENU_OPTIONS = new String[][]{{"0", "1", "2", "3", "4", "5", "6", "7", "8"},
           {"Chinese", "English", "French", "German", "Italian", "Portuguese", "Russian", "Spanish", "Syntax", "Urdu"},
           {"0", "1", "2", "3", "4", "5", "6", "7", "8"},
@@ -98,11 +101,17 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("Display Commands", "Display_Commands");
     put("Multiple Turtles", "Multiple_Turtle_Commands");
   }};
-  private static final List<Image> imageList = List.of(new Image(myResources.getString("Duke")),
-          new Image(myResources.getString("DefaultTurtle")), new Image(myResources.getString("Duval")));
+  private final List<Image> imageList = new ArrayList<>() {{
+    add(new Image(myResources.getString("DefaultTurtle")));
+    add(new Image(myResources.getString("Duke")));
+    add(new Image(myResources.getString("Duval")));
+  }};
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
+  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace"};
+  private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight",
+          "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
 
   private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
   private static final double FPS = 24;
@@ -149,13 +158,17 @@ public class Visualizer extends Application implements FrontEndExternal{
   private Text myPenText;
   private TextFlow myTurtleInfo = new TextFlow();
   private MenuBar myMenuBar;
+  private Consumer<Integer> myOnNewWorkSpaceClicked;
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
+   * @param instructionQueueListener listener for the instruction queue
+   * @param onNewWorkSpaceClicked what happens when the create new workspace button is clicked
    */
-  public Visualizer(ListChangeListener<String> instructionQueueListener) {
+  public Visualizer(ListChangeListener<String> instructionQueueListener, Consumer<Integer> onNewWorkSpaceClicked) {
     myInstructionQueue = new ObservableQueue();
     myInstructionQueue.addListener(instructionQueueListener);
+    myOnNewWorkSpaceClicked = onNewWorkSpaceClicked;
   }
 
   @Override
@@ -283,25 +296,26 @@ public class Visualizer extends Application implements FrontEndExternal{
     if(clearScreen) myTurtleView.clearPaths();
     myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
-    setPenText();
     displayErrorMessage(errorMessage);
+    if (newColorRGB != null){
+      updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
+    }
+    //TODO: show error if the requested color index is not in color palette?
+    myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
+    myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
+    setPenText();
     if(originalInstruction != myCurrentlyHighlighted) {
       myHistory.highlightNext();
       myCurrentlyHighlighted = originalInstruction;
     }
     undone = false;
     myRightVBox.requestLayout(); // make sure everything is updated graphically
-    //newColorRGB = List.of(100, 100, 100);
-    //paletteIndex = 12;
-    if (newColorRGB != null){
-      updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
-    }
   }
 
   private void updateColorMenus(int paletteIndex, Color newColor) {
       myColorPalette.put(Integer.toString(paletteIndex), newColor);
-      addMenuItem(MENU_NAMES.indexOf("Background"),  Integer.toString(paletteIndex), null);
-      addMenuItem(MENU_NAMES.indexOf("Color"), Integer.toString(paletteIndex), null);
+      addMenuItem(MENU_NAMES.indexOf(myResources.getString("BackgroundMenu")),  Integer.toString(paletteIndex));
+      addMenuItem(MENU_NAMES.indexOf(myResources.getString("PenColorMenu")), Integer.toString(paletteIndex));
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -337,7 +351,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         step(false);
       } catch (Exception ex) {
         System.out.println("Caught Exception");
-        ex.printStackTrace();
+        showError(ex.getMessage());
       }
     });
 
@@ -388,6 +402,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     myUserDefinedCommands = new ClearableEntriesBox(UDC_VIEW_SHAPE, CLEAR_UDC_BUTTON_SHAPE, myResources.getString("UDCLabel"));
     myVariables = new VariableBox(VARIABLES_VIEW_SHAPE, CLEAR_VARIABLES_BUTTON_SHAPE, myResources.getString("VariablesLabel"));
     myPenText = new Text();
+    myPenText.setFont(new Font(SMALLER_FONT_SIZE));
+    myPenText.setWrappingWidth(PEN_TEXT_WIDTH);
     setPenText();
     myTurtleInfo.setMaxSize(TURTLE_INFO_SHAPE.getWidth(), TURTLE_INFO_SHAPE.getHeight());
     ScrollPane turtleInfoPane = new ScrollPane();
@@ -400,7 +416,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setPenText(){
     String[] penState = myTurtleView.getPenState();
     double thick = Double.parseDouble(penState[2]);
-    String penThick = String.format("%.3f", thick);
+    String penThick = String.format("%.2f", thick);
     myPenText.setText("Pen Up: " + penState[0] + " Pen Color: " + penState[1] + " Pen Thickness: " + penThick);
   }
 
@@ -415,10 +431,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     step(true);
   }
   private void setUpTopCenterButtons() {
-    String[] buttonNames = new String[]{"moveForward", "moveBackward", "rotateRight", "rotateLeft", "endPause",
-                          "setPause", "resetAnimation", "singleStep"};
     List<Button> buttons = new ArrayList<>();
-    for(String buttonName : buttonNames){
+    for(String buttonName : TOP_CENTER_BUTTON_METHODS){
       buttons.add(makeButton(buttonName, TURTLE_BUTTON_SHAPE, this));
     }
     for(int i=0; i<NUM_TURTLE_MOVE_BUTTONS; i++){
@@ -453,12 +467,9 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setUpTopButtons() {
     HBox topButtons = new HBox(SPACING);
-    Button myHelpButton = makeButton("displayHelp", HELP_BUTTON_SHAPE, this);
-    myHelpButton.setOnAction(event -> displayHelp());
-    Button mySetTurtleImageButton = makeButton("setTurtleImage", SET_TURTLE_IMAGE_BUTTON_SHAPE, this);
-    mySetTurtleImageButton.setOnAction(event -> setTurtleImage());
-    topButtons.getChildren().add(myHelpButton);
-    topButtons.getChildren().add(mySetTurtleImageButton);
+    for(String methodName : TOP_RIGHT_BUTTON_METHODS){
+      topButtons.getChildren().add(makeButton(methodName, TOP_RIGHT_BUTTON_SHAPE, this));
+    }
     myRightVBox.getChildren().add(topButtons);
   }
 
@@ -468,7 +479,6 @@ public class Visualizer extends Application implements FrontEndExternal{
       method = clazz.getClass().getDeclaredMethod(text);
     }
     catch (NoSuchMethodException e) {
-      e.printStackTrace();
       showError(e.getMessage());
     }
     Button button = new Button(myResources.getString(text));
@@ -481,7 +491,6 @@ public class Visualizer extends Application implements FrontEndExternal{
         assert finalMethod != null;
         finalMethod.invoke(clazz);
       } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
-        e.printStackTrace();
         showError(e.getMessage());
       }
     });
@@ -507,7 +516,10 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void resetAnimation() {
     executeInstruction("clearscreen");
-    //myTurtleView.clearPaths(); // TODO: fix clear screen command
+  }
+
+  private void newWorkspace(){
+    myOnNewWorkSpaceClicked.accept(0);
   }
 
   private void undoButton(){
@@ -534,7 +546,8 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void setPenColor(String colorIndex){
     //executeInstruction("setpencolor " + colorIndex); // TODO: uncomment out when implemented in backend
-    myTurtleView.setPenColor(myColorPalette.get(colorIndex));
+    myTurtleView.setPenColor(myColorPalette.get(colorIndex), Integer.parseInt(colorIndex));
+    setPenText();
   }
 
   private void setPenUp(String menuName){
@@ -592,12 +605,12 @@ public class Visualizer extends Application implements FrontEndExternal{
       Menu menu = new Menu(MENU_NAMES.get(i));
       myMenuBar.getMenus().add(menu);
       for(String entry : MENU_OPTIONS[i]){
-        addMenuItem(i, entry, null);
+        addMenuItem(i, entry);
       }
     }
   }
 
-  private void addMenuItem(int menuNameIndex, String menuItemName, ImageView imageView){
+  private void addMenuItem(int menuNameIndex, String menuItemName){
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
     String menuName = MENU_NAMES.get(menuNameIndex);
     MenuItem menuItem = new MenuItem(menuItemName);
@@ -608,8 +621,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     try {
       Method method = this.getClass().getDeclaredMethod(methodName, String.class);
       Method labelGetter = this.getClass().getDeclaredMethod(labelGetterName, String.class);
-      if(imageView == null) menuItem.setGraphic((Node) labelGetter.invoke(this, menuItemName));
-      else menuItem.setGraphic(imageView);
+      menuItem.setGraphic((Node) labelGetter.invoke(this, menuItemName));
       menuItem.setOnAction(event -> {
         try {
           method.invoke(this, menuItemName);
@@ -632,7 +644,9 @@ public class Visualizer extends Application implements FrontEndExternal{
         BufferedImage buffImage = ImageIO.read(file);
         WritableImage fximage = new WritableImage(buffImage.getWidth(), buffImage.getHeight());
         Image image = SwingFXUtils.toFXImage(buffImage, fximage);
-        myTurtleView.setTurtleImage(image);
+        imageList.add(image);
+        addMenuItem(MENU_NAMES.indexOf("TurtleImage"), Integer.toString(imageList.size()-1));
+        setTurtleImageIndex(Integer.toString(imageList.size()-1));
       } catch (IOException | NullPointerException ex) {
         showError(myResources.getString("LoadTurtle"));
       }

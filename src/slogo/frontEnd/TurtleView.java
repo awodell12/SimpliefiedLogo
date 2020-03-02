@@ -26,10 +26,10 @@ public class TurtleView extends Group{
     private Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
     private List<Integer> existingTurtleIDs = new ArrayList<>();
     private Color myPenColor = Color.BLACK;
+    private int myPenColorIndex = 8;
     private double myPenThickness = 1;
     private final Rectangle myBackground;
     private boolean isPenUp = false;
-    private int myImageIndex = 0;
     private final double myWidth;
     private final double myHeight;
     private final double xOffset;
@@ -80,7 +80,10 @@ public class TurtleView extends Group{
      * set the pen color (color of paths)
      * @param color color to set to
      */
-    protected void setPenColor(Color color){ myPenColor = color; }
+    protected void setPenColor(Color color, int index){
+        myPenColor = color;
+        myPenColorIndex = index;
+    }
 
     /**
      * Updates the position of the turtle in the Display to the desired set of coordinates. Offsets so that 0, 0 is center of screen
@@ -177,6 +180,7 @@ public class TurtleView extends Group{
     }
 
     protected void setPenThickness(double value) {
+        assert value <= 10.0;
         myPenThickness = value;
     }
 
@@ -195,21 +199,18 @@ public class TurtleView extends Group{
     protected void activateTurtles(List<Integer> activeTurtles) {
         for(Turtle turtle : myTurtles.values()){
             turtle.setActive(false);
-            //turtle.setImage(myInactiveTurtleImage);
             turtle.setOpacity(UNHIGHLIGHTED_OPACITY);
         }
         for(int id : activeTurtles){
             if(myTurtles.containsKey(id)) {
                 myTurtles.get(id).setActive(true);
-                //myTurtles.get(id).setImage(myActiveTurtleImage);
                 myTurtles.get(id).setOpacity(HIGHLIGHTED_OPACITY);
             }
         }
     }
 
     protected String[] getPenState(){
-        //TODO: replace 0 with myPenColor.toString() or pen color index
-        return new String[]{Boolean.toString(isPenUp), "0", Double.toString(myPenThickness)};
+        return new String[]{Boolean.toString(isPenUp), Integer.toString(myPenColorIndex), Double.toString(myPenThickness)};
     }
 
     protected String[] getTurtleInfo(int turtleID) {
@@ -229,12 +230,10 @@ public class TurtleView extends Group{
         if(myTurtles.get(id).isActive()){
             myTurtles.get(id).setActive(false);
             myTurtles.get(id).setOpacity(UNHIGHLIGHTED_OPACITY);
-            //myTurtles.get(id).setImage(myInactiveTurtleImage); //TODO: maybe just use opacity
             onClicked.accept(false);
         }else{
             myTurtles.get(id).setActive(true);
             myTurtles.get(id).setOpacity(HIGHLIGHTED_OPACITY);
-            //myTurtles.get(id).setImage(myActiveTurtleImage);
             onClicked.accept(true);
         }
     }
