@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  */
 public class ClearableEntriesBox extends HBox {
 
-    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.englishconfig";
+    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.frenchconfig";
     protected static final ResourceBundle myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
 
     protected final TextFlow myTextFlow;

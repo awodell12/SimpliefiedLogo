@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class VariableBox extends ClearableEntriesBox {
 
-  private static final String LABEL_TEXT = myResources.getString("VariableChangerLabel");
+  private static final String LABEL_TEXT = myLanguageResources.getString("VariableChangerLabel");
   private static final Rectangle LABEL_SHAPE = new Rectangle(20, 20);
   private final TextArea valueText;
 

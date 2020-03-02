@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
  */
 public class CommandBox extends HBox {
 
-    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.englishconfig";
+    private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.frenchconfig";
     private static final ResourceBundle myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
     private static final int SPACING = 10;
     private final TextArea inputArea;

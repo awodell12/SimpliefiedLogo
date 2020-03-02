@@ -99,7 +99,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MAX_SPEED = 10;
   private static final double DEFAULT_SPEED = 1;
 
-  private ResourceBundle myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.englishconfig");
+  private ResourceBundle myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.frenchconfig");
   private final List<Image> imageList = new ArrayList<>() {{
     add(new Image(myResources.getString("DefaultTurtle")));
     add(new Image(myResources.getString("Duke")));
@@ -402,7 +402,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void activateTurtle(boolean dummy) {
-    StringBuilder instruction = new StringBuilder("tell [ ");
+    StringBuilder instruction = new StringBuilder(myLanguageResources.getString("tell") + " [ ");
     for(int id : myTurtleView.getActiveTurtles()){
       instruction.append(id).append(" ");
     }
@@ -632,8 +632,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
     String menuName = MENU_NAMES.get(menuNameIndex);
     MenuItem menuItem = new MenuItem(menuItemName);
-    String methodName = myResources.getString(menuName);
-    String labelGetterName = myResources.getString(menuName + "Label");
+    String methodName = myLanguageResources.getString(menuName);
+    String labelGetterName = myLanguageResources.getString(menuName + "Label");
     // get another method name that will give us the label corresponding to this menu name
     // the method should return a node object
     try {
