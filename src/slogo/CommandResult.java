@@ -58,7 +58,6 @@ public class CommandResult {
     myTurtleID = turtleID;
     paletteIndex = newPaletteIndex;
     actualCommand = doesSomething;
-    System.out.println("CR actually has " + myShapeIndex);
   }
 
   public CommandResult(double retVal, int tokensParsed){
@@ -162,7 +161,6 @@ public class CommandResult {
   }
 
   public int getShapeIndex(){
-    System.out.println("Sending to front end shape index " + myShapeIndex);
     return myShapeIndex;
   }
 

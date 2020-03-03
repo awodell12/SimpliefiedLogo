@@ -126,13 +126,12 @@ public class CommandResultBuilder {
 
   public void setColor(List<Integer> color){ newColor = color; }
 
-  public void setShapeIndex(int idx){ shapeIndex = idx; System.out.println("setShapeIndex to " + shapeIndex); }
+  public void setShapeIndex(int idx){ shapeIndex = idx; }
 
   public CommandResult buildCommandResult() {
-    System.out.println("buildCR with " + shapeIndex);
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
         startPos, pathColorIndex, varName, varValue, udcName, udcScript,
-        clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles, newPaletteIndex,
-            shapeIndex, errorMessage, actualCommand);
+        clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles, shapeIndex,
+            newPaletteIndex, errorMessage, actualCommand);
   }
 }
