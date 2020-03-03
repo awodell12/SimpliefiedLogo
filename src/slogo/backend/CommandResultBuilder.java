@@ -30,6 +30,7 @@ public class CommandResultBuilder {
   private int newPaletteIndex;
   private boolean actualCommand;
 
+
   public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers) {
     myRetVal = 0;
     myTokensParsed = 0;
@@ -37,7 +38,7 @@ public class CommandResultBuilder {
     turtlePos = turtlePosition;
     turtleHeading = turtleFacing;
     startPos = null;
-    pathColorIndex = 0;
+    pathColorIndex = -1;
     varName = null;
     varValue = 0;
     udcName = null;
@@ -46,7 +47,7 @@ public class CommandResultBuilder {
     penUp = false; //TODO: change this so pen doesn't always go down
     turtleVis = true;
     turtleReset = false;
-    bgColorIndex = 0;
+    bgColorIndex = -1;
     newColor = null;
     penSize = 0;
     shapeIndex = 0;
@@ -66,7 +67,7 @@ public class CommandResultBuilder {
   }
 
 
-    public void retVal(double val) {
+  public void retVal(double val) {
     myRetVal = val;
   }
 
@@ -121,6 +122,12 @@ public class CommandResultBuilder {
   public void setTurtleReset(boolean isReset){ turtleReset = isReset; }
 
   public void setMyScreenClear(boolean value){ clear = value; }
+
+  public void setBackgroundColor(int index){ bgColorIndex = index; }
+
+  public void setColor(List<Integer> color){ newColor = color; }
+
+  public void setShapeIndex(int idx){ shapeIndex = idx; }
 
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,

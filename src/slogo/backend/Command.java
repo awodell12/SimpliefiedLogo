@@ -26,4 +26,8 @@ public interface Command {
       throws ParseException;
 
   List<String> findVars(String[] tokenList);
+
+  default boolean runsPerTurtle() {
+    return false;
+  }
 }
