@@ -11,8 +11,10 @@ import slogo.backend.ParseException;
 
 public class SetPaletteCommand implements Command {
 
-    public static final int NUM_ARGS = 4;
-    public static final int NUM_VARS = 0;
+    private static final int NUM_ARGS = 4;
+    private static final int NUM_VARS = 0;
+    private static final String INVALID_COLOR_MESSAGE = "Color components must be non-negative integers between 0 and 256";
+
 
     @Override
     public int getNumArgs() {
@@ -33,14 +35,20 @@ public class SetPaletteCommand implements Command {
         List<Integer> paletteColor = List.of(idx, r, g, b);
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
         builder.retVal(idx);
-        builder.setColor(paletteColor);
-        //FIXME Throw exception if this is not a valid color (as specified in command description), perhaps use a helper method to determine if color valid
-        //TODO add to palette in back end?
+        if(isValidColor(arguments.get(1), arguments.get(2), arguments.get(3)))
+            builder.setColor(paletteColor);
+        else
+            builder.setErrorMessage(INVALID_COLOR_MESSAGE);
         return List.of(builder.buildCommandResult());
     }
 
     @Override
     public List<String> findVars(String[] tokenList) {
         return null;
+    }
+
+    private boolean isValidColor(double r, double g, double b){
+        return r == Math.round(r) && g == Math.round(g) && b == Math.round(b) &&
+                r >= 0 && r <= 256 && g >= 0 && g <= 256 && b >= 0 && b <= 256;
     }
 }
