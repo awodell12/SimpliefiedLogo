@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
-@SuppressWarnings("unused")
+//@SuppressWarnings("unused") // TODO: uncomment this out
 public class Visualizer extends Application implements FrontEndExternal{
   private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
   private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
@@ -97,7 +97,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MILLISECOND_DELAY = 1000/FPS;
   private static final double SIGNIFICANT_DIFFERENCE = 0.001;
   private static final double MIN_SPEED = 0.1;
-  private static final double MAX_SPEED = 10;
+  private static final double MAX_SPEED = 50;
   private static final double DEFAULT_SPEED = 1;
   private static final String LANGUAGE_INSTRUCTION_STRING = "language: ";
 
@@ -166,6 +166,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final int myStartingNumTurtles;
   private final int myStartingPenColor;
   private final int myStartingBackgroundColor;
+  private final List<String> myScripts;
   private boolean clearedAtStart = true;
 
   /**
@@ -189,10 +190,11 @@ public class Visualizer extends Application implements FrontEndExternal{
     myStartingNumTurtles = Integer.parseInt(myWorkSpaceResources.getString("numTurtles"));
     myStartingPenColor = Integer.parseInt(myWorkSpaceResources.getString("startingPenColor"));
     myStartingBackgroundColor = Integer.parseInt(myWorkSpaceResources.getString("startingBGColor"));
+    myScripts = Arrays.asList(myWorkSpaceResources.getString("Scripts").split(","));
   }
 
   @Override
-  public void start(Stage primaryStage) throws Exception {
+  public void start(Stage primaryStage) {
     myStage = primaryStage;
     Scene display = setUpDisplay();
     myStage.setScene(display);
@@ -317,6 +319,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
     displayErrorMessage(errorMessage);
+    if(penSize != -1) myTurtleView.setPenThickness(penSize);
     if (newColorRGB != null){
       updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
@@ -417,6 +420,10 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
     instruction.append("]");
     executeInstruction(instruction.toString());
+    for(String scriptName : myScripts){
+      String script = myWorkSpaceResources.getString(scriptName);
+      myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
+    }
     myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + myStartingLanguage);
     // now schedule clear history so the user isn't confused by the commands we used to set up defaults
     clearedAtStart = false;
@@ -461,7 +468,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     myPenText.setFont(new Font(SMALLER_FONT_SIZE));
     myPenText.setWrappingWidth(PEN_TEXT_WIDTH);
     setPenText();
-    myTurtleInfo.setMaxSize(TURTLE_INFO_SHAPE.getWidth(), TURTLE_INFO_SHAPE.getHeight());
+    myTurtleInfo.setPrefSize(TURTLE_INFO_SHAPE.getWidth(), TURTLE_INFO_SHAPE.getHeight());
+    myTurtleInfo.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
     ScrollPane turtleInfoPane = new ScrollPane();
     turtleInfoPane.setContent(myTurtleInfo);
     turtleInfoPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -520,7 +528,6 @@ public class Visualizer extends Application implements FrontEndExternal{
       myTurtleView.setPenThickness(penSlider.getValue());
       setPenText();
       myRightVBox.requestLayout(); // make sure everything is updated graphically
-      //TODO: make this also change pen thickness in backend?
     });
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
@@ -581,6 +588,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void resetAnimation() {
+    //TODO: make this reset the animation too (e.g. desired position)
     executeInstruction(myLanguageResources.getString("clearscreen"));
   }
 
