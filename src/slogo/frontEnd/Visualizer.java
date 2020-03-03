@@ -47,8 +47,8 @@ import java.util.function.Consumer;
 
 //@SuppressWarnings("unused") // TODO: uncomment this out
 public class Visualizer extends Application implements FrontEndExternal{
-  private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
-  private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+  private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.";
+  private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "config");
   private static final List<String> MENU_TYPES = Arrays.asList(myResources.getString("MenuTypes").split(","));
   private static final double HEIGHT = Double.parseDouble(myResources.getString("WindowHeight"));
   private static final double ASPECT_RATIO = (16.0/9.0);
@@ -103,25 +103,26 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private ResourceBundle myLanguageResources;
   private ResourceBundle myWorkSpaceResources;
+  private ResourceBundle myUserConfigurableResources;
   private final List<Image> imageList = new ArrayList<>() {{
     add(new Image(myResources.getString("DefaultTurtle")));
     add(new Image(myResources.getString("Duke")));
     add(new Image(myResources.getString("Duval")));
   }};
   private List<String> myMenuNames;
-  private Map<String, Color> myColorPalette = new HashMap<>(){{
-    put("0", Color.RED);
-    put("1", Color.WHITE);
-    put("2", Color.GRAY);
-    put("3", Color.AZURE);
-    put("4", Color.LEMONCHIFFON);
-    put("5", Color.ROYALBLUE);
-    put("6", Color.LAWNGREEN);
-    put("7", Color.DARKSALMON);
-    put("8", Color.BLACK);
-    put("9", Color.MAGENTA);
-    put("10", Color.ORANGE);
-  }};
+ private Map<String, Color> myColorPalette; // = new HashMap<>(){{
+//    put("0", Color.RED);
+//    put("1", Color.WHITE);
+//    put("2", Color.GRAY);
+//    put("3", Color.AZURE);
+//    put("4", Color.LEMONCHIFFON);
+//    put("5", Color.ROYALBLUE);
+//    put("6", Color.LAWNGREEN);
+//    put("7", Color.DARKSALMON);
+//    put("8", Color.BLACK);
+//    put("9", Color.MAGENTA);
+//    put("10", Color.ORANGE);
+//  }};
 
   private CommandBox myCommandBox;
   private History myHistory;
@@ -170,6 +171,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final List<String> myStartingVariables;
   private final int myStartingImage;
   private boolean clearedAtStart = true;
+  private int myPaletteSize;
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -188,13 +190,26 @@ public class Visualizer extends Application implements FrontEndExternal{
       myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace0");
     }
     myStartingLanguage = myWorkSpaceResources.getString("Language");
-    myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources." + myStartingLanguage + "config");
+    myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION + myStartingLanguage + "config");
+    myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable");
     myStartingNumTurtles = Integer.parseInt(myWorkSpaceResources.getString("numTurtles"));
     myStartingPenColor = Integer.parseInt(myWorkSpaceResources.getString("startingPenColor"));
     myStartingBackgroundColor = Integer.parseInt(myWorkSpaceResources.getString("startingBGColor"));
     myScripts = Arrays.asList(myWorkSpaceResources.getString("Scripts").split(","));
     myStartingVariables = Arrays.asList(myWorkSpaceResources.getString("Variables").split(","));
     myStartingImage = Integer.parseInt(myWorkSpaceResources.getString("startingImage"));
+    setOriginalColorPalette();
+  }
+
+  private void setOriginalColorPalette() {
+    String[] defaultColors = myUserConfigurableResources.getString("DefaultPalette").split(" ");
+    myPaletteSize = defaultColors.length;
+    myColorPalette = new HashMap<>();
+    for (String colorString : defaultColors){
+      String[] parts = colorString.split(",");
+      Color color = Color.rgb(Integer.parseInt(parts[1]),Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+      myColorPalette.put(parts[0], color);
+    }
   }
 
   @Override
@@ -712,6 +727,16 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(String menuType : MENU_TYPES){
       myMenuOptions.add(Arrays.asList(myWorkSpaceResources.getString(menuType+"Options").split(",")));
     }
+    int penIndex = MENU_TYPES.indexOf(myLanguageResources.getString("PenColorMenu"));
+    int backIndex = MENU_TYPES.indexOf(myLanguageResources.getString("BackgroundMenu"));
+    myMenuOptions.remove(penIndex);
+    myMenuOptions.remove(backIndex);
+    List<String> colorIndices = new ArrayList<>();
+    for (int i = 1; i <= myPaletteSize; i ++){
+      colorIndices.add(Integer.toString(i));
+    }
+    myMenuOptions.add(penIndex,colorIndices);
+    myMenuOptions.add(backIndex,colorIndices);
     myMenuBar = new MenuBar();
     myLeftVBox.getChildren().add(myMenuBar);
     for(int i=0; i<myMenuNames.size(); i++){
