@@ -1,5 +1,6 @@
 package slogo.frontEnd;
 
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -25,7 +26,15 @@ public class History extends ClearableEntriesBox{
       myTextFlow.getChildren().add(descriptionText);
       myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
       entryList.clear();
+      displayableEntries.clear();
       currentlyHighlighted = 0;
+    }
+  }
+
+  @Override
+  protected void setChildDisplayableTexts(ResourceBundle languageResources){
+    for(Text text : displayableEntries){
+      text.setText(super.translateCommand(text.getText(), languageResources)); //TODO: translate the command
     }
   }
 

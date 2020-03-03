@@ -44,6 +44,7 @@ public class VariableBox extends ClearableEntriesBox implements DisplayableTextO
     Text newText = new Text(entry + "\n");
     newText.setOnMouseClicked(event -> action.accept(valueText.getText()));
     myTextFlow.getChildren().add(newText);
+    displayableEntries.add(newText);
     super.checkDuplicates(name);
   }
 

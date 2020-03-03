@@ -28,6 +28,7 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
     protected final List<String> entryList;
     protected final VBox rightSide;
     protected final Button clearButton;
+    protected final List<Text> displayableEntries = new ArrayList<>();
     private final String myDescriptionKey;
 
     private static final double SPACING = 10;
@@ -74,7 +75,14 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
      * @param languageResources the new language config to translate with
      */
     protected void setChildDisplayableTexts(ResourceBundle languageResources){
+        for(int i=0; i<displayableEntries.size(); i++){
+            String commandPart = displayableEntries.get(i).getText().substring(entryList.get(i).length()+2);
+            displayableEntries.get(i).setText(entryList.get(i) + ": " + translateCommand(commandPart, languageResources));
+        }
+    }
 
+    protected String translateCommand(String script, ResourceBundle languageResources){
+        return languageResources.getBaseBundleName() + script; //TODO: implement this
     }
 
     /**
@@ -85,6 +93,7 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
         myTextFlow.getChildren().add(descriptionText);
         myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
         entryList.clear();
+        displayableEntries.clear();
     }
 
     /**
@@ -98,6 +107,7 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
         Text newText = new Text(entry + "\n");
         newText.setOnMouseClicked(event -> action.accept(entry));
         myTextFlow.getChildren().add(newText);
+        displayableEntries.add(newText);
         checkDuplicates(name);
     }
 
@@ -109,6 +119,7 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
                 if(name.equals(entryList.get(i))){
                     myTextFlow.getChildren().remove(i+1); // add 1 to account for description text
                     entryList.remove(i);
+                    displayableEntries.remove(i);
                     break;
                 }
             }
