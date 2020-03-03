@@ -1,5 +1,6 @@
 package slogo.backend.commands.displaycommands;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import slogo.CommandResult;
@@ -27,13 +28,14 @@ public class SetPaletteCommand implements Command {
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
                                        BackEndInternal backEnd) throws ParseException {
         int idx = (int) Math.round(arguments.get(0));
-        double r = arguments.get(1); double g = arguments.get(2); double b = arguments.get(3);
+        int r = (int) Math.round(arguments.get(1)); int g = (int) Math.round(arguments.get(2)); int b = (int) Math.round(arguments.get(3));
         System.out.println("Palette color index " + idx + " set to: R:" + r + " G:" + g + " B:" + b);
-
+        List<Integer> paletteColor = List.of(idx, r, g, b);
         CommandResultBuilder builder = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getActiveTurtleNumbers());
-        builder.retVal(arguments.get(0));
-        //TODO error handling if this is not a valid index or not an integer
-        //TODO update builder here, add to palette in back end?
+        builder.retVal(idx);
+        builder.setColor(paletteColor);
+        //FIXME Throw exception if this is not a valid color (as specified in command description), perhaps use a helper method to determine if color valid
+        //TODO add to palette in back end?
         return List.of(builder.buildCommandResult());
     }
 

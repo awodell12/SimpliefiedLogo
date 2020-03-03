@@ -125,6 +125,8 @@ public class CommandResultBuilder {
 
   public void setBackgroundColor(int index){ bgColorIndex = index; }
 
+  public void setColor(List<Integer> color){ newColor = color; }
+
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
         startPos, pathColorIndex, varName, varValue, udcName, udcScript,
