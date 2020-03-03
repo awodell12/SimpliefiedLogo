@@ -10,8 +10,8 @@ import slogo.backend.ParseException;
 
 public class SetPenColorCommand implements Command {
 
-    public static final int NUM_ARGS = 1;
-    public static final int NUM_VARS = 0;
+    private static final int NUM_ARGS = 1;
+    private static final int NUM_VARS = 0;
 
     @Override
     public int getNumArgs() {
