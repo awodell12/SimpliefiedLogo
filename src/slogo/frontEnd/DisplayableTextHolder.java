@@ -23,8 +23,7 @@ public class DisplayableTextHolder implements DisplayableTextOwner{
 
   /**
    * change the language and translate all displayable texts to the new language
-   *
-   * @param languageResources the new language config to translate with
+   * @param languageResources the new language config file to translate with
    */
   @Override
   public void setDisplayableTexts(ResourceBundle languageResources) {

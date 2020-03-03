@@ -323,11 +323,11 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
     displayErrorMessage(errorMessage);
-    if(penSize != -1) myTurtleView.setPenThickness(penSize);
+    myTurtleView.setPenThickness(penSize);
     if (newColorRGB != null){
       updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
-    // nothing happens if the requested color is not in color palette or if it's -1 (didn't change)
+    // nothing happens if the requested color is not in color palette
     if(myColorPalette.containsKey(Integer.toString(backgroundColorIndex))) {
       myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
     }
@@ -417,8 +417,8 @@ public class Visualizer extends Application implements FrontEndExternal{
    * note that we don't use the config file because we change the language at the last step
    */
   private void setUpDefaults(){
-    executeInstruction("setpencolor " + myStartingPenColor);
     executeInstruction("setbackground " + myStartingBackgroundColor);
+    executeInstruction("setpencolor " + myStartingPenColor);
     executeInstruction("setshape " + myStartingImage);
     StringBuilder instruction = new StringBuilder("tell" + " [ ");
     for(int id=0; id<myStartingNumTurtles; id++){
@@ -428,11 +428,13 @@ public class Visualizer extends Application implements FrontEndExternal{
     executeInstruction(instruction.toString());
     for(String scriptName : myScripts){
       String script = myWorkSpaceResources.getString(scriptName);
+      executeInstruction("to " + scriptName + " [ ] [ " + script + " ]");
       myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
     }
     for(String variableName : myStartingVariables){
       double value = Double.parseDouble(myWorkSpaceResources.getString(variableName));
-      addVariable(variableName, value);
+      executeInstruction("make :" + variableName + " " + value);
+      //addVariable(variableName, value);
     }
     myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + myStartingLanguage);
     // now schedule clear history so the user isn't confused by the commands we used to set up defaults
