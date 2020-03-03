@@ -327,7 +327,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     if (newColorRGB != null){
       updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
-    // nothing happens if the requested color is not in color palette
+    // nothing happens if the requested color is not in color palette or if it's -1 (didn't change)
     if(myColorPalette.containsKey(Integer.toString(backgroundColorIndex))) {
       myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
     }
@@ -414,10 +414,11 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   /**
    * execute instructions to make the starting setup much the setup specified by the workspace config file
+   * note that we don't use the config file because we change the language at the last step
    */
   private void setUpDefaults(){
     executeInstruction("setpencolor " + myStartingPenColor);
-    executeInstruction("setbackgroundcolor " + myStartingBackgroundColor);
+    executeInstruction("setbackground " + myStartingBackgroundColor);
     executeInstruction("setshape " + myStartingImage);
     StringBuilder instruction = new StringBuilder("tell" + " [ ");
     for(int id=0; id<myStartingNumTurtles; id++){
@@ -628,8 +629,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setPenColor(String colorIndex){
-    //executeInstruction(myLanguageResources.getString("setpencolor") + " " + colorIndex); // TODO: uncomment out when implemented in backend
-    myTurtleView.setPenColor(myColorPalette.get(colorIndex), Integer.parseInt(colorIndex));
+    executeInstruction(myLanguageResources.getString("setpencolor") + " " + colorIndex);
+    //myTurtleView.setPenColor(myColorPalette.get(colorIndex), Integer.parseInt(colorIndex));
     setPenText();
   }
 
@@ -638,8 +639,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setBackGroundColor(String colorIndex){
-    //executeInstruction(myLanguageResources.getString("setbackgroundcolor") + " " + colorIndex); // TODO: uncomment out when implemented in backend
-    myTurtleView.setBackGroundColor(myColorPalette.get(colorIndex));
+    executeInstruction(myLanguageResources.getString("setbackground") + " " + colorIndex);
+    //myTurtleView.setBackGroundColor(myColorPalette.get(colorIndex));
   }
 
   /**
@@ -653,10 +654,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setTurtleImageIndex(String num){
-    Image image = imageList.get(Integer.parseInt(num));
-    myTurtleView.setTurtleImage(image);
-    //TODO: move the above 2 lines to interpretResult once this command is supported by backend
-    //executeInstruction(myLanguageResources.getString("setshape") + " " + Integer.parseInt(num));
+    //Image image = imageList.get(Integer.parseInt(num));
+    //myTurtleView.setTurtleImage(image);
+    executeInstruction(myLanguageResources.getString("setshape") + " " + Integer.parseInt(num));
   }
 
   private void runButton(){
@@ -741,6 +741,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         try {
           method.invoke(this, menuItemName);
         } catch (IllegalAccessException | InvocationTargetException e) {
+          e.printStackTrace();
           showError(myLanguageResources.getString("InvokeError"), myLanguageResources);
         }
       });
