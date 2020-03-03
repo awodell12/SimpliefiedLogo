@@ -33,7 +33,7 @@ public class CommandResult {
   public CommandResult(double retVal, int tokensParsed, int turtleID, double heading, List<Double> pos, List<Double> pathStart, int penColor,
                        String variableName, double variableVal, String udcName, String udcText,
                        boolean clearScreen, boolean penUp, boolean turtleVisible, boolean turtleReset,
-                       int backGroundColor, List<Integer> newPaletteColor, double penSize, List<Integer> activeTurtles,
+                       int backgroundColor, List<Integer> newPaletteColor, double penSize, List<Integer> activeTurtles,
                        int shapeIndex, int newPaletteIndex, String errorMessage, boolean doesSomething) {
     returnVal = retVal;
     myTokensParsed = tokensParsed;
@@ -50,7 +50,7 @@ public class CommandResult {
     myTurtleReset = turtleReset;
     myPathStart = pathStart;
     myPenColor = penColor;
-    myBackgroundColor = backGroundColor;
+    myBackgroundColor = backgroundColor;
     myNewPaletteColor = newPaletteColor;
     myPenSize = penSize;
     myActiveTurtleIDs = activeTurtles;
