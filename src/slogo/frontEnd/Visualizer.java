@@ -741,7 +741,6 @@ public class Visualizer extends Application implements FrontEndExternal{
         try {
           method.invoke(this, menuItemName);
         } catch (IllegalAccessException | InvocationTargetException e) {
-          e.printStackTrace();
           showError(myLanguageResources.getString("InvokeError"), myLanguageResources);
         }
       });
