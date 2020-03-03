@@ -19,12 +19,12 @@ public class TurtleView extends Group{
     private static final Image myActiveTurtleImage = new Image(myResources.getString("DefaultTurtle"));
     private static final double TURTLE_SIZE = 50;
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;
-    private static final double UNHIGHLIGHTED_OPACITY = 0.4;
+    private static final double NOT_HIGHLIGHTED_OPACITY = 0.4;
     private static final double HIGHLIGHTED_OPACITY = 1.0;
 
     private final Map<Integer, Turtle> myTurtles = new HashMap<>();
-    private Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
-    private List<Integer> existingTurtleIDs = new ArrayList<>();
+    private final Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
+    private final List<Integer> existingTurtleIDs = new ArrayList<>();
     private Color myPenColor = Color.BLACK;
     private int myPenColorIndex;
     private double myPenThickness = 1;
@@ -201,7 +201,7 @@ public class TurtleView extends Group{
     protected void activateTurtles(List<Integer> activeTurtles) {
         for(Turtle turtle : myTurtles.values()){
             turtle.setActive(false);
-            turtle.setOpacity(UNHIGHLIGHTED_OPACITY);
+            turtle.setOpacity(NOT_HIGHLIGHTED_OPACITY);
         }
         for(int id : activeTurtles){
             if(myTurtles.containsKey(id)) {
@@ -231,7 +231,7 @@ public class TurtleView extends Group{
     private void toggleActive(int id, Consumer<Boolean> onClicked) {
         if(myTurtles.get(id).isActive()){
             myTurtles.get(id).setActive(false);
-            myTurtles.get(id).setOpacity(UNHIGHLIGHTED_OPACITY);
+            myTurtles.get(id).setOpacity(NOT_HIGHLIGHTED_OPACITY);
             onClicked.accept(false);
         }else{
             myTurtles.get(id).setActive(true);

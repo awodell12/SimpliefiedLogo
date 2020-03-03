@@ -86,7 +86,7 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
 
     /**
      * split it
-     * call getsymbol with source properties file, if it isn't a match don't translate it
+     * get symbol with source properties file, if it isn't a match don't translate it
      * then translate each command using the destination properties file
      * @param script the series of commands to translate
      * @param languageResources the new language resource bundle

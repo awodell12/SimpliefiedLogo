@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
-//@SuppressWarnings("unused") // TODO: uncomment this out
+@SuppressWarnings({"unused", "StringEquality"})
 public class Visualizer extends Application implements FrontEndExternal{
   private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
   private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
@@ -109,7 +109,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     add(new Image(myResources.getString("Duval")));
   }};
   private List<String> myMenuNames;
-  private Map<String, Color> myColorPalette = new HashMap<>(){{
+  private final Map<String, Color> myColorPalette = new HashMap<>(){{
     put("0", Color.RED);
     put("1", Color.WHITE);
     put("2", Color.GRAY);
@@ -155,12 +155,12 @@ public class Visualizer extends Application implements FrontEndExternal{
   private String myCurrentlyHighlighted = null;
   private String myCurrentInstruction = null;
   private Timeline animation;
-  private List<TextArea> turtleMovementButtons = new ArrayList<>();
+  private final List<TextArea> turtleMovementButtons = new ArrayList<>();
   private int myCurrentTurtleID;
   private Text myPenText;
-  private TextFlow myTurtleInfo = new TextFlow();
+  private final TextFlow myTurtleInfo = new TextFlow();
   private MenuBar myMenuBar;
-  private Consumer<Integer> myOnNewWorkSpaceClicked;
+  private final Consumer<Integer> myOnNewWorkSpaceClicked;
   private final DisplayableTextHolder myDisplayableTextHolder = new DisplayableTextHolder();
   private final String myStartingLanguage;
   private final int myStartingNumTurtles;
@@ -175,7 +175,7 @@ public class Visualizer extends Application implements FrontEndExternal{
    * Constructor for the visualizer class, which manages the display components and state
    * @param instructionQueueListener listener for the instruction queue
    * @param onNewWorkSpaceClicked what happens when the create new workspace button is clicked
-   * @param configFileNum this indicates we will set defults for this workspace using file workspaceX.properties
+   * @param configFileNum this indicates we will set defaults for this workspace using file workspaceX.properties
    *                      default to workspace 0 if file not found
    */
   public Visualizer(ListChangeListener<String> instructionQueueListener, Consumer<Integer> onNewWorkSpaceClicked, int configFileNum) {
@@ -220,7 +220,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   /**
    * Takes in a command result for the visualizer to process (after all other queued command results finish)
-   * @param result a commandresult from controller, OR null if this is called by the step function
+   * @param result a CommandResult from controller, OR null if this is called by the step function
    */
   public void processResult(CommandResult result){
     if(!isReady){
