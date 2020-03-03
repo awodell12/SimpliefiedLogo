@@ -26,7 +26,7 @@ public class TurtleView extends Group{
     private Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
     private List<Integer> existingTurtleIDs = new ArrayList<>();
     private Color myPenColor = Color.BLACK;
-    private int myPenColorIndex = 8;
+    private int myPenColorIndex;
     private double myPenThickness = 1;
     private final Rectangle myBackground;
     private boolean isPenUp = false;
