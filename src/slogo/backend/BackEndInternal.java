@@ -82,12 +82,6 @@ public interface BackEndInternal {
 
   List<CommandResult> parseCommandsList(String[] tokenList);
 
-  CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, int pathColor);
-
-  CommandResult makeCommandResult(double retVal, int tokensParsed, String varName, double varValue);
-
-  CommandResult makeCommandResult(double retVal, int tokensParsed, String udcName, String udcScript);
-
   CommandResult makeCommandResult(double retVal, int tokensParsed);
 
   void setActiveTurtles(List<Integer> turtleIDs);
@@ -105,6 +99,8 @@ public interface BackEndInternal {
   List<Integer> getActiveTurtleNumbers();
 
   CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition);
+
+  CommandResultBuilder startCommandResult(double retVal);
 
   Integer getActiveTurtleID();
 

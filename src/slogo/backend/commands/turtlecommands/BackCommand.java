@@ -5,7 +5,6 @@ import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
-import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
 public class BackCommand implements Command {
@@ -42,8 +41,8 @@ public class BackCommand implements Command {
             System.out.println("Turtle " + turtle.getId() + " is now at x=" +  turtle.getX() + " y=" + turtle.getY());
             CommandResultBuilder builder = backEnd.startCommandResult(turtle.getHeading(),turtle.getPosition());
             builder.setTurtleID(id);
-            builder.retVal(arguments.get(0));
-            builder.tokensParsed(0);
+            builder.setRetVal(arguments.get(0));
+            builder.setTokensParsed(0);
             builder.setPathColor(0);
             builder.setPathStart(prevPos);
             return List.of(builder.buildCommandResult());

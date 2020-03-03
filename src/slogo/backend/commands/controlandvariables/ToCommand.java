@@ -7,6 +7,7 @@ import java.util.List;
 import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
+import slogo.backend.CommandResultBuilder;
 import slogo.backend.ParseException;
 import slogo.backend.SLogoBackEnd;
 import slogo.CommandResult;
@@ -43,7 +44,11 @@ public class ToCommand implements Command {
     int numCommands = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
     String[] commandTokens = Arrays.copyOfRange(tokens,programCounter,programCounter + numCommands);
     backEnd.setUserCommand(cmdName,toVars,commandTokens);
-    return List.of(backEnd.makeCommandResult(1.0,programCounter+numCommands+1,cmdName,concatStringArray(commandTokens)));
+    CommandResultBuilder builder = backEnd.startCommandResult(1.0);
+    builder.setTokensParsed(programCounter+numCommands+1);
+    builder.userDefinedCommandName(cmdName);
+    builder.userDefinedCommandScript(concatStringArray(commandTokens));
+    return List.of(builder.buildCommandResult());
   }
 
   private String concatStringArray(String[] tokens) {

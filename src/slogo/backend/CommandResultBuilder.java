@@ -48,7 +48,7 @@ public class CommandResultBuilder {
     turtleReset = false;
     bgColorIndex = 0;
     newColor = null;
-    penSize = 0;
+    penSize = -1;
     shapeIndex = 0;
     errorMessage = "";
     //TODO: change these so that stuff doesn't automatically get set to zero
@@ -59,18 +59,11 @@ public class CommandResultBuilder {
     actualCommand = true;
   }
 
-  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles) {
-    this(turtleFacing,turtlePosition, activeTurtles);
-    turtleID = turtleNumber;
-    penUp = turtlePenUp;
-  }
-
-
-    public void retVal(double val) {
+  public void setRetVal(double val) {
     myRetVal = val;
   }
 
-  public void tokensParsed(int val) {
+  public void setTokensParsed(int val) {
     myTokensParsed = val;
   }
 
@@ -123,6 +116,10 @@ public class CommandResultBuilder {
   public void setTurtleReset(boolean isReset){ turtleReset = isReset; }
 
   public void setMyScreenClear(boolean value){ clear = value; }
+
+  public void setPenUp(boolean penIsUp) {
+    penUp = penIsUp;
+  }
 
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,

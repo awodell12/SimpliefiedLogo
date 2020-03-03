@@ -2,6 +2,7 @@ package slogo.backend;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -36,13 +37,22 @@ public class BackEndUtil {
     return tokenList.length;
   }
 
-  private String getSymbol(String text) {
+  public static String getSymbol(String text) {
     for (String key : myResources.keySet()) {
       if (text.matches(myResources.getString(key))) {
         return key;
       }
     }
     return NO_MATCH_STRING;
+
+  }
+
+  public static void printRemainingTokens(String[] scriptTokens, int i) {
+    String[] remaining = Arrays.copyOfRange(scriptTokens, i, scriptTokens.length);
+    for (String string : remaining) {
+      System.out.printf("(%s) ", string);
+    }
+    System.out.println();
   }
 
   private static boolean isClosedBracket(String text) {

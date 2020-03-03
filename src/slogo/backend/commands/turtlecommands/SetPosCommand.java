@@ -4,6 +4,7 @@ import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
+import slogo.backend.CommandResultBuilder;
 
 public class SetPosCommand implements Command {
 
@@ -26,7 +27,9 @@ public class SetPosCommand implements Command {
         List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
         double retVal = backEnd.getTurtles().get(0).setPos(arguments.get(0), arguments.get(1));
         //System.out.println("Turtle now at x=" + arguments.get(0) ", y=" + arguments.get(1));
-        return List.of(backEnd.makeCommandResult(retVal,0, prevPos, 0));
+        CommandResultBuilder builder = backEnd.startCommandResult(retVal);
+        builder.setPathStart(prevPos);
+        return List.of(builder.buildCommandResult());
     }
 
     @Override
