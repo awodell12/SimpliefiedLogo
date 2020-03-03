@@ -31,7 +31,7 @@ public class SetPaletteCommand implements Command {
         int r = (int) Math.round(arguments.get(1)); int g = (int) Math.round(arguments.get(2)); int b = (int) Math.round(arguments.get(3));
         System.out.println("Palette color index " + idx + " set to: R:" + r + " G:" + g + " B:" + b);
         List<Integer> paletteColor = List.of(idx, r, g, b);
-        CommandResultBuilder builder = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getActiveTurtleNumbers());
+        CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
         builder.retVal(idx);
         builder.setColor(paletteColor);
         //FIXME Throw exception if this is not a valid color (as specified in command description), perhaps use a helper method to determine if color valid

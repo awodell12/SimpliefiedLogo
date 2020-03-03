@@ -34,6 +34,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
   private int myPathColor = 0;
+  private int myBackgroundColor = 0;
+  private int myShapeIndex = 0;
   private Integer myActiveTurtleID;
 
 
@@ -437,7 +439,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
-    return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers());
+    return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex);
   }
 
   @Override
@@ -447,10 +449,16 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   public void setPathColor(int index){ myPathColor = index; }
 
   @Override
-  public int getBackgroundColor(){ return myPathColor; }
+  public int getBackgroundColor(){ return myBackgroundColor; }
 
   @Override
-  public void setBackgroundColor(int index){ myPathColor = index; }
+  public void setBackgroundColor(int index){ myBackgroundColor = index; }
+
+  @Override
+  public int getShapeIndex(){ return myShapeIndex; }
+
+  @Override
+  public void setShapeIndex(int index){ myShapeIndex = index; }
 
   public Integer getActiveTurtleID() {
     return myActiveTurtleID;

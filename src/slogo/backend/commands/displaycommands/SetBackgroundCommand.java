@@ -30,7 +30,7 @@ public class SetBackgroundCommand implements Command {
     int index = (int) Math.round(arguments.get(0));
     backEnd.setBackgroundColor(index);
     System.out.println("Changed background color to index " + index);
-    CommandResultBuilder builder = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getActiveTurtleNumbers());
+    CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
     builder.retVal(index);
     builder.setBackgroundColor(backEnd.getBackgroundColor());
     return List.of(builder.buildCommandResult());

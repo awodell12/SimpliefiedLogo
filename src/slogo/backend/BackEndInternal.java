@@ -116,6 +116,10 @@ public interface BackEndInternal {
 
   void setBackgroundColor(int index);
 
+  int getShapeIndex();
+
+  void setShapeIndex(int index);
+
   Integer getActiveTurtleID();
 
 }

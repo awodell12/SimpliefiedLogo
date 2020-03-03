@@ -27,10 +27,11 @@ public class SetShapeCommand implements Command {
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
                                        BackEndInternal backEnd) throws ParseException {
         int index = (int) Math.round(arguments.get(0));
-        System.out.println("Changed turtle shape to index " + index);
-        CommandResultBuilder builder = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getActiveTurtleNumbers());
+        backEnd.setShapeIndex(index);
+        System.out.println("Changed turtle shape to index " + backEnd.getShapeIndex());
+        CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
         builder.retVal(index);
-        builder.setShapeIndex(index);
+        builder.setShapeIndex(backEnd.getShapeIndex());
         //TODO error handling if this is not a valid index or not an integer
         return List.of(builder.buildCommandResult());
     }
