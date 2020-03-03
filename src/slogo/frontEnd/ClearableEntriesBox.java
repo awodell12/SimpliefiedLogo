@@ -82,7 +82,8 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
     }
 
     protected String translateCommand(String script, ResourceBundle languageResources){
-        return languageResources.getBaseBundleName() + script; //TODO: implement this
+        return script;
+        //return languageResources.getBaseBundleName() + script; //TODO: implement this
     }
 
     /**
