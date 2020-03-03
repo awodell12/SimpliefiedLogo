@@ -419,16 +419,17 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpDefaults(){
     executeInstruction("setbackground " + myStartingBackgroundColor);
     executeInstruction("setpencolor " + myStartingPenColor);
-    executeInstruction("setshape " + myStartingImage);
     StringBuilder instruction = new StringBuilder("tell" + " [ ");
     for(int id=0; id<myStartingNumTurtles; id++){
       instruction.append(id).append(" ");
     }
     instruction.append("]");
     executeInstruction(instruction.toString());
+    executeInstruction("setshape " + myStartingImage);
     for(String scriptName : myScripts){
       String script = myWorkSpaceResources.getString(scriptName);
-      executeInstruction("to " + scriptName + " [ ] [ " + script + " ]");
+      //executeInstruction("to " + scriptName + " [ ] [ " + script + " ]");
+      //TODO: comment in above line when to command is fixed, and comment out below line
       myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
     }
     for(String variableName : myStartingVariables){

@@ -156,6 +156,7 @@ public class TurtleView extends Group{
      */
     protected void setTurtleImage(Image newTurtleImage){
         for(Turtle turtle : myTurtles.values()) {
+            System.out.println("here!!!");
             turtle.setImage(newTurtleImage);
         }
     }
