@@ -15,11 +15,10 @@ public class BackEndUtil {
   public static final String NO_MATCH_STRING = "NO MATCH";
   public static final String LIST_END_LABEL = "ListEnd";
   public static final String LIST_START_LABEL = "ListStart";
-  public static final String WHITESPACE = "\\s+";
 
-  private ResourceBundle myResources = ResourceBundle.getBundle(RESOURCES_PACKAGE + SYNTAX_FILENAME);
+  private static ResourceBundle myResources = ResourceBundle.getBundle(RESOURCES_PACKAGE + SYNTAX_FILENAME);
 
-  public int distanceToEndBracket(String[] tokenList) {
+  public static int distanceToEndBracket(String[] tokenList) {
     int extraBrackets = 0;
     for (int i = 0; i < tokenList.length; i ++) {
       String token = tokenList[i];
@@ -46,10 +45,10 @@ public class BackEndUtil {
     return NO_MATCH_STRING;
   }
 
-  private boolean isClosedBracket(String text) {
+  private static boolean isClosedBracket(String text) {
     return (text.matches(myResources.getString(LIST_END_LABEL)));
   }
-  private boolean isOpenBracket (String text) {
+  private static boolean isOpenBracket(String text) {
     return (text.matches(myResources.getString(LIST_START_LABEL)));
   }
 }

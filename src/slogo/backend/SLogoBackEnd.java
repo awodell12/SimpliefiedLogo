@@ -285,27 +285,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return identity.equals("ListEnd");
   }
 
-  public static int distanceToEndBracketStatic(String[] tokenList) {
-    return new SLogoBackEnd().distanceToEndBracket(tokenList);
-  }
-
-  public int distanceToEndBracket(String[] tokenList) {
-    int extraBrackets = 0;
-    for (int i = 0; i < tokenList.length; i++) {
-      String tokenSymbol = getSymbol(tokenList[i]);
-      if (isOpenBracket(tokenSymbol)) {
-        extraBrackets++;
-      } else if (isClosedBracket(tokenSymbol)) {
-        if (extraBrackets == 0) {
-          return i + 1;
-        } else {
-          extraBrackets--;
-        }
-      }
-    }
-    return tokenList.length;
-  }
-
   @Override
   public void setVariable(String name, double value) {
     myVariables.put(name, value);
@@ -457,6 +436,15 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     CommandResultBuilder builder = new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers());
     builder.setIsActualCommand(true);
     builder.setPenSize(-1);
+    return builder;
+  }
+
+  public CommandResultBuilder startCommandResultWithIndex(int index, double retVal) {
+    Turtle turtle = getTurtleWithID(index);
+    CommandResultBuilder builder = new CommandResultBuilder(turtle.getHeading(),turtle.getPosition(),getActiveTurtleNumbers());
+    builder.setTurtleID(index);
+    builder.setPenSize(-1);
+    builder.retVal(retVal);
     return builder;
   }
 

@@ -3,6 +3,7 @@ package slogo.backend.commands.controlandvariables;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.backend.ParseException;
@@ -31,7 +32,7 @@ public class DoTimesCommand implements Command {
     String var = vars.get(1);
     double returnVal = 0;
     List<CommandResult> results = new ArrayList<>();
-    int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length));
+    int listLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length));
     for (double i = 1; i <= limit; i ++) {
       backEnd.setVariable(var,i);
       results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)));
