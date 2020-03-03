@@ -55,7 +55,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double WIDTH = HEIGHT * ASPECT_RATIO;
   private static final Paint BACKGROUND = Color.WHITE;
   private static final Rectangle COMMAND_BOX_SHAPE = new Rectangle(650, 125);
-  private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(300*ASPECT_RATIO,500);
+  private static final Rectangle TURTLE_VIEW_SHAPE = new Rectangle(300*ASPECT_RATIO,325);
   private static final Rectangle HISTORY_VIEW_SHAPE = new Rectangle(225, 125);
   private static final Rectangle UDC_VIEW_SHAPE = new Rectangle(225, 125);
   private static final Rectangle VARIABLES_VIEW_SHAPE = new Rectangle(225, 125);
@@ -792,6 +792,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     if(!clearedAtStart && isReady){
       myCurrentlyHighlighted = null;
       myHistory.clearEntryBox();
+      myErrorMessage.setText(myLanguageResources.getString("DefaultErrorMessage"));
       clearedAtStart = true;
     }
     if(!paused || overridePause) {
