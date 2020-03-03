@@ -180,7 +180,8 @@ public class TurtleView extends Group{
     }
 
     protected void setPenThickness(double value) {
-        assert value <= 10.0;
+        assert value <= 50.0;
+        assert value >= 0.1;
         myPenThickness = value;
     }
 
