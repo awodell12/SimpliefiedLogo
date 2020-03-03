@@ -26,11 +26,13 @@ public class SetBackgroundCommand implements Command {
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd) throws ParseException {
-    System.out.println("Changed background color to index " + arguments.get(0));
+    //TODO error handling if this is not a valid index or not an integer?
+    int index = (int) Math.round(arguments.get(0));
+    backEnd.setBackgroundColor(index);
+    System.out.println("Changed background color to index " + index);
     CommandResultBuilder builder = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getActiveTurtleNumbers());
     builder.retVal(arguments.get(0));
-    //TODO error handling if this is not a valid index or not an integer
-    builder.setBackgroundColor((int) Math.round(arguments.get(0)));
+    builder.setBackgroundColor(backEnd.getBackgroundColor());
     return List.of(builder.buildCommandResult());
   }
 

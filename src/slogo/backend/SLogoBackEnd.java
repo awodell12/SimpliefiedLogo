@@ -446,6 +446,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   @Override
   public void setPathColor(int index){ myPathColor = index; }
 
+  @Override
+  public int getBackgroundColor(){ return myPathColor; }
+
+  @Override
+  public void setBackgroundColor(int index){ myPathColor = index; }
+
   public Integer getActiveTurtleID() {
     return myActiveTurtleID;
   }

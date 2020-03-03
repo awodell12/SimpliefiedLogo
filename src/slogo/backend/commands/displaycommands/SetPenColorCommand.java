@@ -26,11 +26,13 @@ public class SetPenColorCommand implements Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
                                        BackEndInternal backEnd) throws ParseException {
-        System.out.println("Changed pen color to index " + arguments.get(0));
+        int index = (int) Math.round(arguments.get(0));
+        backEnd.setPathColor(index);
+        System.out.println("Changed pen color to index " + index);
         CommandResultBuilder builder = new CommandResultBuilder(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getActiveTurtleNumbers());
         builder.retVal(arguments.get(0));
         //TODO error handling if this is not a valid index or not an integer
-        builder.setPathColor((int) Math.round(arguments.get(0)));
+        builder.setPathColor(backEnd.getPathColor());
         return List.of(builder.buildCommandResult());
     }
 
