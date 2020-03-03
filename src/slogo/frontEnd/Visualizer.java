@@ -167,6 +167,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final int myStartingPenColor;
   private final int myStartingBackgroundColor;
   private final List<String> myScripts;
+  private final List<String> myStartingVariables;
+  private final int myStartingImage;
   private boolean clearedAtStart = true;
 
   /**
@@ -191,6 +193,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     myStartingPenColor = Integer.parseInt(myWorkSpaceResources.getString("startingPenColor"));
     myStartingBackgroundColor = Integer.parseInt(myWorkSpaceResources.getString("startingBGColor"));
     myScripts = Arrays.asList(myWorkSpaceResources.getString("Scripts").split(","));
+    myStartingVariables = Arrays.asList(myWorkSpaceResources.getString("Variables").split(","));
+    myStartingImage = Integer.parseInt(myWorkSpaceResources.getString("startingImage"));
   }
 
   @Override
@@ -414,6 +418,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setUpDefaults(){
     executeInstruction("setpencolor " + myStartingPenColor);
     executeInstruction("setbackgroundcolor " + myStartingBackgroundColor);
+    executeInstruction("setshape " + myStartingImage);
     StringBuilder instruction = new StringBuilder("tell" + " [ ");
     for(int id=0; id<myStartingNumTurtles; id++){
       instruction.append(id).append(" ");
@@ -423,6 +428,10 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(String scriptName : myScripts){
       String script = myWorkSpaceResources.getString(scriptName);
       myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
+    }
+    for(String variableName : myStartingVariables){
+      double value = Double.parseDouble(myWorkSpaceResources.getString(variableName));
+      addVariable(variableName, value);
     }
     myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + myStartingLanguage);
     // now schedule clear history so the user isn't confused by the commands we used to set up defaults
@@ -588,7 +597,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void resetAnimation() {
-    //TODO: make this reset the animation too (e.g. desired position)
+    //TODO: make this reset the animation too (e.g. desired position)??
     executeInstruction(myLanguageResources.getString("clearscreen"));
   }
 
