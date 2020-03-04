@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.paint.Color;
 
 /**
  * The purpose of this class is to be able to save properties to a .properties file for later use.
@@ -15,25 +16,18 @@ import javafx.scene.control.Alert.AlertType;
  */
 public class PropertiesWriter {
 
+  private static final int COLOR_MAX = 255;
+  private OutputStream myOutput;
+  private Properties myProperties;
   /**
    * Constructor that does the writing to a new file
-   * @param fileName the name of the file to be put in front end resources file. Must end with .properties
-   * @param map The map that will be converted to the properties file.
+   * @param fileNum the number of the UserConfigurable file to be put in front end resources file. Must end with .properties
    */
-  public PropertiesWriter(String fileName, Map<String,String> map) {
-    try (OutputStream output = new FileOutputStream("src/slogo/frontEnd/Resources/"+fileName)) {
-
-      Properties prop = new Properties();
-
-      // set the properties value
-      for (String s : map.keySet()){
-        prop.setProperty(s, map.get(s));
-      }
-
-      // save properties to project root folder
-      prop.store(output, null);
-
-
+  public PropertiesWriter(String fileNum,Map<String, Color> colorPaletteMap) {
+    try (OutputStream output = new FileOutputStream("src/slogo/frontEnd/Resources/UserConfigurable"+fileNum+".properties")) {
+      myOutput = output;
+      myProperties = new Properties();
+      saveColorPalette(colorPaletteMap);
     } catch (IOException io) {
       Alert alert = new Alert(AlertType.ERROR);
       alert.setContentText(io.getMessage());
@@ -41,4 +35,28 @@ public class PropertiesWriter {
     }
 
   }
+  private void saveColorPalette(Map<String, Color> colorPaletteMap) throws IOException {
+
+    StringBuilder colors = new StringBuilder();
+    // set the properties value
+    for (String s : colorPaletteMap.keySet()) {
+      Color color = colorPaletteMap.get(s);
+      colors.append(s);
+      colors.append(',');
+      colors.append((int)color.getRed()* COLOR_MAX);
+      colors.append(',');
+      colors.append((int)color.getGreen()* COLOR_MAX);
+      colors.append(',');
+      colors.append((int)color.getBlue() * COLOR_MAX);
+      colors.append(' ');
+    }
+
+    myProperties.setProperty("DefaultPalette", colors.toString());
+
+    // save properties to project root folder
+    myProperties.store(myOutput, null);
+    myOutput.close();
+  }
+
+
 }

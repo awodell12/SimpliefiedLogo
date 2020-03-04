@@ -4,7 +4,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
-import java.io.DataInput;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -48,6 +47,7 @@ public class VariableBox extends ClearableEntriesBox implements DisplayableTextO
     super.checkDuplicates(name);
   }
 
+  @SuppressWarnings("EmptyMethod")
   @Override
   protected void clearEntryBox(){
     super.clearEntryBox();
