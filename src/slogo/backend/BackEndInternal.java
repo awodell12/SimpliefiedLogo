@@ -120,6 +120,10 @@ public interface BackEndInternal {
 
   void setShapeIndex(int index);
 
+  double getPenSize();
+
+  void setPenSize(double size);
+
   Integer getActiveTurtleID();
 
 }

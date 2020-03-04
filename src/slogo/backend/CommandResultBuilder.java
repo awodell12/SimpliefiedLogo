@@ -31,7 +31,8 @@ public class CommandResultBuilder {
   private boolean actualCommand;
 
 
-  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers, int pathColor, int bgColor, int shape) {
+  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers,
+                              int pathColor, int bgColor, int shape, double size) {
     myRetVal = 0;
     myTokensParsed = 0;
     turtleID = 0;
@@ -49,18 +50,18 @@ public class CommandResultBuilder {
     turtleReset = false;
     bgColorIndex = bgColor;
     newColor = null;
-    penSize = 0;
+    penSize = size;
     shapeIndex = shape;
     errorMessage = "";
     //TODO: change these so that stuff doesn't automatically get set to zero
     newPaletteIndex = 0;
     activeTurtles = new ArrayList<>(activeTurtleNumbers);
-    penSize = 1.0;
     actualCommand = true;
   }
 
-  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles, int pathColor, int bgColor, int shape) {
-    this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape);
+  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles,
+                              int pathColor, int bgColor, int shape, double size) {
+    this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape, size);
     turtleID = turtleNumber;
     penUp = turtlePenUp;
   }
@@ -130,7 +131,10 @@ public class CommandResultBuilder {
 
   public void setPaletteIndex(int index){ newPaletteIndex = index; }
 
+  public void setPenSize(double size){ penSize = size; }
+
   public CommandResult buildCommandResult() {
+    System.out.println("pen thickness is " + penSize);
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
         startPos, pathColorIndex, varName, varValue, udcName, udcScript,
         clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles, shapeIndex,

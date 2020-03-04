@@ -40,7 +40,8 @@ public class ForwardCommand implements Command {
           backEnd.getActiveTurtleNumbers(),
           backEnd.getPathColor(),
           backEnd.getBackgroundColor(),
-          backEnd.getShapeIndex()
+          backEnd.getShapeIndex(),
+              backEnd.getPenSize()
       );
       builder.retVal(arguments.get(0));
       builder.setPathStart(prevPos);

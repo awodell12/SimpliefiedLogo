@@ -36,6 +36,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private int myPathColor = 0;
   private int myBackgroundColor = 0;
   private int myShapeIndex = 0;
+  private double myPenSize = 1;
   private Integer myActiveTurtleID;
 
 
@@ -439,7 +440,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
-    return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex);
+    return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize);
   }
 
   @Override
@@ -459,6 +460,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public void setShapeIndex(int index){ myShapeIndex = index; }
+
+  @Override
+  public double getPenSize(){ return myPenSize; }
+
+  @Override
+  public void setPenSize(double size){ myPenSize = size; }
 
   public Integer getActiveTurtleID() {
     return myActiveTurtleID;
