@@ -170,6 +170,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final List<String> myStartingVariables;
   private final int myStartingImage;
   private boolean clearedAtStart = true;
+  private boolean clearScreenScheduled = false;
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -226,6 +227,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     if(!isReady){
       if(result != null) {
         resultQueue.add(result);
+        if(result.isMyScreenClear()){
+          clearScreenScheduled = true;
+        }
       }
     }
     else{
@@ -319,7 +323,10 @@ public class Visualizer extends Application implements FrontEndExternal{
     myStartPos = startPos;
     if(variableName != null) addVariable(variableName, variableValue);
     if(udcName != null) addUserDefinedCommand(udcName, udcText);
-    if(clearScreen) myTurtleView.clearPaths();
+    if(clearScreen) {
+      myTurtleView.clearPaths();
+      clearScreenScheduled = false;
+    }
     myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
     displayErrorMessage(errorMessage);
@@ -391,9 +398,9 @@ public class Visualizer extends Application implements FrontEndExternal{
       try {
         step(false);
       } catch (Exception ex) {
-        System.out.println("Caught Exception");
-        ex.printStackTrace();
-        //showError(ex.getMessage(), myLanguageResources);
+        //ex.printStackTrace();
+        // note that this should ideally never be thrown
+        showError(ex.getMessage(), myLanguageResources);
       }
     });
 
@@ -797,6 +804,10 @@ public class Visualizer extends Application implements FrontEndExternal{
       myHistory.clearEntryBox();
       myErrorMessage.setText(myLanguageResources.getString("DefaultErrorMessage"));
       clearedAtStart = true;
+    }
+    if(clearScreenScheduled){
+      myCurrentTurtlePosition = myDesiredTurtlePosition;
+      // skip the animations if a clear screen command is coming (so that reset can interrupt animation)
     }
     if(!paused || overridePause) {
       if (myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX() - myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||

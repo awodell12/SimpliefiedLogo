@@ -109,6 +109,7 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
             }
             if(!foundMatch) translatedScript.append(scriptPiece).append(" ");
         }
+        translatedScript.append("\n");
         return translatedScript.toString();
     }
 
