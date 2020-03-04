@@ -30,7 +30,7 @@ public class SetShapeCommand implements Command {
         backEnd.setShapeIndex(index);
         System.out.println("Changed turtle shape to index " + backEnd.getShapeIndex());
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
-        builder.retVal(index);
+        builder.setRetVal(index);
         builder.setShapeIndex(backEnd.getShapeIndex());
         //TODO error handling if this is not a valid index or not an integer
         return List.of(builder.buildCommandResult());

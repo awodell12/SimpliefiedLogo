@@ -16,11 +16,6 @@ public class CommandFactory {
 
   private CommandFactory() {
     //This constructor exists to hide the implicit public constructor that would otherwise appear
-    ALL_COMMANDS = new ArrayList<>();
-    Enumeration<String> commands  = RESOURCES.getKeys();
-    while(commands.hasMoreElements()){
-      ALL_COMMANDS.add(commands.nextElement());
-    }
   }
 
 
@@ -37,7 +32,7 @@ public class CommandFactory {
   }
 
   public static boolean hasCommand(String type) {
-    return ALL_COMMANDS.contains(type);
+    return RESOURCES.containsKey(type);
   }
 
   public static void main(String[] args) throws ParseException {

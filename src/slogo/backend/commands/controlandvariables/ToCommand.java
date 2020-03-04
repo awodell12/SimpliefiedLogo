@@ -30,6 +30,7 @@ public class ToCommand implements Command {
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd) throws ParseException {
+    //TODO: Find out why adding an empty instruction doesn't parse the correct number of tokens.
     int programCounter = 0;
     String cmdName = tokens[programCounter];
     int numVars = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter+2,tokens.length)) - 1;
@@ -46,8 +47,6 @@ public class ToCommand implements Command {
     backEnd.setUserCommand(cmdName,toVars,commandTokens);
     CommandResultBuilder builder = backEnd.startCommandResult(1.0);
     builder.setTokensParsed(programCounter+numCommands+1);
-    builder.userDefinedCommandName(cmdName);
-    builder.userDefinedCommandScript(BackEndUtil.concatStringArray(commandTokens));
     return List.of(builder.buildCommandResult());
   }
 

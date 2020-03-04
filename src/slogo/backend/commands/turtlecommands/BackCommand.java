@@ -43,7 +43,6 @@ public class BackCommand implements Command {
             builder.setTurtleID(id);
             builder.setRetVal(arguments.get(0));
             builder.setTokensParsed(0);
-            builder.setPathColor(0);
             builder.setPathStart(prevPos);
             return List.of(builder.buildCommandResult());
         }

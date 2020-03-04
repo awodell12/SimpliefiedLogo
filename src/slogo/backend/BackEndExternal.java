@@ -22,5 +22,9 @@ public interface BackEndExternal {
    */
   List<CommandResult> parseScript(String script);
 
+  List<CommandResult> redo();
+
+  List<CommandResult> undo();
+
   void applyChanger(Changer changer);
 }

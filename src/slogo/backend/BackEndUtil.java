@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.Stack;
 import java.util.regex.Pattern;
 
 public class BackEndUtil {
@@ -83,5 +84,14 @@ public class BackEndUtil {
   }
   private static boolean isOpenBracket(String text) {
     return (text.matches(myResources.getString(LIST_START_LABEL)));
+  }
+
+  public static List<Double> getArgsFromStack(Stack<Double> values, int numArgs) {
+    List<Double> argList = new ArrayList<>();
+    for (int arg = 0; arg < numArgs; arg++) {
+      argList.add(values.pop());
+    }
+    Collections.reverse(argList);
+    return argList;
   }
 }

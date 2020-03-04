@@ -27,8 +27,6 @@ public class MakeCommand implements Command {
       BackEndInternal backEnd) throws ParseException {
     backEnd.setVariable(vars.get(0),arguments.get(0));
     CommandResultBuilder builder = backEnd.startCommandResult(arguments.get(0));
-    builder.variableName(vars.get(0));
-    builder.varValue(arguments.get(0));
     return List.of(builder.buildCommandResult());
   }
 
