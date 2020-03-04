@@ -223,7 +223,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   /**
    * Takes in a command result for the visualizer to process (after all other queued command results finish)
-   * @param result a CommandResult from controller, OR null if this is called by the step function
+   * @param result a CommandResult from the controller, OR null if this is called by the step function
    */
   public void processResult(CommandResult result){
     if(!isReady){
