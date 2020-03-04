@@ -88,7 +88,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
-  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace"};
+  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace", "savePrefs"};
   private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight",
           "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
 
@@ -180,7 +180,11 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
     myStartingLanguage = myWorkSpaceResources.getString("Language");
     myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION + myStartingLanguage + "config");
-    myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable"+ configFileNum);
+    try {
+      myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable"+ configFileNum);
+    } catch(MissingResourceException ex){
+      myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable0");
+    }
     myStartingNumTurtles = Integer.parseInt(myWorkSpaceResources.getString("numTurtles"));
     myStartingPenColor = Integer.parseInt(myWorkSpaceResources.getString("startingPenColor"));
     myStartingBackgroundColor = Integer.parseInt(myWorkSpaceResources.getString("startingBGColor"));
@@ -199,7 +203,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       Color color = Color.rgb(Integer.parseInt(parts[1]),Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
       myColorPalette.put(parts[0], color);
     }
-    System.out.println(myColorPalette);
+   // System.out.println(myColorPalette);
   }
 
   @Override
@@ -261,7 +265,7 @@ public class Visualizer extends Application implements FrontEndExternal{
             startPos, result.getMyVariableName(),
             result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
             result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction(),
-            result.getTurtleID(), result.getActiveTurtleIDs(), 55, result.getPenColor(),
+            result.getTurtleID(), result.getActiveTurtleIDs(), result.getPaletteIndex(), result.getPenColor(),
             result.getBackgroundColor(), result.getNewPaletteColor(), result.getShapeIndex(), result.getPenSize());
   }
 
@@ -351,7 +355,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void updateColorMenus(int paletteIndex, Color newColor) {
       myColorPalette.put(Integer.toString(paletteIndex), newColor);
       addMenuItem(MENU_TYPES.indexOf("Background"),  Integer.toString(paletteIndex));
-      addMenuItem(myMenuNames.indexOf("PenColor"), Integer.toString(paletteIndex));
+      addMenuItem(MENU_TYPES.indexOf("PenColor"), Integer.toString(paletteIndex));
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -600,7 +604,6 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void rotateLeft(){
     executeInstruction(myLanguageResources.getString("lt") + " " + turtleMovementButtons.get(3).getText());
-    makeNewUserProperties();
   }
 
   private void resetAnimation() {
@@ -718,8 +721,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(String menuType : MENU_TYPES){
       myMenuOptions.add(Arrays.asList(myWorkSpaceResources.getString(menuType+"Options").split(",")));
     }
-    int penIndex = MENU_TYPES.indexOf(myLanguageResources.getString("PenColorMenu"));
-    int backIndex = MENU_TYPES.indexOf(myLanguageResources.getString("BackgroundMenu"));
+    int penIndex = MENU_TYPES.indexOf("PenColor");
+    int backIndex = MENU_TYPES.indexOf("Background");
     myMenuOptions.remove(penIndex);
     myMenuOptions.remove(backIndex);
     List<String> colorIndices = new ArrayList<>();
@@ -890,12 +893,16 @@ public class Visualizer extends Application implements FrontEndExternal{
     stage.show();
   }
 
+  private void savePrefs(){
+    makeNewUserProperties(myFileNum);
+  }
+
   private void changeHelpImage(String imageName, VBox vBox){
     vBox.getChildren().remove(1);
     vBox.getChildren().add(new ImageView("slogo/frontEnd/Resources/" + imageName + ".png"));
   }
 
-  private void makeNewUserProperties(){
-    PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(myFileNum),myColorPalette);
+  private void makeNewUserProperties(int fileNum){
+    PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(fileNum),myColorPalette);
   }
 }
