@@ -36,7 +36,7 @@ public class IfCommand implements Command {
     }
     else {
     }
-    results.add(backEnd.makeCommandResult(returnVal,listLength));
+    results.add(backEnd.makeCommandResult(returnVal,listLength+1));
     return results;
   }
 

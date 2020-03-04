@@ -30,7 +30,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private int myPathColor = 0;
   private int myBackgroundColor = 0;
   private int myShapeIndex = 0;
+  private double myPenSize = 1;
   private Integer myActiveTurtleID;
+  SLogoCareTaker careTaker = new SLogoCareTaker();
 
 
   public SLogoBackEnd() {
@@ -43,6 +45,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     myLanguage = interpretPatterns("English");
     mySyntax = interpretPatterns("Syntax");
     myActiveTurtleID = null;
+    myPalette = new HashMap<>();
   }
 
   public List<Entry<String, Pattern>> interpretPatterns(String syntax) {
@@ -185,6 +188,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     for (int programCounter = variableNames.size(); programCounter <= tokenList.length;
         programCounter++) {
       if (commandValues.size() >= command.getNumArgs()) {
+        //TODO: Figure this one out actually
+        int tokensParsed = programCounter + command.getTokensParsed(tokenList);
+        System.out.println("tokensParsed = " + tokensParsed);
         return executeCurrentCommand(command, tokenList, commandValues, variableNames,
             programCounter);
       }
@@ -196,7 +202,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<CommandResult> executeCurrentCommand(Command command, String[] tokenList,
                                                     Stack<Double> commandValues, List<String> variableNames, int programCounter)
       throws ParseException {
-    List<Double> argList = getArgsFromStack(commandValues, command.getNumArgs());
+    List<Double> argList = BackEndUtil.getArgsFromStack(commandValues, command.getNumArgs());
     List<CommandResult> results = new ArrayList<>((command.execute(argList, variableNames,
         Arrays.copyOfRange(tokenList, programCounter, tokenList.length),
         this)));
@@ -231,15 +237,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       return insideResult.get(insideResult.size() - 1).getTokensParsed();
     }
     return 0;
-  }
-
-  private List<Double> getArgsFromStack(Stack<Double> values, int numArgs) {
-    List<Double> argList = new ArrayList<>();
-    for (int arg = 0; arg < numArgs; arg++) {
-      argList.add(values.pop());
-    }
-    Collections.reverse(argList);
-    return argList;
   }
 
   private double parseValue(String type, String token) throws ParseException {
@@ -287,12 +284,23 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public Collection<String> getUserCommandArgs(String name) {
+    if (myUserCommandManager.containsCommand(name)) {
+      return myUserCommandManager.getArguments(name);
+    }
     return null;
   }
 
   @Override
   //TODO: Figure out a way to report the contents of user-generated commands.
   public Collection<String> getUserCommandScript(String name) {
+    return null;
+  }
+
+  @Override
+  public Command getUserCommand(String name) {
+    if (myUserCommandManager.containsCommand(name)) {
+      return myUserCommandManager.getCommand(name);
+    }
     return null;
   }
 
@@ -390,6 +398,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     CommandResultBuilder builder = new CommandResultBuilder(activeTurtle.getHeading(),activeTurtle.getPosition(),getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex);
     builder.setTurtleID(activeTurtle.getId());
     builder.setRetVal(retVal);
+    builder.setPenSize(-1);
     return builder;
   }
 
@@ -413,6 +422,40 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   public Integer getActiveTurtleID() {
     return myActiveTurtleID;
+  }
+
+  public SLogoMemento saveStateToMemento() {
+    ArrayList<Turtle> turtleCopy = new ArrayList<>();
+    for (Turtle turtle : myTurtles) {
+      turtleCopy.add(turtle.getClone());
+    }
+    return new SLogoMemento(turtleCopy,getActiveTurtleNumbers(),new HashMap<>(myPalette),
+                            myBackgroundColor,myPathColor,
+                            myShapeIndex, myPenSize,new ArrayList<>(myLanguage),
+                            new HashMap<>(myVariables),new UserCommandManager(myUserCommandManager));
+  }
+
+  public List<CommandResult> loadStateFromMemento(SLogoMemento memento) {
+    myTurtles = memento.getTurtles();
+    setActiveTurtles(memento.getActiveTurtles());
+    myPalette = memento.getPalette();
+    myBackgroundColor = memento.getBackgroundIndex();
+    myPathColor = memento.getPenColorIndex();
+    myPenSize = memento.getPenSize();
+    myShapeIndex = memento.getShapeIndex();
+    myLanguage = memento.getLanguage();
+    myVariables = memento.getVariables();
+    myUserCommandManager = memento.getUserCommandManager();
+
+    ArrayList<CommandResult> results = new ArrayList<>();
+    for (Turtle turtle : myTurtles) {
+      CommandResultBuilder builder = startCommandResult(turtle.getHeading(),turtle.getPosition());
+      builder.setTurtleID(turtle.getId());
+      builder.setPenUp(turtle.getPenUp());
+      results.add(builder.buildCommandResult());
+    }
+
+    return results;
   }
 
 }

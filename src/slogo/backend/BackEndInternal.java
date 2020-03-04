@@ -62,6 +62,8 @@ public interface BackEndInternal {
    */
   Collection<String> getUserCommandScript(String name);
 
+  Command getUserCommand(String name);
+
   /**
    * @return A list of all Turtles in this instance of the model.
    */

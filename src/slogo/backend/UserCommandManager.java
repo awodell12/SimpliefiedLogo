@@ -14,6 +14,10 @@ public class UserCommandManager {
     myCommands = new HashMap<>();
   }
 
+  public UserCommandManager(UserCommandManager original) {
+    myCommands = original.myCommands;
+  }
+
   public boolean containsCommand(String name) {
     return myCommands.containsKey(name);
   }
