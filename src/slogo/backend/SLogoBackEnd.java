@@ -33,8 +33,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private double myPenSize = 1;
   private Integer myActiveTurtleID;
   private SLogoCareTaker careTaker = new SLogoCareTaker();
-  private List<SLogoMemento> prevStates;
-  private int locationInTimeline;
+  private List<SLogoMemento> myPrevStates;
+  private int myTimelineLocation;
 
 
   public SLogoBackEnd() {
@@ -48,8 +48,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     mySyntax = interpretPatterns("Syntax");
     myActiveTurtleID = null;
     myPalette = new HashMap<>();
-    prevStates = new ArrayList<>();
-    locationInTimeline = -1;
+    myPrevStates = new ArrayList<>();
+    myTimelineLocation = -1;
   }
 
   public List<Entry<String, Pattern>> interpretPatterns(String syntax) {
@@ -88,7 +88,13 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   @Override
   public List<CommandResult> parseScript(String script) {
     String[] scriptTokens = BackEndUtil.getTokenList(script).toArray(new String[0]);
-    return parseCommandsList(scriptTokens);
+    List<CommandResult> retList = parseCommandsList(scriptTokens);
+    if (myTimelineLocation < myPrevStates.size()-1) {
+      myPrevStates = myPrevStates.subList(0,myTimelineLocation);
+    }
+    myTimelineLocation += 1;
+    myPrevStates.add(saveStateToMemento());
+    return retList;
   }
 
   @Override
@@ -395,7 +401,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     CommandResultBuilder builder = new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(),
         myPathColor, myBackgroundColor, myShapeIndex);
     builder.setIsActualCommand(true);
-    builder.setPenSize(-1);
+    builder.setPenSize(myPenSize);
+    builder.setVariables(new HashMap<>(myVariables));
+    builder.setUserCommands(myUserCommandManager.getScriptMap());
     return builder;
   }
 
@@ -436,13 +444,23 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public List<CommandResult> undo() {
-//    loadStateFromMemento;
-    return null;
+    List<CommandResult> results = new ArrayList<>();
+    if (myTimelineLocation > 0) {
+      myTimelineLocation -= 1;
+      results = loadStateFromMemento(myPrevStates.get(myTimelineLocation));
+    }
+    return results;
   }
 
   @Override
   public List<CommandResult> redo() {
-    return null;
+
+    List<CommandResult> results = new ArrayList<>();
+    if (myTimelineLocation < myPrevStates.size()-1) {
+      myTimelineLocation += 1;
+      loadStateFromMemento(myPrevStates.get(myTimelineLocation));
+    }
+    return results;
   }
 
   public Integer getActiveTurtleID() {
@@ -479,8 +497,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       builder.setPenUp(turtle.getPenUp());
       results.add(builder.buildCommandResult());
     }
-
     return results;
   }
-
 }

@@ -44,8 +44,6 @@ public class DoTimesCommand implements Command {
     }
     CommandResultBuilder builder = backEnd.startCommandResult(returnVal);
     builder.setTokensParsed(listLength+2);
-    builder.variableName(var);
-    builder.varValue(limit);
     results.add(builder.buildCommandResult());
     return results;
   }

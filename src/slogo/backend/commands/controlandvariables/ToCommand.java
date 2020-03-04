@@ -47,8 +47,6 @@ public class ToCommand implements Command {
     backEnd.setUserCommand(cmdName,toVars,commandTokens);
     CommandResultBuilder builder = backEnd.startCommandResult(1.0);
     builder.setTokensParsed(programCounter+numCommands+1);
-    builder.userDefinedCommandName(cmdName);
-    builder.userDefinedCommandScript(BackEndUtil.concatStringArray(commandTokens));
     return List.of(builder.buildCommandResult());
   }
 
