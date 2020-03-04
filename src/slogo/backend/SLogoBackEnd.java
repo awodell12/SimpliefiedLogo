@@ -27,7 +27,11 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<Turtle> myTurtles;
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
+  private int myPathColor = 0;
+  private int myBackgroundColor = 0;
+  private int myShapeIndex = 0;
   private Integer myActiveTurtleID;
+
 
   public SLogoBackEnd() {
     myLanguage = new ArrayList<>();
@@ -365,7 +369,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
-    CommandResultBuilder builder = new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers());
+    CommandResultBuilder builder = new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(),
+        myPathColor, myBackgroundColor, myShapeIndex);
     builder.setIsActualCommand(true);
     builder.setPenSize(-1);
     return builder;
@@ -380,14 +385,33 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     else {
       activeTurtle = myTurtles.get(0);
     }
-    CommandResultBuilder builder = new CommandResultBuilder(activeTurtle.getHeading(),activeTurtle.getPosition(),getActiveTurtleNumbers());
+
+    CommandResultBuilder builder = new CommandResultBuilder(activeTurtle.getHeading(),activeTurtle.getPosition(),getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex);
     builder.setTurtleID(activeTurtle.getId());
     builder.setRetVal(retVal);
     return builder;
   }
 
   @Override
+  public int getPathColor(){ return myPathColor; }
+
+  @Override
+  public void setPathColor(int index){ myPathColor = index; }
+
+  @Override
+  public int getBackgroundColor(){ return myBackgroundColor; }
+
+  @Override
+  public void setBackgroundColor(int index){ myBackgroundColor = index; }
+
+  @Override
+  public int getShapeIndex(){ return myShapeIndex; }
+
+  @Override
+  public void setShapeIndex(int index){ myShapeIndex = index; }
+
   public Integer getActiveTurtleID() {
     return myActiveTurtleID;
   }
+
 }

@@ -30,14 +30,15 @@ public class CommandResultBuilder {
   private int newPaletteIndex;
   private boolean actualCommand;
 
-  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers) {
+
+  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers, int pathColor, int bgColor, int shape) {
     myRetVal = 0;
     myTokensParsed = 0;
     turtleID = 0;
     turtlePos = turtlePosition;
     turtleHeading = turtleFacing;
     startPos = null;
-    pathColorIndex = 0;
+    pathColorIndex = pathColor;
     varName = null;
     varValue = 0;
     udcName = null;
@@ -46,21 +47,26 @@ public class CommandResultBuilder {
     penUp = false; //TODO: change this so pen doesn't always go down
     turtleVis = true;
     turtleReset = false;
-    bgColorIndex = 0;
+    bgColorIndex = bgColor;
     newColor = null;
-    penSize = -1;
     shapeIndex = 0;
+    shapeIndex = shape;
     errorMessage = "";
     //TODO: change these so that stuff doesn't automatically get set to zero
     newPaletteIndex = 0;
     activeTurtles = new ArrayList<>(activeTurtleNumbers);
     penSize = 1.0;
-    shapeIndex = 0;
     actualCommand = true;
   }
 
   public void setRetVal(double val) {
     myRetVal = val;
+  }
+
+  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles, int pathColor, int bgColor, int shape) {
+    this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape);
+    turtleID = turtleNumber;
+    penUp = turtlePenUp;
   }
 
   public void setTokensParsed(int val) {
@@ -121,10 +127,16 @@ public class CommandResultBuilder {
     penUp = penIsUp;
   }
 
+  public void setBackgroundColor(int index){ bgColorIndex = index; }
+
+  public void setColor(List<Integer> color){ newColor = color; }
+
+  public void setShapeIndex(int idx){ shapeIndex = idx; }
+
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
         startPos, pathColorIndex, varName, varValue, udcName, udcScript,
-        clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles, newPaletteIndex,
-            shapeIndex, errorMessage, actualCommand);
+        clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles, shapeIndex,
+            newPaletteIndex, errorMessage, actualCommand);
   }
 }

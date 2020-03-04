@@ -105,5 +105,18 @@ public interface BackEndInternal {
   Integer getActiveTurtleID();
 
   List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException;
-  }
+
+  int getPathColor();
+
+  void setPathColor(int index);
+
+  int getBackgroundColor();
+
+  void setBackgroundColor(int index);
+
+  int getShapeIndex();
+
+  void setShapeIndex(int index);
+
+}
 

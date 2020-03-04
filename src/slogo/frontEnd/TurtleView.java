@@ -16,7 +16,7 @@ import javafx.scene.shape.*;
 public class TurtleView extends Group{
     private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
     private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
-    private static final Image myActiveTurtleImage = new Image("slogo/frontEnd/Resources/activeTurtle.png");
+    private static final Image myActiveTurtleImage = new Image(myResources.getString("DefaultTurtle"));
     private static final double TURTLE_SIZE = 50;
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;
     private static final double UNHIGHLIGHTED_OPACITY = 0.4;
@@ -180,7 +180,8 @@ public class TurtleView extends Group{
     }
 
     protected void setPenThickness(double value) {
-        assert value <= 10.0;
+        assert value <= 50.0;
+        assert value >= 0.1;
         myPenThickness = value;
     }
 
