@@ -16,6 +16,9 @@ public class BackEndUtil {
   public static final String NO_MATCH_STRING = "NO MATCH";
   public static final String LIST_END_LABEL = "ListEnd";
   public static final String LIST_START_LABEL = "ListStart";
+  public static final String COMMENT_LINE = "(^#(?s).*|\\s+)";
+  public static final String NEWLINE = "\\n+";
+  public static final String WHITESPACE = "\\s+";
 
   private static ResourceBundle myResources = ResourceBundle.getBundle(RESOURCES_PACKAGE + SYNTAX_FILENAME);
 
@@ -53,6 +56,26 @@ public class BackEndUtil {
       System.out.printf("(%s) ", string);
     }
     System.out.println();
+  }
+
+  public static String concatStringArray(String[] tokens) {
+      StringBuffer sb = new StringBuffer();
+      for (String string : tokens) {
+        sb.append(string + " ");
+      }
+      return sb.toString();
+  }
+
+  public static List<String> getTokenList(String script) {
+    String[] scriptLines = script.split(NEWLINE);
+    List<String> scriptTokenList = new ArrayList<>();
+    for (String line : scriptLines) {
+      System.out.println(line);
+      if (!line.matches(COMMENT_LINE)) {
+        scriptTokenList.addAll(Arrays.asList(line.strip().split(WHITESPACE)));
+      }
+    }
+    return scriptTokenList;
   }
 
   private static boolean isClosedBracket(String text) {

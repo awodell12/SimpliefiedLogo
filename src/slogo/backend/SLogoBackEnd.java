@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.regex.Pattern;
-import slogo.backend.commands.controlandvariables.UserCommand;
 import slogo.CommandResult;
 
 /**
@@ -21,15 +20,10 @@ import slogo.CommandResult;
 public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   private static final String RESOURCES_PACKAGE = "resources/languages/";
-  public static final String COMMENT_LINE = "(^#(?s).*|\\s+)";
-  public static final String NEWLINE = "\\n+";
   private List<Entry<String, Pattern>> myLanguage;
   private List<Entry<String, Pattern>> mySyntax;
   private Map<String, Double> myVariables;
-  // TODO: make VariableMap
-  private Map<String, Command> myUserCommands;
-  // TODO: make UserCommand Map
-  public static final String WHITESPACE = "\\s+";
+  private UserCommandManager myUserCommandManager;
   private List<Turtle> myTurtles;
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
@@ -38,7 +32,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   public SLogoBackEnd() {
     myLanguage = new ArrayList<>();
     myVariables = new HashMap<>();
-    myUserCommands = new HashMap<>();
+    myUserCommandManager = new UserCommandManager();
     myTurtles = new ArrayList<>();
     myTurtles.add(new SLogoTurtle(0));
     myActiveTurtles = List.of(myTurtles.get(0));
@@ -82,25 +76,13 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public List<CommandResult> parseScript(String script) {
-    String[] scriptTokens = getTokenList(script).toArray(new String[0]);
+    String[] scriptTokens = BackEndUtil.getTokenList(script).toArray(new String[0]);
     return parseCommandsList(scriptTokens);
   }
 
   @Override
   public void applyChanger(Changer changer) {
     changer.doChanges(this);
-  }
-
-  private List<String> getTokenList(String script) {
-    String[] scriptLines = script.split(NEWLINE);
-    List<String> scriptTokenList = new ArrayList<>();
-    for (String line : scriptLines) {
-      System.out.println(line);
-      if (!line.matches(COMMENT_LINE)) {
-        scriptTokenList.addAll(Arrays.asList(line.strip().split(WHITESPACE)));
-      }
-    }
-    return scriptTokenList;
   }
 
   public List<CommandResult> parseCommandsList(String[] tokenList) {
@@ -119,7 +101,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         return results;
       }
     }
-    results.add(makeCommandResult(findRetVal(results), programCounter));
+    CommandResultBuilder builder = startCommandResult(findRetVal(results));
+    builder.setTokensParsed(programCounter);
+    results.add(builder.buildCommandResult());
     return results;
   }
 
@@ -165,8 +149,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     try {
       return CommandFactory.makeCommand(getSymbol(rawToken));
     } catch (ParseException e) {
-      if (myUserCommands.containsKey(rawToken)) {
-        return myUserCommands.get(rawToken);
+      if (myUserCommandManager.containsCommand(rawToken)) {
+        return myUserCommandManager.getCommand(rawToken);
       }
       throw new ParseException("Don't know how to " + rawToken.toUpperCase());
     }
@@ -269,14 +253,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return identity.equals("Variable");
   }
 
-  private boolean isOpenBracket(String identity) {
-    return identity.equals("ListStart");
-  }
-
-  private boolean isClosedBracket(String identity) {
-    return identity.equals("ListEnd");
-  }
-
   @Override
   public void setVariable(String name, double value) {
     myVariables.put(name, value);
@@ -301,7 +277,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     if (CommandFactory.hasCommand(getSymbol(name))) {
       throw new ParseException("Can't redefine primitive " + name);
     }
-    myUserCommands.put(name, new UserCommand(parameters, Arrays.asList(commands)));
+    myUserCommandManager.addUserCommand(name, parameters, Arrays.asList(commands));
   }
 
   @Override

@@ -47,16 +47,8 @@ public class ToCommand implements Command {
     CommandResultBuilder builder = backEnd.startCommandResult(1.0);
     builder.setTokensParsed(programCounter+numCommands+1);
     builder.userDefinedCommandName(cmdName);
-    builder.userDefinedCommandScript(concatStringArray(commandTokens));
+    builder.userDefinedCommandScript(BackEndUtil.concatStringArray(commandTokens));
     return List.of(builder.buildCommandResult());
-  }
-
-  private String concatStringArray(String[] tokens) {
-    StringBuffer sb = new StringBuffer();
-    for (String string : tokens) {
-      sb.append(string + " ");
-    }
-    return sb.toString();
   }
 
   @Override
