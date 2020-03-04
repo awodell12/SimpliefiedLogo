@@ -37,7 +37,10 @@ public class ForwardCommand implements Command {
           turtle.getHeading(),
           turtle.getPosition(),
           turtle.getPenUp(),
-          backEnd.getActiveTurtleNumbers()
+          backEnd.getActiveTurtleNumbers(),
+          backEnd.getPathColor(),
+          backEnd.getBackgroundColor(),
+          backEnd.getShapeIndex()
       );
       builder.retVal(arguments.get(0));
       builder.setPathStart(prevPos);

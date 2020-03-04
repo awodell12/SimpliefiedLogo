@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
-//@SuppressWarnings("unused") // TODO: uncomment this out
+@SuppressWarnings({"unused", "StringEquality"})
 public class Visualizer extends Application implements FrontEndExternal{
   private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.";
   private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "config");
@@ -111,7 +111,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     add(new Image(myResources.getString("Duval")));
   }};
   private List<String> myMenuNames;
- private Map<String, Color> myColorPalette;
+  private Map<String, Color> myColorPalette;
   private CommandBox myCommandBox;
   private History myHistory;
   private ClearableEntriesBox myUserDefinedCommands;
@@ -144,12 +144,12 @@ public class Visualizer extends Application implements FrontEndExternal{
   private String myCurrentlyHighlighted = null;
   private String myCurrentInstruction = null;
   private Timeline animation;
-  private List<TextArea> turtleMovementButtons = new ArrayList<>();
+  private final List<TextArea> turtleMovementButtons = new ArrayList<>();
   private int myCurrentTurtleID;
   private Text myPenText;
-  private TextFlow myTurtleInfo = new TextFlow();
+  private final TextFlow myTurtleInfo = new TextFlow();
   private MenuBar myMenuBar;
-  private Consumer<Integer> myOnNewWorkSpaceClicked;
+  private final Consumer<Integer> myOnNewWorkSpaceClicked;
   private final DisplayableTextHolder myDisplayableTextHolder = new DisplayableTextHolder();
   private final String myStartingLanguage;
   private final int myStartingNumTurtles;
@@ -165,7 +165,7 @@ public class Visualizer extends Application implements FrontEndExternal{
    * Constructor for the visualizer class, which manages the display components and state
    * @param instructionQueueListener listener for the instruction queue
    * @param onNewWorkSpaceClicked what happens when the create new workspace button is clicked
-   * @param configFileNum this indicates we will set defults for this workspace using file workspaceX.properties
+   * @param configFileNum this indicates we will set defaults for this workspace using file workspaceX.properties
    *                      default to workspace 0 if file not found
    */
   public Visualizer(ListChangeListener<String> instructionQueueListener, Consumer<Integer> onNewWorkSpaceClicked, int configFileNum) {
@@ -229,7 +229,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   /**
    * Takes in a command result for the visualizer to process (after all other queued command results finish)
-   * @param result a commandresult from controller, OR null if this is called by the step function
+   * @param result a CommandResult from controller, OR null if this is called by the step function
    */
   public void processResult(CommandResult result){
     if(!isReady){
@@ -332,11 +332,11 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
     displayErrorMessage(errorMessage);
-    if(penSize != -1) myTurtleView.setPenThickness(penSize);
+    myTurtleView.setPenThickness(penSize);
     if (newColorRGB != null){
       updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
-    // nothing happens if the requested color is not in color palette or if it's -1 (didn't change)
+    // nothing happens if the requested color is not in color palette
     if(myColorPalette.containsKey(Integer.toString(backgroundColorIndex))) {
       myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
     }
@@ -426,22 +426,25 @@ public class Visualizer extends Application implements FrontEndExternal{
    * note that we don't use the config file because we change the language at the last step
    */
   private void setUpDefaults(){
-    executeInstruction("setpencolor " + myStartingPenColor);
     executeInstruction("setbackground " + myStartingBackgroundColor);
-    executeInstruction("setshape " + myStartingImage);
+    executeInstruction("setpencolor " + myStartingPenColor);
     StringBuilder instruction = new StringBuilder("tell" + " [ ");
     for(int id=0; id<myStartingNumTurtles; id++){
       instruction.append(id).append(" ");
     }
     instruction.append("]");
     executeInstruction(instruction.toString());
+    executeInstruction("setshape " + myStartingImage);
     for(String scriptName : myScripts){
       String script = myWorkSpaceResources.getString(scriptName);
+      //executeInstruction("to " + scriptName + " [ ] [ " + script + " ]");
+      //TODO: comment in above line when to command is fixed, and comment out below line
       myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
     }
     for(String variableName : myStartingVariables){
       double value = Double.parseDouble(myWorkSpaceResources.getString(variableName));
-      addVariable(variableName, value);
+      executeInstruction("make :" + variableName + " " + value);
+      //addVariable(variableName, value);
     }
     myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + myStartingLanguage);
     // now schedule clear history so the user isn't confused by the commands we used to set up defaults
