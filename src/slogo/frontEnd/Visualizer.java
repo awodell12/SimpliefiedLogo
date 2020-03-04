@@ -100,6 +100,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MAX_SPEED = 50;
   private static final double DEFAULT_SPEED = 1;
   private static final String LANGUAGE_INSTRUCTION_STRING = "language: ";
+  private final int myFileNum;
 
   private ResourceBundle myLanguageResources;
   private ResourceBundle myWorkSpaceResources;
@@ -110,20 +111,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     add(new Image(myResources.getString("Duval")));
   }};
   private List<String> myMenuNames;
- private Map<String, Color> myColorPalette; // = new HashMap<>(){{
-//    put("0", Color.RED);
-//    put("1", Color.WHITE);
-//    put("2", Color.GRAY);
-//    put("3", Color.AZURE);
-//    put("4", Color.LEMONCHIFFON);
-//    put("5", Color.ROYALBLUE);
-//    put("6", Color.LAWNGREEN);
-//    put("7", Color.DARKSALMON);
-//    put("8", Color.BLACK);
-//    put("9", Color.MAGENTA);
-//    put("10", Color.ORANGE);
-//  }};
-
+ private Map<String, Color> myColorPalette;
   private CommandBox myCommandBox;
   private History myHistory;
   private ClearableEntriesBox myUserDefinedCommands;
@@ -184,6 +172,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     myInstructionQueue = new ObservableQueue();
     myInstructionQueue.addListener(instructionQueueListener);
     myOnNewWorkSpaceClicked = onNewWorkSpaceClicked;
+    myFileNum = configFileNum;
     try {
       myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace" + configFileNum);
     } catch(MissingResourceException ex){
@@ -191,7 +180,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
     myStartingLanguage = myWorkSpaceResources.getString("Language");
     myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION + myStartingLanguage + "config");
-    myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable");
+    myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable"+ configFileNum);
     myStartingNumTurtles = Integer.parseInt(myWorkSpaceResources.getString("numTurtles"));
     myStartingPenColor = Integer.parseInt(myWorkSpaceResources.getString("startingPenColor"));
     myStartingBackgroundColor = Integer.parseInt(myWorkSpaceResources.getString("startingBGColor"));
@@ -610,6 +599,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void rotateLeft(){
     executeInstruction(myLanguageResources.getString("lt") + " " + turtleMovementButtons.get(3).getText());
+    makeNewUserProperties();
   }
 
   private void resetAnimation() {
@@ -894,5 +884,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void changeHelpImage(String imageName, VBox vBox){
     vBox.getChildren().remove(1);
     vBox.getChildren().add(new ImageView("slogo/frontEnd/Resources/" + imageName + ".png"));
+  }
+
+  private void makeNewUserProperties(){
+    PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(myFileNum),myColorPalette);
   }
 }
