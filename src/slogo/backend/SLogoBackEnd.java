@@ -32,7 +32,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private int myShapeIndex = 0;
   private double myPenSize = 1;
   private Integer myActiveTurtleID;
-  SLogoCareTaker careTaker = new SLogoCareTaker();
+  private SLogoCareTaker careTaker = new SLogoCareTaker();
+  private List<SLogoMemento> prevStates;
+  private int locationInTimeline;
 
 
   public SLogoBackEnd() {
@@ -46,6 +48,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     mySyntax = interpretPatterns("Syntax");
     myActiveTurtleID = null;
     myPalette = new HashMap<>();
+    prevStates = new ArrayList<>();
+    locationInTimeline = -1;
   }
 
   public List<Entry<String, Pattern>> interpretPatterns(String syntax) {
@@ -429,6 +433,17 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public void setShapeIndex(int index){ myShapeIndex = index; }
+
+  @Override
+  public List<CommandResult> undo() {
+//    loadStateFromMemento;
+    return null;
+  }
+
+  @Override
+  public List<CommandResult> redo() {
+    return null;
+  }
 
   public Integer getActiveTurtleID() {
     return myActiveTurtleID;

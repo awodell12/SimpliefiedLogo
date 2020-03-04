@@ -120,5 +120,9 @@ public interface BackEndInternal {
 
   void setShapeIndex(int index);
 
+  List<CommandResult> undo();
+
+  List<CommandResult> redo();
+
 }
 
