@@ -64,12 +64,12 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle TOP_RIGHT_BUTTON_SHAPE = new Rectangle(75, 50);
-  private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
+  private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(70, 30);
   private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
   private static final Rectangle TURTLE_MOVEMENT_LABEL_SHAPE = new Rectangle(20, 5);
   private static final Rectangle TURTLE_INFO_SHAPE = new Rectangle(275 ,75);
   private static final double SPACING = 10;
-  private static final double MARGIN = 25;
+  private static final double MARGIN = 15;
   private static final double BOTTOM_INSET = 0.15;
   private static final double MENU_LABEL_SIZE = 20;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
@@ -99,7 +99,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MIN_SPEED = 0.1;
   private static final double MAX_SPEED = 50;
   private static final double DEFAULT_SPEED = 1;
+  private static final int PEN_SLIDER_TICKS = 10;
   private static final String LANGUAGE_INSTRUCTION_STRING = "language: ";
+  private static final String DEFAULT_MOVE_BUTTON_VALUE = "45";
 
   private ResourceBundle myLanguageResources;
   private ResourceBundle myWorkSpaceResources;
@@ -371,8 +373,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     String headingString = myLanguageResources.getString("Heading");
     return turtleString + " " + turtleID + ": \n" + activeString + ": " +
             activityAndHeading[0] + "  " + positionString + ": ("
-            + (int)myTurtleView.getUnalteredTurtlePositions().get(turtleID).getX() + ","
-            + (int)myTurtleView.getUnalteredTurtlePositions().get(turtleID).getY()
+            + String.format("%.2f", myTurtleView.getUnalteredTurtlePositions().get(turtleID).getX()) + ","
+            + String.format("%.2f", -myTurtleView.getUnalteredTurtlePositions().get(turtleID).getY())
             + ")  " + headingString + ": " + activityAndHeading[1] + "\n";
   }
 
@@ -527,7 +529,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
     for(int i=0; i<NUM_TURTLE_MOVE_BUTTONS; i++){
       HBox hbox = new HBox(SPACING);
-      TextArea valueSetter = new TextArea();
+      TextArea valueSetter = new TextArea(DEFAULT_MOVE_BUTTON_VALUE);
       valueSetter.setMaxSize(TURTLE_MOVEMENT_LABEL_SHAPE.getWidth(), TURTLE_MOVEMENT_LABEL_SHAPE.getHeight());
       turtleMovementButtons.add(valueSetter);
       hbox.getChildren().addAll(buttons.get(i), valueSetter);
@@ -549,6 +551,12 @@ public class Visualizer extends Application implements FrontEndExternal{
       setPenText();
       myRightVBox.requestLayout(); // make sure everything is updated graphically
     });
+    // update the displayed value as slider is dragged, but only send command to change it when slider is dropped
+    penSlider.valueChangingProperty().addListener((val, wasChanging, changing) -> {
+      if(wasChanging)
+        executeInstruction(myLanguageResources.getString("setPenSize") + " " + String.format("%.2f", penSlider.getValue()));
+    });
+    penSlider.setMinorTickCount(PEN_SLIDER_TICKS);
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
     Text penSliderLabel = new Text(myLanguageResources.getString("PenThicknessString"));
