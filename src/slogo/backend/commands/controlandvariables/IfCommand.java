@@ -3,6 +3,7 @@ package slogo.backend.commands.controlandvariables;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.backend.ParseException;
@@ -28,14 +29,12 @@ public class IfCommand implements Command {
       BackEndInternal backEnd) throws ParseException {
     double returnVal = 0;
     List<CommandResult> results = new ArrayList<>();
-    int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,0,tokens.length));
+    int listLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,0,tokens.length));
     if (arguments.get(0) != 0) {
-      System.out.println("IF evaluated to TRUE");
       results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength-1)));
       returnVal = results.get(results.size()-1).getReturnVal();
     }
     else {
-      System.out.println("IF evaluated to FALSE");
     }
     results.add(backEnd.makeCommandResult(returnVal,listLength));
     return results;
@@ -44,5 +43,10 @@ public class IfCommand implements Command {
   @Override
   public List<String> findVars(String[] tokenList) {
     return null;
+  }
+
+  @Override
+  public int getTokensParsed(String[] tokens) {
+    return BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,0,tokens.length));
   }
 }

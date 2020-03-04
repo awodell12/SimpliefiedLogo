@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.regex.Pattern;
-import slogo.backend.commands.controlandvariables.UserCommand;
 import slogo.CommandResult;
 
 /**
@@ -21,15 +20,10 @@ import slogo.CommandResult;
 public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   private static final String RESOURCES_PACKAGE = "resources/languages/";
-  public static final String COMMENT_LINE = "(^#(?s).*|\\s+)";
-  public static final String NEWLINE = "\\n+";
   private List<Entry<String, Pattern>> myLanguage;
   private List<Entry<String, Pattern>> mySyntax;
   private Map<String, Double> myVariables;
-  // TODO: make VariableMap
-  private Map<String, Command> myUserCommands;
-  // TODO: make UserCommand Map
-  public static final String WHITESPACE = "\\s+";
+  private UserCommandManager myUserCommandManager;
   private List<Turtle> myTurtles;
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
@@ -42,7 +36,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   public SLogoBackEnd() {
     myLanguage = new ArrayList<>();
     myVariables = new HashMap<>();
-    myUserCommands = new HashMap<>();
+    myUserCommandManager = new UserCommandManager();
     myTurtles = new ArrayList<>();
     myTurtles.add(new SLogoTurtle(0));
     myActiveTurtles = List.of(myTurtles.get(0));
@@ -56,9 +50,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     ResourceBundle resources = ResourceBundle.getBundle(RESOURCES_PACKAGE + syntax);
     for (String key : Collections.list(resources.getKeys())) {
       String regex = resources.getString(key);
-      patterns.add(new SimpleEntry<>(key,
-
-          Pattern.compile(regex, Pattern.CASE_INSENSITIVE)));
+      patterns.add(new SimpleEntry<>(key, Pattern.compile(regex, Pattern.CASE_INSENSITIVE)));
     }
     return patterns;
   }
@@ -81,15 +73,14 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return "NO MATCH";
   }
 
-  // Returns true if the given text matches the given regular expression pattern
+  //from the parser spike on the cs308 repo
   private boolean match(String text, Pattern regex) {
-    // THIS IS THE IMPORTANT LINE
     return regex.matcher(text).matches();
   }
 
   @Override
   public List<CommandResult> parseScript(String script) {
-    String[] scriptTokens = getTokenList(script).toArray(new String[0]);
+    String[] scriptTokens = BackEndUtil.getTokenList(script).toArray(new String[0]);
     return parseCommandsList(scriptTokens);
   }
 
@@ -98,42 +89,38 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     changer.doChanges(this);
   }
 
-  private List<String> getTokenList(String script) {
-    String[] scriptLines = script.split(NEWLINE);
-    List<String> scriptTokenList = new ArrayList<>();
-    for (String line : scriptLines) {
-      System.out.println(line);
-      if (!line.matches(COMMENT_LINE)) {
-        scriptTokenList.addAll(Arrays.asList(line.strip().split(WHITESPACE)));
-      }
-    }
-    return scriptTokenList;
-  }
-
   public List<CommandResult> parseCommandsList(String[] tokenList) {
     List<CommandResult> results = new ArrayList<>();
     int programCounter = 0;
     while (programCounter < tokenList.length) {
       try {
         Command command = identifyCommand(tokenList[programCounter]);
-        List<CommandResult> listResult;
-        if (command.runsPerTurtle()) {
-          listResult = parseCommandPerTurtle(command,
-              Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
-        }
-        else {
-          listResult = parseCommand(command,
-              Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
-        }
-        results.addAll(listResult);
+        String[] tokensToParse = Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length);
+        results.addAll(parseSingleCommand(command, tokensToParse));
+        //in 'fd sum 30 40 bk 10', we advance by 4 then by 2.
         programCounter += results.get(results.size() - 1).getTokensParsed() + 1;
       } catch (ParseException e) {
-        results.add(makeErrorCommandResult(0.0,0,e.getMessage()));
+        CommandResultBuilder builder = startCommandResult(0);
+        builder.setErrorMessage(e.getMessage());
+        results.add(builder.buildCommandResult());
         return results;
       }
     }
-    results.add(makeCommandResult(findRetVal(results), programCounter));
+    CommandResultBuilder builder = startCommandResult(findRetVal(results));
+    builder.setTokensParsed(programCounter);
+    results.add(builder.buildCommandResult());
     return results;
+  }
+
+  private List<CommandResult> parseSingleCommand(Command command, String[] tokensToParse)
+      throws ParseException {
+    List<CommandResult> listResult;
+    if (command.runsPerTurtle()) {
+      listResult = parseCommandPerTurtle(command, tokensToParse);
+    } else {
+      listResult = parseCommand(command, tokensToParse);
+    }
+    return listResult;
   }
 
   private double findRetVal(List<CommandResult> results) {
@@ -144,6 +131,22 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return retVal;
   }
 
+  public List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException {
+    int programCounter = 0;
+    List<CommandResult> results = new ArrayList<>();
+    String currentTokenType = getSymbol(tokenList[0]);
+    if (isValue(currentTokenType)) {
+      CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+      builder.setRetVal(parseValue(currentTokenType,tokenList[0]));
+      return List.of(builder.buildCommandResult());
+    }
+    Command command = identifyCommand(tokenList[0]);
+    List<CommandResult> listResult = parseSingleCommand(command,
+        Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+    results.addAll(listResult);
+    return results;
+  }
+
   private Command identifyCommand(String rawToken) throws ParseException {
     if (isValue(getSymbol(rawToken))) {
       throw new ParseException("Don't know what to do with " + rawToken);
@@ -151,8 +154,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     try {
       return CommandFactory.makeCommand(getSymbol(rawToken));
     } catch (ParseException e) {
-      if (myUserCommands.containsKey(rawToken)) {
-        return myUserCommands.get(rawToken);
+      if (myUserCommandManager.containsCommand(rawToken)) {
+        return myUserCommandManager.getCommand(rawToken);
       }
       throw new ParseException("Don't know how to " + rawToken.toUpperCase());
     }
@@ -163,12 +166,14 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     List<CommandResult> results = new ArrayList<>();
     for (Turtle activeTurtle : myActiveTurtles) {
       myActiveTurtleID = activeTurtle.getId();
+      System.out.println("myActiveTurtleID = " + myActiveTurtleID);
       results.addAll(parseCommand(command,tokenList));
     }
-    if (results.isEmpty()) {
-       results.add(startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition()).buildCommandResult());
-    }
     myActiveTurtleID = null;
+    if (results.isEmpty()) {
+      List<CommandResult> nonActionResult = (parseCommand(command,tokenList));
+      results.addAll(nonActionResult);
+    }
     return results;
   }
 
@@ -177,8 +182,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     //'fd 50' expects to start at PC = 1, where '50' is.
     Stack<Double> commandValues = new Stack<>();
     List<String> variableNames = getCommandVars(command, tokenList);
-    int programCounter;
-    for (programCounter = variableNames.size(); programCounter <= tokenList.length;
+    for (int programCounter = variableNames.size(); programCounter <= tokenList.length;
         programCounter++) {
       if (commandValues.size() >= command.getNumArgs()) {
         return executeCurrentCommand(command, tokenList, commandValues, variableNames,
@@ -193,10 +197,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
                                                     Stack<Double> commandValues, List<String> variableNames, int programCounter)
       throws ParseException {
     List<Double> argList = getArgsFromStack(commandValues, command.getNumArgs());
-    List<CommandResult> results = null;
-    results = new ArrayList<>(command.execute(argList, variableNames,
+    List<CommandResult> results = new ArrayList<>((command.execute(argList, variableNames,
         Arrays.copyOfRange(tokenList, programCounter, tokenList.length),
-        this));
+        this)));
     CommandResult lastResult = results.get(results.size() - 1);
     results.add(makeCommandResult(lastResult.getReturnVal(),
         lastResult.getTokensParsed() + programCounter));
@@ -221,7 +224,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     String currentTokenType = getSymbol(tokenList[programCounter]);
     if (isValue(currentTokenType)) {
       commandValues.add(parseValue(currentTokenType, currentTokenRaw));
-    } else { //It's a command. TODO: actually check if it's a command or if it's gibberish.
+    } else {
       List<CommandResult> insideResult = parseCommand(identifyCommand(currentTokenRaw),
           Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
       commandValues.add(insideResult.get(insideResult.size() - 1).getReturnVal());
@@ -247,48 +250,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     }
   }
 
-  private void printRemainingTokens(String[] scriptTokens, int i) {
-    String[] remaining = Arrays.copyOfRange(scriptTokens, i, scriptTokens.length);
-    for (String string : remaining) {
-      System.out.printf("(%s) ", string);
-    }
-    System.out.println();
-  }
   private boolean isValue(String identity) {
     return identity.equals("Constant") || identity.equals("Variable");
   }
 
   private boolean isVariable(String identity) {
     return identity.equals("Variable");
-  }
-
-  private boolean isOpenBracket(String identity) {
-    return identity.equals("ListStart");
-  }
-
-  private boolean isClosedBracket(String identity) {
-    return identity.equals("ListEnd");
-  }
-
-  public static int distanceToEndBracketStatic(String[] tokenList) {
-    return new SLogoBackEnd().distanceToEndBracket(tokenList);
-  }
-
-  public int distanceToEndBracket(String[] tokenList) {
-    int extraBrackets = 0;
-    for (int i = 0; i < tokenList.length; i++) {
-      String tokenSymbol = getSymbol(tokenList[i]);
-      if (isOpenBracket(tokenSymbol)) {
-        extraBrackets++;
-      } else if (isClosedBracket(tokenSymbol)) {
-        if (extraBrackets == 0) {
-          return i + 1;
-        } else {
-          extraBrackets--;
-        }
-      }
-    }
-    return tokenList.length;
   }
 
   @Override
@@ -315,7 +282,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     if (CommandFactory.hasCommand(getSymbol(name))) {
       throw new ParseException("Can't redefine primitive " + name);
     }
-    myUserCommands.put(name, new UserCommand(parameters, Arrays.asList(commands)));
+    myUserCommandManager.addUserCommand(name, parameters, Arrays.asList(commands));
   }
 
   @Override
@@ -348,45 +315,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     myLanguage = interpretPatterns(language);
   }
 
-  public CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, int pathColor) {
-    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
-    builder.retVal(retVal);
-    builder.tokensParsed(tokensParsed);
-    builder.setPathStart(pathStart);
-    //TODO: MAKE THIS WORK WITH COLOR INDEX
-    builder.setPathColor(0);
-    return builder.buildCommandResult();
-  }
-
-  public CommandResult makeCommandResult(double retVal, int tokensParsed, String varName,
-      double varValue) {
-    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
-    builder.retVal(retVal);
-    builder.tokensParsed(tokensParsed);
-    builder.variableName(varName);
-    builder.varValue(varValue);
-    return builder.buildCommandResult();
-  }
-
-  public CommandResult makeCommandResult(double retVal, int tokensParsed, String udcName, String udcScript) {
-    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
-    builder.retVal(retVal);
-    builder.tokensParsed(tokensParsed);
-    builder.userDefinedCommandName(udcName);
-    builder.userDefinedCommandScript(udcScript);
-    return builder.buildCommandResult();
-  }
-  public CommandResult makeErrorCommandResult(double retVal, int tokensParsed, String errorMessage) {
-    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
-    builder.retVal(retVal);
-    builder.tokensParsed(tokensParsed);
-    builder.setErrorMessage(errorMessage);
-    return builder.buildCommandResult();
-  }
   public CommandResult makeCommandResult(double retVal, int tokensParsed) {
-    CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
-    builder.retVal(retVal);
-    builder.tokensParsed(tokensParsed);
+    CommandResultBuilder builder = startCommandResult(retVal);
+    builder.setTokensParsed(tokensParsed);
     return builder.buildCommandResult();
   }
 
@@ -439,7 +370,27 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
-    return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex);
+    CommandResultBuilder builder = new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(),
+        myPathColor, myBackgroundColor, myShapeIndex);
+    builder.setIsActualCommand(true);
+    builder.setPenSize(-1);
+    return builder;
+  }
+
+  @Override
+  public CommandResultBuilder startCommandResult(double retVal) {
+    Turtle activeTurtle;
+    if (myActiveTurtleID != null) {
+      activeTurtle = getTurtleWithID(myActiveTurtleID);
+    }
+    else {
+      activeTurtle = myTurtles.get(0);
+    }
+
+    CommandResultBuilder builder = new CommandResultBuilder(activeTurtle.getHeading(),activeTurtle.getPosition(),getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex);
+    builder.setTurtleID(activeTurtle.getId());
+    builder.setRetVal(retVal);
+    return builder;
   }
 
   @Override

@@ -14,7 +14,6 @@ public class CommandFactory {
   private static final String PATH_TO_CLASSES = "slogo.backend.commands.";
   private static List<String> ALL_COMMANDS;
 
-
   private CommandFactory() {
     //This constructor exists to hide the implicit public constructor that would otherwise appear
     ALL_COMMANDS = new ArrayList<>();

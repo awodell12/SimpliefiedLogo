@@ -49,7 +49,7 @@ public class CommandResultBuilder {
     turtleReset = false;
     bgColorIndex = bgColor;
     newColor = null;
-    penSize = 0;
+    shapeIndex = 0;
     shapeIndex = shape;
     errorMessage = "";
     //TODO: change these so that stuff doesn't automatically get set to zero
@@ -59,18 +59,17 @@ public class CommandResultBuilder {
     actualCommand = true;
   }
 
+  public void setRetVal(double val) {
+    myRetVal = val;
+  }
+
   public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles, int pathColor, int bgColor, int shape) {
     this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape);
     turtleID = turtleNumber;
     penUp = turtlePenUp;
   }
 
-
-  public void retVal(double val) {
-    myRetVal = val;
-  }
-
-  public void tokensParsed(int val) {
+  public void setTokensParsed(int val) {
     myTokensParsed = val;
   }
 
@@ -89,6 +88,8 @@ public class CommandResultBuilder {
   public void setPathColor(int index) {
     pathColorIndex = index;
   }
+
+  public void setPenSize(double size) { penSize = size; }
 
   public void variableName(String name) {
     varName = name;
@@ -121,6 +122,10 @@ public class CommandResultBuilder {
   public void setTurtleReset(boolean isReset){ turtleReset = isReset; }
 
   public void setMyScreenClear(boolean value){ clear = value; }
+
+  public void setPenUp(boolean penIsUp) {
+    penUp = penIsUp;
+  }
 
   public void setBackgroundColor(int index){ bgColorIndex = index; }
 

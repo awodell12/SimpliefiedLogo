@@ -30,4 +30,8 @@ public interface Command {
   default boolean runsPerTurtle() {
     return false;
   }
+
+  default int getTokensParsed(String[] tokens) {
+    return 0;
+  }
 }
