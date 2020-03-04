@@ -47,8 +47,8 @@ import java.util.function.Consumer;
 
 @SuppressWarnings({"unused", "StringEquality"})
 public class Visualizer extends Application implements FrontEndExternal{
-  private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.";
-  private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "config");
+  private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
+  private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
   private static final List<String> MENU_TYPES = Arrays.asList(myResources.getString("MenuTypes").split(","));
   private static final double HEIGHT = Double.parseDouble(myResources.getString("WindowHeight"));
   private static final double ASPECT_RATIO = (16.0/9.0);
@@ -88,7 +88,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
-  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace", "savePrefs"};
+  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace"};
   private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight",
           "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
 
@@ -100,18 +100,29 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MAX_SPEED = 50;
   private static final double DEFAULT_SPEED = 1;
   private static final String LANGUAGE_INSTRUCTION_STRING = "language: ";
-  private final int myFileNum;
 
   private ResourceBundle myLanguageResources;
   private ResourceBundle myWorkSpaceResources;
-  private ResourceBundle myUserConfigurableResources;
   private final List<Image> imageList = new ArrayList<>() {{
     add(new Image(myResources.getString("DefaultTurtle")));
     add(new Image(myResources.getString("Duke")));
     add(new Image(myResources.getString("Duval")));
   }};
   private List<String> myMenuNames;
-  private Map<String, Color> myColorPalette;
+  private final Map<String, Color> myColorPalette = new HashMap<>(){{
+    put("0", Color.RED);
+    put("1", Color.WHITE);
+    put("2", Color.GRAY);
+    put("3", Color.AZURE);
+    put("4", Color.LEMONCHIFFON);
+    put("5", Color.ROYALBLUE);
+    put("6", Color.LAWNGREEN);
+    put("7", Color.DARKSALMON);
+    put("8", Color.BLACK);
+    put("9", Color.MAGENTA);
+    put("10", Color.ORANGE);
+  }};
+
   private CommandBox myCommandBox;
   private History myHistory;
   private ClearableEntriesBox myUserDefinedCommands;
@@ -159,7 +170,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final List<String> myStartingVariables;
   private final int myStartingImage;
   private boolean clearedAtStart = true;
-  private int myPaletteSize;
+  private boolean clearScreenScheduled = false;
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -172,38 +183,19 @@ public class Visualizer extends Application implements FrontEndExternal{
     myInstructionQueue = new ObservableQueue();
     myInstructionQueue.addListener(instructionQueueListener);
     myOnNewWorkSpaceClicked = onNewWorkSpaceClicked;
-    myFileNum = configFileNum;
     try {
       myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace" + configFileNum);
     } catch(MissingResourceException ex){
       myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace0");
     }
     myStartingLanguage = myWorkSpaceResources.getString("Language");
-    myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION + myStartingLanguage + "config");
-    try {
-      myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable"+ configFileNum);
-    } catch(MissingResourceException ex){
-      myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable0");
-    }
+    myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources." + myStartingLanguage + "config");
     myStartingNumTurtles = Integer.parseInt(myWorkSpaceResources.getString("numTurtles"));
     myStartingPenColor = Integer.parseInt(myWorkSpaceResources.getString("startingPenColor"));
     myStartingBackgroundColor = Integer.parseInt(myWorkSpaceResources.getString("startingBGColor"));
     myScripts = Arrays.asList(myWorkSpaceResources.getString("Scripts").split(","));
     myStartingVariables = Arrays.asList(myWorkSpaceResources.getString("Variables").split(","));
     myStartingImage = Integer.parseInt(myWorkSpaceResources.getString("startingImage"));
-    setOriginalColorPalette();
-  }
-
-  private void setOriginalColorPalette() {
-    String[] defaultColors = myUserConfigurableResources.getString("DefaultPalette").split(" ");
-    myPaletteSize = defaultColors.length;
-    myColorPalette = new HashMap<>();
-    for (String colorString : defaultColors){
-      String[] parts = colorString.split(",");
-      Color color = Color.rgb(Integer.parseInt(parts[1]),Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
-      myColorPalette.put(parts[0], color);
-    }
-   // System.out.println(myColorPalette);
   }
 
   @Override
@@ -235,6 +227,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     if(!isReady){
       if(result != null) {
         resultQueue.add(result);
+        if(result.isMyScreenClear()){
+          clearScreenScheduled = true;
+        }
       }
     }
     else{
@@ -328,7 +323,10 @@ public class Visualizer extends Application implements FrontEndExternal{
     myStartPos = startPos;
     if(variableName != null) addVariable(variableName, variableValue);
     if(udcName != null) addUserDefinedCommand(udcName, udcText);
-    if(clearScreen) myTurtleView.clearPaths();
+    if(clearScreen) {
+      myTurtleView.clearPaths();
+      clearScreenScheduled = false;
+    }
     myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
     myTurtleView.setIsPenUp(isPenUp);
     displayErrorMessage(errorMessage);
@@ -353,9 +351,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void updateColorMenus(int paletteIndex, Color newColor) {
-      myColorPalette.put(Integer.toString(paletteIndex), newColor);
-      addMenuItem(MENU_TYPES.indexOf("Background"),  Integer.toString(paletteIndex));
-      addMenuItem(MENU_TYPES.indexOf("PenColor"), Integer.toString(paletteIndex));
+    myColorPalette.put(Integer.toString(paletteIndex), newColor);
+    addMenuItem(MENU_TYPES.indexOf("Background"),  Integer.toString(paletteIndex));
+    addMenuItem(myMenuNames.indexOf("PenColor"), Integer.toString(paletteIndex));
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -400,9 +398,9 @@ public class Visualizer extends Application implements FrontEndExternal{
       try {
         step(false);
       } catch (Exception ex) {
-        System.out.println("Caught Exception");
-        ex.printStackTrace();
-        //showError(ex.getMessage(), myLanguageResources);
+        //ex.printStackTrace();
+        // note that this should ideally never be thrown
+        showError(ex.getMessage(), myLanguageResources);
       }
     });
 
@@ -724,16 +722,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(String menuType : MENU_TYPES){
       myMenuOptions.add(Arrays.asList(myWorkSpaceResources.getString(menuType+"Options").split(",")));
     }
-    int penIndex = MENU_TYPES.indexOf("PenColor");
-    int backIndex = MENU_TYPES.indexOf("Background");
-    myMenuOptions.remove(penIndex);
-    myMenuOptions.remove(backIndex);
-    List<String> colorIndices = new ArrayList<>();
-    for (String s : myColorPalette.keySet()){
-      colorIndices.add(s);
-    }
-    myMenuOptions.add(penIndex,colorIndices);
-    myMenuOptions.add(backIndex,colorIndices);
     myMenuBar = new MenuBar();
     myLeftVBox.getChildren().add(myMenuBar);
     for(int i=0; i<myMenuNames.size(); i++){
@@ -749,14 +737,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void addMenuItem(int menuNameIndex, String menuItemName){
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
     String menuType = MENU_TYPES.get(menuNameIndex);
-    String menuString;
-    try {
-      menuString = Integer.toString(Integer.parseInt(menuItemName));
-    }
-    catch(Exception e) {
-      menuString = myLanguageResources.getString(menuItemName);
-    }
-    MenuItem menuItem = new MenuItem(menuString);
+    MenuItem menuItem = new MenuItem(myLanguageResources.getString(menuItemName));
     myDisplayableTextHolder.addMenuItem(menuItem, menuItemName);
     String methodName = myResources.getString(menuType);
     String labelGetterName = myResources.getString(menuType + "Label");
@@ -776,8 +757,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       showError(myLanguageResources.getString("NoMethodError"), myLanguageResources);
     }
-    String finalMenuString = menuString;
-    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(finalMenuString));
+    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(myLanguageResources.getString(menuItemName)));
     menu.getItems().add(menuItem);
   }
 
@@ -824,6 +804,10 @@ public class Visualizer extends Application implements FrontEndExternal{
       myHistory.clearEntryBox();
       myErrorMessage.setText(myLanguageResources.getString("DefaultErrorMessage"));
       clearedAtStart = true;
+    }
+    if(clearScreenScheduled){
+      myCurrentTurtlePosition = myDesiredTurtlePosition;
+      // skip the animations if a clear screen command is coming (so that reset can interrupt animation)
     }
     if(!paused || overridePause) {
       if (myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX() - myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||
@@ -896,16 +880,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     stage.show();
   }
 
-  private void savePrefs(){
-    makeNewUserProperties(myFileNum);
-  }
-
   private void changeHelpImage(String imageName, VBox vBox){
     vBox.getChildren().remove(1);
     vBox.getChildren().add(new ImageView("slogo/frontEnd/Resources/" + imageName + ".png"));
-  }
-
-  private void makeNewUserProperties(int fileNum){
-    PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(fileNum),myColorPalette);
   }
 }
