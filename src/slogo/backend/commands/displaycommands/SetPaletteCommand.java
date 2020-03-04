@@ -32,11 +32,13 @@ public class SetPaletteCommand implements Command {
         int idx = (int) Math.round(arguments.get(0));
         int r = (int) Math.round(arguments.get(1)); int g = (int) Math.round(arguments.get(2)); int b = (int) Math.round(arguments.get(3));
         System.out.println("Palette color index " + idx + " set to: R:" + r + " G:" + g + " B:" + b);
-        List<Integer> paletteColor = List.of(idx, r, g, b);
+        List<Integer> paletteColor = List.of(r, g, b);
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
         builder.retVal(idx);
-        if(isValidColor(arguments.get(1), arguments.get(2), arguments.get(3)))
+        if(isValidColor(arguments.get(1), arguments.get(2), arguments.get(3))){
             builder.setColor(paletteColor);
+            builder.setPaletteIndex(idx);
+        }
         else
             builder.setErrorMessage(INVALID_COLOR_MESSAGE);
         return List.of(builder.buildCommandResult());

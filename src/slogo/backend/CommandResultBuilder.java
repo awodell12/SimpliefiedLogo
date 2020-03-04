@@ -126,7 +126,9 @@ public class CommandResultBuilder {
 
   public void setColor(List<Integer> color){ newColor = color; }
 
-  public void setShapeIndex(int idx){ shapeIndex = idx; }
+  public void setShapeIndex(int index){ shapeIndex = index; }
+
+  public void setPaletteIndex(int index){ newPaletteIndex = index; }
 
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
