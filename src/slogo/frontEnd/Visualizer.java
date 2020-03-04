@@ -716,6 +716,10 @@ public class Visualizer extends Application implements FrontEndExternal{
     myCommandBox.setDisplayableTexts(myLanguageResources);
   }
 
+  protected static boolean isNonNumeric(String str) {
+    return !str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+  }
+
   private void setUpMenus(){
     myMenuNames = Arrays.asList(myLanguageResources.getString("MenuNames").split(","));
     List<List<String>> myMenuOptions = new ArrayList<>();
@@ -737,7 +741,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void addMenuItem(int menuNameIndex, String menuItemName){
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
     String menuType = MENU_TYPES.get(menuNameIndex);
-    MenuItem menuItem = new MenuItem(myLanguageResources.getString(menuItemName));
+    String menuItemNameTranslation = menuItemName;
+    if(isNonNumeric(menuItemName)) menuItemNameTranslation = myLanguageResources.getString(menuItemName);
+    MenuItem menuItem = new MenuItem(menuItemNameTranslation);
     myDisplayableTextHolder.addMenuItem(menuItem, menuItemName);
     String methodName = myResources.getString(menuType);
     String labelGetterName = myResources.getString(menuType + "Label");
@@ -757,7 +763,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       showError(myLanguageResources.getString("NoMethodError"), myLanguageResources);
     }
-    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(myLanguageResources.getString(menuItemName)));
+    String finalMenuItemNameTranslation = menuItemNameTranslation; // intellij makes us put this in a variable. Don't delete it.
+    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(finalMenuItemNameTranslation));
     menu.getItems().add(menuItem);
   }
 

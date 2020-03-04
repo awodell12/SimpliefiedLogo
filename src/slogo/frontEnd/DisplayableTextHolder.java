@@ -28,6 +28,7 @@ public class DisplayableTextHolder implements DisplayableTextOwner{
   @Override
   public void setDisplayableTexts(ResourceBundle languageResources) {
     for(Map.Entry<MenuItem, String> entry : menuItems.entrySet()){
+      if(Visualizer.isNonNumeric(entry.getValue()))
       entry.getKey().setText(languageResources.getString(entry.getValue()));
     }
     for(Map.Entry<Menu, String> entry : menus.entrySet()){
