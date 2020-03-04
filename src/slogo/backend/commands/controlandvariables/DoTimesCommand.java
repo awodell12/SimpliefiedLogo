@@ -55,7 +55,8 @@ public class DoTimesCommand implements Command {
     return List.of(tokenList[0],tokenList[1].substring(1));
   }
 
-  private int getTokensParsed(String[] tokens) {
+  @Override
+  public int getTokensParsed(String[] tokens) {
     int listLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length));
     return listLength + 2;
   }

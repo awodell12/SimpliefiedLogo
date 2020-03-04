@@ -1,4 +1,4 @@
-package slogo.backend.commands;
+package slogo.backend.commands.multiplecommands;
 
 import java.util.List;
 import slogo.CommandResult;

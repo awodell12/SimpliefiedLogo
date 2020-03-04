@@ -44,4 +44,9 @@ public class IfCommand implements Command {
   public List<String> findVars(String[] tokenList) {
     return null;
   }
+
+  @Override
+  public int getTokensParsed(String[] tokens) {
+    return BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,0,tokens.length));
+  }
 }

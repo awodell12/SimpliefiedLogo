@@ -97,6 +97,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         Command command = identifyCommand(tokenList[programCounter]);
         String[] tokensToParse = Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length);
         results.addAll(parseSingleCommand(command, tokensToParse));
+        //in 'fd sum 30 40 bk 10', we advance by 4 then by 2.
         programCounter += results.get(results.size() - 1).getTokensParsed() + 1;
       } catch (ParseException e) {
         CommandResultBuilder builder = startCommandResult(0);
