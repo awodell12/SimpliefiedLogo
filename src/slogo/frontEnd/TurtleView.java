@@ -21,6 +21,8 @@ public class TurtleView extends Group{
     private static final double SIGNIFICANT_DIFFERENCE = 0.001;
     private static final double NOT_HIGHLIGHTED_OPACITY = 0.4;
     private static final double HIGHLIGHTED_OPACITY = 1.0;
+    private static final double MIN_PEN_SIZE = 0.1;
+    private static final double MAX_PEN_SIZE = 50.0;
 
     private final Map<Integer, Turtle> myTurtles = new HashMap<>();
     private final Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
@@ -181,8 +183,8 @@ public class TurtleView extends Group{
     }
 
     protected void setPenThickness(double value) {
-        assert value <= 50.0;
-        assert value >= 0.1;
+        assert value <= MAX_PEN_SIZE;
+        assert value >= MIN_PEN_SIZE;
         myPenThickness = value;
     }
 

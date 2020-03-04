@@ -62,15 +62,15 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
 
     /**
      * change the language and translate all displayable texts to the new language
-     * @param languageResources the new language config to translate with
+     * @param newLanguageResources the new language config to translate with
      */
     @Override
-    public void setDisplayableTexts(ResourceBundle languageResources){
-        clearButton.setText(languageResources.getString("clearButton"));
-        clearButton.setTooltip(new Tooltip(languageResources.getString("HoverText")));
-        descriptionText.setText(languageResources.getString(myDescriptionKey) + "\n");
-        setChildDisplayableTexts(languageResources);
-        myLanguage = languageResources.getString("LanguageName");
+    public void setDisplayableTexts(ResourceBundle newLanguageResources){
+        clearButton.setText(newLanguageResources.getString("clearButton"));
+        clearButton.setTooltip(new Tooltip(newLanguageResources.getString("HoverText")));
+        descriptionText.setText(newLanguageResources.getString(myDescriptionKey) + "\n");
+        setChildDisplayableTexts(newLanguageResources);
+        myLanguage = newLanguageResources.getString("LanguageName");
     }
 
     /**

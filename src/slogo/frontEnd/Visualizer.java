@@ -805,12 +805,17 @@ public class Visualizer extends Application implements FrontEndExternal{
     myCenterVBox.getChildren().add(buttonGrid);
   }
 
+  private void initialHistoryClear(){
+    myCurrentlyHighlighted = null;
+    myHistory.clearEntryBox();
+    myErrorMessage.setText(myLanguageResources.getString("DefaultErrorMessage"));
+    clearedAtStart = true;
+  }
+
   private void step(boolean overridePause){
     if(!clearedAtStart && isReady){
-      myCurrentlyHighlighted = null;
-      myHistory.clearEntryBox();
-      myErrorMessage.setText(myLanguageResources.getString("DefaultErrorMessage"));
-      clearedAtStart = true;
+      initialHistoryClear();
+      // clear the history after setting up defaults
     }
     if(clearScreenScheduled){
       myCurrentTurtlePosition = myDesiredTurtlePosition;

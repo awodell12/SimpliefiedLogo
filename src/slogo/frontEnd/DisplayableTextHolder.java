@@ -17,10 +17,6 @@ public class DisplayableTextHolder implements DisplayableTextOwner{
   private final Map<Text, String> texts = new HashMap<>();
   private final Map<Button, String> buttons = new HashMap<>();
 
-  public DisplayableTextHolder() {
-
-  }
-
   /**
    * change the language and translate all displayable texts to the new language
    * @param languageResources the new language config file to translate with
