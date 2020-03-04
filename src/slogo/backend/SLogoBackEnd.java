@@ -447,7 +447,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     List<CommandResult> results = new ArrayList<>();
     if (myTimelineLocation > 0) {
       myTimelineLocation -= 1;
-      results = loadStateFromMemento(myPrevStates.get(myTimelineLocation));
+      results = loadStateFromMemento(myPrevStates.get(myTimelineLocation),true,false);
     }
     return results;
   }
@@ -458,7 +458,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     List<CommandResult> results = new ArrayList<>();
     if (myTimelineLocation < myPrevStates.size()-1) {
       myTimelineLocation += 1;
-      loadStateFromMemento(myPrevStates.get(myTimelineLocation));
+      loadStateFromMemento(myPrevStates.get(myTimelineLocation), false, true);
     }
     return results;
   }
@@ -478,7 +478,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
                             new HashMap<>(myVariables),new UserCommandManager(myUserCommandManager));
   }
 
-  public List<CommandResult> loadStateFromMemento(SLogoMemento memento) {
+  public List<CommandResult> loadStateFromMemento(SLogoMemento memento, boolean isUndo, boolean isRedo) {
     myTurtles = memento.getTurtles();
     setActiveTurtles(memento.getActiveTurtles());
     myPalette = memento.getPalette();
@@ -495,6 +495,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       CommandResultBuilder builder = startCommandResult(turtle.getHeading(),turtle.getPosition());
       builder.setTurtleID(turtle.getId());
       builder.setPenUp(turtle.getPenUp());
+      builder.setIsUndo(isUndo);
+      builder.setIsRedo(isRedo);
       results.add(builder.buildCommandResult());
     }
     return results;
