@@ -199,6 +199,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       Color color = Color.rgb(Integer.parseInt(parts[1]),Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
       myColorPalette.put(parts[0], color);
     }
+    System.out.println(myColorPalette);
   }
 
   @Override
@@ -260,7 +261,7 @@ public class Visualizer extends Application implements FrontEndExternal{
             startPos, result.getMyVariableName(),
             result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
             result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction(),
-            result.getTurtleID(), result.getActiveTurtleIDs(), result.getPaletteIndex(), result.getPenColor(),
+            result.getTurtleID(), result.getActiveTurtleIDs(), 55, result.getPenColor(),
             result.getBackgroundColor(), result.getNewPaletteColor(), result.getShapeIndex(), result.getPenSize());
   }
 
@@ -722,8 +723,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     myMenuOptions.remove(penIndex);
     myMenuOptions.remove(backIndex);
     List<String> colorIndices = new ArrayList<>();
-    for (int i = 1; i <= myPaletteSize; i ++){
-      colorIndices.add(Integer.toString(i));
+    for (String s : myColorPalette.keySet()){
+      colorIndices.add(s);
     }
     myMenuOptions.add(penIndex,colorIndices);
     myMenuOptions.add(backIndex,colorIndices);
@@ -742,7 +743,14 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void addMenuItem(int menuNameIndex, String menuItemName){
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
     String menuType = MENU_TYPES.get(menuNameIndex);
-    MenuItem menuItem = new MenuItem(myLanguageResources.getString(menuItemName));
+    String menuString;
+    try {
+      menuString = Integer.toString(Integer.parseInt(menuItemName));
+    }
+    catch(Exception e) {
+      menuString = myLanguageResources.getString(menuItemName);
+    }
+    MenuItem menuItem = new MenuItem(menuString);
     myDisplayableTextHolder.addMenuItem(menuItem, menuItemName);
     String methodName = myResources.getString(menuType);
     String labelGetterName = myResources.getString(menuType + "Label");
@@ -762,7 +770,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       showError(myLanguageResources.getString("NoMethodError"), myLanguageResources);
     }
-    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(myLanguageResources.getString(menuItemName)));
+    String finalMenuString = menuString;
+    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(finalMenuString));
     menu.getItems().add(menuItem);
   }
 
