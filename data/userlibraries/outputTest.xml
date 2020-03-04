@@ -5,6 +5,9 @@
         <Variable name="b" value="99.0"/>
     </VariableList>
     <CommandsList>
-        <Variable name="func" value="fd 50"/>
+        <Command contents="fd 50" name="func">
+            <argument label="arg"/>
+            <argument label="farg"/>
+        </Command>
     </CommandsList>
 </UserLib>
