@@ -180,6 +180,16 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return results;
   }
 
+  public void doActionPerTurtle(Runnable action) throws ParseException {
+    System.out.println("Running PER TURTLE");
+    List<CommandResult> results = new ArrayList<>();
+    for (Turtle activeTurtle : myActiveTurtles) {
+      myActiveTurtleID = activeTurtle.getId();
+      action.run();
+    }
+    myActiveTurtleID = null;
+  }
+
   private List<CommandResult> parseCommand(Command command, String[] tokenList)
       throws ParseException {
     //'fd 50' expects to start at PC = 1, where '50' is.
