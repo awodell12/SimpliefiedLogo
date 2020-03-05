@@ -31,4 +31,9 @@ public abstract class TurtleCommand implements Command {
 
   protected abstract CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
       List<Double> prevPos, BackEndInternal backEnd);
+
+  @Override
+  public boolean runsPerTurtle() {
+    return true;
+  }
 }

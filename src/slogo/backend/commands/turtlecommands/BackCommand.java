@@ -40,9 +40,4 @@ public class BackCommand extends TurtleCommand implements Command {
     public List<String> findVars(String[] tokenList) {
         return null;
     }
-
-    @Override
-    public boolean runsPerTurtle() {
-        return true;
-    }
 }
