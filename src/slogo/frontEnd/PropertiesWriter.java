@@ -36,22 +36,24 @@ public class PropertiesWriter {
 
   }
   private void saveColorPalette(Map<String, Color> colorPaletteMap) throws IOException {
-
+    //System.out.println(colorPaletteMap);
     StringBuilder colors = new StringBuilder();
     // set the properties value
     for (String s : colorPaletteMap.keySet()) {
       Color color = colorPaletteMap.get(s);
       colors.append(s);
       colors.append(',');
-      colors.append((int)color.getRed()* COLOR_MAX);
+      colors.append((int)(color.getRed()* COLOR_MAX));
       colors.append(',');
-      colors.append((int)color.getGreen()* COLOR_MAX);
+      colors.append((int)(color.getGreen()* COLOR_MAX));
       colors.append(',');
-      colors.append((int)color.getBlue() * COLOR_MAX);
+      colors.append((int)(color.getBlue() * COLOR_MAX));
       colors.append(' ');
+      //System.out.println(colors.toString());
     }
-
+    //System.out.println(colors.toString());
     myProperties.setProperty("DefaultPalette", colors.toString());
+
 
     // save properties to project root folder
     myProperties.store(myOutput, null);
