@@ -27,9 +27,36 @@ CommandResultBuilder
 set data rather than pass it into constructor. This wouldn't solve the problem of having too much
 data in CommandResultBuilder/CommandResult but might be more elegant.
 * Setters using objects now use copies
+* To do: change the way we pass the palette since this will be stored in the backend
 
 SLogoTurtle
 * Some minor stylistic changes (curly braces in control statements, declaring on multiple lines)
 
+SLogoFileBuilder
+* In constructVarList, now looping through map entries rather than a key list
+* Fixing magic numbers
 
+SLogoUtil
+* Need to handle some issues with brackets and spaces
+
+Path
+* Potential refactoring: storing paths in model
+* Fixed some magic numbers
+
+SLogoMemento
+* Mutable members shouldn't be stored or passed in (now storing a copy of active turtles)
+
+SLogoParser
+*  Removed programCounter variable (unused), reduced line count of parseForRetVal
+
+
+Commands
+SetPalette
+* Adding a constant called NAMED_COLOR_TYPES so we don't assume RGB has 3 values
+
+Math Commands
+* Statements on separate lines, magic numbers changing to constants
+
+Control Commands
+* Magic numbers changing to constants
 
