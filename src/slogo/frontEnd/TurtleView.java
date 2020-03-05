@@ -140,10 +140,6 @@ public class TurtleView extends Group{
         return existingTurtleTimeline.get(currentTimelineIndex);
     }
 
-    protected void addExistingTurtleIDs(int turtleID) {
-        existingTurtleTimeline.get(currentTimelineIndex).add(turtleID);
-    }
-
     /**
      * set the pen color (color of paths)
      * @param color color to set to

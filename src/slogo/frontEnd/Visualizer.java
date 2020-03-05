@@ -384,7 +384,6 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
     myTurtleView.makeTurtle(turtleID, this::activateTurtle);
-    myTurtleView.addExistingTurtleIDs(turtleID);
     myTurtleView.getUnalteredTurtlePositions().put(turtleID, turtlePos);
     myTurtleInfo.getChildren().add(new Text(buildTurtleInfoString(myCurrentTurtleID)));
   }
@@ -424,7 +423,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       try {
         step(false);
       } catch (Exception ex) {
-        //ex.printStackTrace();
+        ex.printStackTrace();
         // note that this should ideally never be thrown
         System.out.println(ex.getMessage());
         //showError(ex.getMessage(), myLanguageResources);
