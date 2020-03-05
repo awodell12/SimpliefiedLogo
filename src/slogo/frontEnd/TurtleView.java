@@ -26,9 +26,9 @@ public class TurtleView extends Group{
 
     private final Map<Integer, Turtle> myTurtles = new HashMap<>();
     private final Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
-    private final List<Integer> existingTurtleIDs = new ArrayList<>();
-    private final List<List<Path>> pathsHistory = new ArrayList<>(){{add(new ArrayList<>());}};
-    private int currentPathHistoryIndex = 0;
+    private final List<List<Integer>> existingTurtleTimeline = new ArrayList<>(){{add(new ArrayList<>());}};
+    private final List<List<Path>> pathsTimeline = new ArrayList<>(){{add(new ArrayList<>());}};
+    private int currentTimelineIndex = 0;
     private boolean pathCreateMode = true;
     private Color myPenColor = Color.BLACK;
     private int myPenColorIndex;
@@ -63,16 +63,17 @@ public class TurtleView extends Group{
         resetTurtle(id);
         myTurtle.setOnMouseClicked(event -> toggleActive(id, onClicked));
         this.getChildren().add(myTurtle);
+        existingTurtleTimeline.get(currentTimelineIndex).add(id);
     }
 
     /**
      * increments or decrements the path history index. Limits it to list range bounds.
      * @param value what to add to the index
      */
-    protected void incrementPathHistoryIndex(int value){
-        currentPathHistoryIndex += value;
-        assert currentPathHistoryIndex >= 0;
-        assert currentPathHistoryIndex <= pathsHistory.size()-1;
+    protected void incrementHistoryIndex(int value){
+        currentTimelineIndex += value;
+        assert currentTimelineIndex >= 0;
+        assert currentTimelineIndex <= pathsTimeline.size()-1;
     }
 
     /**
@@ -88,26 +89,39 @@ public class TurtleView extends Group{
      *      index to prevent the user from redoing after a non-undo command
      * @param copyPrevious whether or not to maintain the current state or start fresh
      */
-    protected void addPathHistory(boolean copyPrevious){
-        if(currentPathHistoryIndex < pathsHistory.size()-1)
-            pathsHistory.subList(currentPathHistoryIndex+1, pathsHistory.size()).clear();
-        if(copyPrevious) pathsHistory.add(new ArrayList<>(pathsHistory.get(currentPathHistoryIndex)));
-        else pathsHistory.add(new ArrayList<>());
-        currentPathHistoryIndex++;
+    protected void addTimelineElement(boolean copyPrevious){
+        if(currentTimelineIndex < pathsTimeline.size()-1) {
+            pathsTimeline.subList(currentTimelineIndex + 1, pathsTimeline.size()).clear();
+            existingTurtleTimeline.subList(currentTimelineIndex + 1, existingTurtleTimeline.size()).clear();
+        }
+        if(copyPrevious) pathsTimeline.add(new ArrayList<>(pathsTimeline.get(currentTimelineIndex)));
+        else pathsTimeline.add(new ArrayList<>());
+        existingTurtleTimeline.add(new ArrayList<>(existingTurtleTimeline.get(currentTimelineIndex)));
+        currentTimelineIndex++;
+    }
+
+    /**
+     * Removes all of the turtles displayed on the screen
+     */
+    protected void clearTurtles() {
+        this.getChildren().removeIf(node -> node.getClass().equals(Turtle.class));
     }
 
     /**
      * Removes all of the taken paths displayed on the screen
      */
     protected void clearPaths(){
-        this.getChildren().removeAll(pathsHistory.get(currentPathHistoryIndex));
+        this.getChildren().removeAll(pathsTimeline.get(currentTimelineIndex));
     }
 
     /**
-     * set the displayed paths to what's at the current path history
+     * set the displayed paths and turtles to what's at the current timeline index
      */
-    protected void setDisplayedPaths(){
-        this.getChildren().addAll(pathsHistory.get(currentPathHistoryIndex));
+    protected void setDisplayedPathsAndTurtles(){
+        this.getChildren().addAll(pathsTimeline.get(currentTimelineIndex));
+        for(Integer id : existingTurtleTimeline.get(currentTimelineIndex)){
+            this.getChildren().add(myTurtles.get(id));
+        }
     }
 
     /**
@@ -123,7 +137,11 @@ public class TurtleView extends Group{
      * @return list of ids
      */
     protected List<Integer> getExistingTurtleIDs(){
-        return existingTurtleIDs;
+        return existingTurtleTimeline.get(currentTimelineIndex);
+    }
+
+    protected void addExistingTurtleIDs(int turtleID) {
+        existingTurtleTimeline.get(currentTimelineIndex).add(turtleID);
     }
 
     /**
@@ -185,7 +203,7 @@ public class TurtleView extends Group{
             path.setStroke(myPenColor);
             path.setStrokeWidth(myPenThickness);
             this.getChildren().add(path);
-            pathsHistory.get(currentPathHistoryIndex).add(path);
+            pathsTimeline.get(currentTimelineIndex).add(path);
         }
     }
 
