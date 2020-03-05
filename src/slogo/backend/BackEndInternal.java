@@ -102,6 +102,8 @@ public interface BackEndInternal {
 
   CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition);
 
+  CommandResultBuilder startCommandResult(int turtleID, double retVal);
+
   CommandResultBuilder startCommandResult(double retVal);
 
   List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException;

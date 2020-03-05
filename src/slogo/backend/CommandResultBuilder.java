@@ -39,7 +39,7 @@ public class CommandResultBuilder {
       Map<String, Double> varMap, Map<String, String> commandMap) {
     myRetVal = 0;
     myTokensParsed = 0;
-    turtleID = 0;
+    turtleID = turtleNumber;
     turtlePos = turtlePosition;
     turtleHeading = turtleFacing;
     startPos = null;
