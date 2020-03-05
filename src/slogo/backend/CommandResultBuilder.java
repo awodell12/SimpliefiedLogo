@@ -34,7 +34,7 @@ public class CommandResultBuilder {
 
 
   public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition,
-      List<Integer> activeTurtleNumbers,
+      List<Integer> activeTurtleNumbers, boolean visible,
       int pathColor, int bgColor, int shape, double size, boolean isUp,
       Map<String, Double> varMap, Map<String, String> commandMap) {
     myRetVal = 0;
@@ -47,7 +47,7 @@ public class CommandResultBuilder {
     variables = varMap;
     userCommands = commandMap;
     clear = false;
-    turtleVis = true;
+    turtleVis = visible;
     turtleReset = false;
     bgColorIndex = bgColor;
     newColor = null;

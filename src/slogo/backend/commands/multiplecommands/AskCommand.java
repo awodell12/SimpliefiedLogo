@@ -8,6 +8,7 @@ import slogo.backend.BackEndInternal;
 import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.CommandResultBuilder;
+import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
@@ -25,7 +26,7 @@ public class AskCommand implements Command {
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-      BackEndInternal backEnd) throws ParseException {
+      BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
     int programCounter = 1;
     int numTokens = new BackEndUtil().distanceToEndBracket(
         Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
@@ -41,16 +42,17 @@ public class AskCommand implements Command {
     for (Turtle newlyActive : backEnd.getActiveTurtles()) {
       CommandResultBuilder builder = backEnd.startCommandResult(
           newlyActive.getHeading(),
-          newlyActive.getPosition());
+          newlyActive.getPosition(),
+              newlyActive.getVisible());
       builder.setRetVal(0);
       builder.setTokensParsed(programCounter+1);
       builder.activeTurtleIDs(activeTurtleNums);
       builder.setTurtleID(newlyActive.getId());
       results.add(builder.buildCommandResult());
     }
-    results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,numTokens+3,tokens.length)));
+    results.addAll(interpreter.parseCommandsList(Arrays.copyOfRange(tokens,numTokens+3,tokens.length)));
     backEnd.setActiveTurtles(originalActives);
-    CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition());
+    CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
     builder.setRetVal(0);
     builder.setTokensParsed(numTokens + totalParsed +4);
     results.add(builder.buildCommandResult());
