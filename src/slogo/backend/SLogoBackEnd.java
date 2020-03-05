@@ -44,22 +44,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     myTurtles = new ArrayList<>();
     myTurtles.add(new SLogoTurtle(0));
     myActiveTurtles = List.of(myTurtles.get(0));
-    myLanguage = interpretPatterns("English");
-    mySyntax = interpretPatterns("Syntax");
+    myLanguage = BackEndUtil.interpretPatterns("English");
+    mySyntax = BackEndUtil.interpretPatterns("Syntax");
     myActiveTurtleID = null;
     myPalette = new HashMap<>();
     myPrevStates = new ArrayList<>();
     myTimelineLocation = -1;
-  }
-
-  public List<Entry<String, Pattern>> interpretPatterns(String syntax) {
-    List<Entry<String, Pattern>> patterns = new ArrayList<>();
-    ResourceBundle resources = ResourceBundle.getBundle(RESOURCES_PACKAGE + syntax);
-    for (String key : Collections.list(resources.getKeys())) {
-      String regex = resources.getString(key);
-      patterns.add(new SimpleEntry<>(key, Pattern.compile(regex, Pattern.CASE_INSENSITIVE)));
-    }
-    return patterns;
   }
 
   /**
@@ -90,9 +80,11 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     String[] scriptTokens = BackEndUtil.getTokenList(script).toArray(new String[0]);
     List<CommandResult> retList = parseCommandsList(scriptTokens);
     if (myTimelineLocation < myPrevStates.size()-1) {
-      myPrevStates = myPrevStates.subList(0,myTimelineLocation);
+      System.out.println("Deleting previous state timeline");
+      myPrevStates = new ArrayList<>(myPrevStates.subList(0,myTimelineLocation+1));
     }
     myTimelineLocation += 1;
+    System.out.println("myTimelineLocation = " + myTimelineLocation);
     myPrevStates.add(saveStateToMemento());
     return retList;
   }
@@ -119,9 +111,10 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
         return results;
       }
     }
-    CommandResultBuilder builder = startCommandResult(findRetVal(results));
-    builder.setTokensParsed(programCounter);
-    results.add(builder.buildCommandResult());
+    results.get(results.size()-1).setTokensParsed(programCounter);
+//    CommandResultBuilder builder = startCommandResult(findRetVal(results));
+//    builder.setTokensParsed(programCounter);
+//    results.add(builder.buildCommandResult());
     return results;
   }
 
@@ -340,7 +333,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public void setLanguage(String language) {
-    myLanguage = interpretPatterns(language);
+    myLanguage = BackEndUtil.interpretPatterns(language);
   }
 
   public CommandResult makeCommandResult(double retVal, int tokensParsed) {
@@ -500,5 +493,86 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       results.add(builder.buildCommandResult());
     }
     return results;
+  }
+
+  public static void main(String[] args) {
+    SLogoBackEnd myBackEnd = new SLogoBackEnd();
+    System.out.println("myBackEnd.getTurtles().get(0).getPosition().toString() = " + myBackEnd.getTurtles().get(0).getPosition().toString());
+    List<CommandResult> results = myBackEnd.parseScript("fd 40");
+//    for (CommandResult result : results) {
+//      System.out.println("result.getReturnVal() = " + result.getReturnVal());
+//      System.out.println("result.getTurtlePosition().toString() = " + result.getTurtlePosition().toString());
+//    }
+    ALSO_THIS(myBackEnd);
+    myBackEnd.parseScript("fd 5");
+    ALSO_THIS(myBackEnd);
+    myBackEnd.parseScript("fd 6");
+    ALSO_THIS(myBackEnd);
+    myBackEnd.parseScript("fd 7");
+    ALSO_THIS(myBackEnd);
+    myBackEnd.parseScript("fd 8");
+    ALSO_THIS(myBackEnd);
+    myBackEnd.undo();
+    ALSO_THIS(myBackEnd);
+    myBackEnd.undo();
+    ALSO_THIS(myBackEnd);
+    myBackEnd.parseScript("fd 2");
+    ALSO_THIS(myBackEnd);
+    myBackEnd.parseScript("fd 2");
+    ALSO_THIS(myBackEnd);
+    myBackEnd.parseScript("fd 2");
+    ALSO_THIS(myBackEnd);
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.parseScript("fd 5");
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.parseScript("fd 5");
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.parseScript("fd 5");
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.parseScript("fd 5");
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.parseScript("fd 5");
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.parseScript("fd 5");
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.undo();
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.undo();
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.undo();
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.parseScript("fd 5");
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.undo();
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.redo();
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.undo();
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.undo();
+//    DELETE_THIS(myBackEnd);
+//    myBackEnd.undo();
+//    DELETE_THIS(myBackEnd);
+  }
+
+  private static void DELETE_THIS(SLogoBackEnd myBackEnd) {
+    System.out.println(
+        "myBackEnd.getTurtles().get(0).getPosition().toString() = " + myBackEnd.getTurtles().get(0)
+            .getPosition().toString());
+    System.out.println("myBackEnd.myPrevStates.size() = " + myBackEnd.myPrevStates.size());
+    System.out.println("myBackEnd.myTimelineLocation = " + myBackEnd.myTimelineLocation);
+  }
+
+  private static void ALSO_THIS(SLogoBackEnd backEnd) {
+    for (int i = 0; i < backEnd.myPrevStates.size(); i ++) {
+      SLogoMemento memento = backEnd.myPrevStates.get(i);
+      System.out.print(memento.getTurtles().get(0).getPosition());
+//      System.out.print(" " + memento);
+      if (backEnd.myTimelineLocation == i) {
+        System.out.print("<---");
+      }
+      System.out.print("\n");
+    }
+    System.out.println();
   }
 }
