@@ -24,6 +24,7 @@ public abstract class TurtleCommand implements Command {
       Turtle turtle = backEnd.getTurtles(List.of(id)).get(0);
       List<Double> prevPos = turtle.getPosition();
       applyToTurtle(turtle,arguments);
+      System.out.println("turtle.getPosition() = " + turtle.getPosition());
       return List.of(createCommandResult(turtle,arguments,prevPos,backEnd));
     }
   }

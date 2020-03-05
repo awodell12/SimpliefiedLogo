@@ -4,6 +4,7 @@ import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
+import slogo.backend.CommandResultBuilder;
 import slogo.backend.Turtle;
 
 public class ShowTurtleCommand extends TurtleCommand implements Command {
@@ -30,8 +31,8 @@ public class ShowTurtleCommand extends TurtleCommand implements Command {
     @Override
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
         List<Double> prevPos, BackEndInternal backEnd) {
-        backEnd.startCommandResult(turtle.getId(),0);
-        return null;
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),0);
+        return builder.buildCommandResult();
     }
 
     @Override
