@@ -133,7 +133,7 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
     protected void addEntry(String entry, String name, Consumer<String> action) {
         myTextFlow.getChildren().remove(myTextFlow.getChildren().size() - 1);
         Text newText = new Text(entry + "\n");
-        newText.setOnMouseClicked(event -> action.accept(entry));
+        newText.setOnMouseClicked(event -> action.accept(newText.getText()));
         myTextFlow.getChildren().add(newText);
         displayableEntries.add(newText);
         checkDuplicates(name);

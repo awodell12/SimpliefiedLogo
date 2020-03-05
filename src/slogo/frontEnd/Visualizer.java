@@ -869,7 +869,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void executeInstruction(String instruction) {
-    myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
+    myHistory.addEntry(instruction, null, text->myCommandBox.setText(text));
     if(instruction != myCurrentlyHighlighted && isReady) { // want to compare object references here
       myHistory.highlightNext();
       myCurrentlyHighlighted = instruction;
