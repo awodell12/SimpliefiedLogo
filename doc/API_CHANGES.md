@@ -23,6 +23,10 @@ Added appliedChanges
 - allows you to change the language, but is expandable to change any setting
 - 
 
+Proposed change: Give it a file with every turtle and state, user defined variables, and user commands
+This will allow for the front end not to have to keep track of these saved preferences. Currently they 
+are loaded form resources in both the front and back ends. 
+
 
 ### Back End Internal
 
@@ -34,9 +38,8 @@ getUserCommand: split up the getters for this so you can split up a script and i
 
 The following were added so that the model can keep track of them
 For everything in CommandResult that can be changed everything has a getter and a setter
-Anything changable in a command is accessible
+Anything changeable in a command is accessible
 
-setLanguage: removal since the internal doesn't need to know this. It is added to the intrepreter interface
 
 makeCommandResults: 
 there are a bunch of ways to make them for convenience
