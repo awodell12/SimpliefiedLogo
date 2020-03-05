@@ -47,8 +47,8 @@ import java.util.function.Consumer;
 
 @SuppressWarnings({"unused", "StringEquality"})
 public class Visualizer extends Application implements FrontEndExternal{
-  private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.config";
-  private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION);
+  private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.";
+  private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "config");
   private static final List<String> MENU_TYPES = Arrays.asList(myResources.getString("MenuTypes").split(","));
   private static final double HEIGHT = Double.parseDouble(myResources.getString("WindowHeight"));
   private static final double ASPECT_RATIO = (16.0/9.0);
@@ -64,12 +64,12 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle TOP_RIGHT_BUTTON_SHAPE = new Rectangle(75, 50);
-  private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(70, 30);
+  private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
   private static final Rectangle TURTLE_MOVEMENT_LABEL_SHAPE = new Rectangle(20, 5);
   private static final Rectangle TURTLE_INFO_SHAPE = new Rectangle(275 ,75);
   private static final double SPACING = 10;
-  private static final double MARGIN = 15;
+  private static final double MARGIN = 25;
   private static final double BOTTOM_INSET = 0.15;
   private static final double MENU_LABEL_SIZE = 20;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
@@ -88,7 +88,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
-  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace"};
+  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace", "savePrefs"};
   private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight",
           "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
 
@@ -99,32 +99,21 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MIN_SPEED = 0.1;
   private static final double MAX_SPEED = 50;
   private static final double DEFAULT_SPEED = 1;
-  private static final int PEN_SLIDER_TICKS = 10;
   private static final String LANGUAGE_INSTRUCTION_STRING = "language: ";
+  private static final int PEN_SLIDER_TICKS = 10;
   private static final String DEFAULT_MOVE_BUTTON_VALUE = "45";
+  private final int myFileNum;
 
   private ResourceBundle myLanguageResources;
   private ResourceBundle myWorkSpaceResources;
+  private ResourceBundle myUserConfigurableResources;
   private final List<Image> imageList = new ArrayList<>() {{
     add(new Image(myResources.getString("DefaultTurtle")));
     add(new Image(myResources.getString("Duke")));
     add(new Image(myResources.getString("Duval")));
   }};
   private List<String> myMenuNames;
-  /*private final Map<String, Color> myColorPalette = new HashMap<>(){{
-    put("0", Color.RED);
-    put("1", Color.WHITE);
-    put("2", Color.GRAY);
-    put("3", Color.AZURE);
-    put("4", Color.LEMONCHIFFON);
-    put("5", Color.ROYALBLUE);
-    put("6", Color.LAWNGREEN);
-    put("7", Color.DARKSALMON);
-    put("8", Color.BLACK);
-    put("9", Color.MAGENTA);
-    put("10", Color.ORANGE);
-  }};*/
-
+  private Map<String, Color> myColorPalette;
   private CommandBox myCommandBox;
   private History myHistory;
   private ClearableEntriesBox myUserDefinedCommands;
@@ -144,22 +133,17 @@ public class Visualizer extends Application implements FrontEndExternal{
   private boolean isReady = true;
   private boolean paused = false;
   private final Queue<CommandResult> resultQueue = new LinkedList<>();
-  /*private CommandResult previousResult = new CommandResult(0, 0, 0, 0,
-          List.of(0.0,0.0), null, 0, null, 0.0, null, null,
-          false, false, true, false, 0, null,
-          1.0, Collections.singletonList(0), 0, 0, "", true);
-  private CommandResult currentResult = previousResult;*/
   private List<String> undoCommandsIssued = new ArrayList<>();
   private int numUndoCommandsIssued = 0;
   private String myCurrentlyHighlighted = null;
   private String myCurrentInstruction = null;
   private Timeline animation;
-  private final List<TextArea> turtleMovementButtons = new ArrayList<>();
+  private List<TextArea> turtleMovementButtons = new ArrayList<>();
   private int myCurrentTurtleID;
   private Text myPenText;
-  private final TextFlow myTurtleInfo = new TextFlow();
+  private TextFlow myTurtleInfo = new TextFlow();
   private MenuBar myMenuBar;
-  private final Consumer<Integer> myOnNewWorkSpaceClicked;
+  private Consumer<Integer> myOnNewWorkSpaceClicked;
   private final DisplayableTextHolder myDisplayableTextHolder = new DisplayableTextHolder();
   private final String myStartingLanguage;
   private final int myStartingNumTurtles;
@@ -169,7 +153,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final List<String> myStartingVariables;
   private final int myStartingImage;
   private boolean clearedAtStart = true;
-  private boolean clearScreenScheduled = false;
+  private boolean clearScreenScheduled;
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -182,13 +166,19 @@ public class Visualizer extends Application implements FrontEndExternal{
     myInstructionQueue = new ObservableQueue();
     myInstructionQueue.addListener(instructionQueueListener);
     myOnNewWorkSpaceClicked = onNewWorkSpaceClicked;
+    myFileNum = configFileNum;
     try {
       myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace" + configFileNum);
     } catch(MissingResourceException ex){
       myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace0");
     }
     myStartingLanguage = myWorkSpaceResources.getString("Language");
-    myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources." + myStartingLanguage + "config");
+    myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION + myStartingLanguage + "config");
+    try {
+      myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable"+ configFileNum);
+    } catch(MissingResourceException ex){
+      myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable0");
+    }
     myStartingNumTurtles = Integer.parseInt(myWorkSpaceResources.getString("numTurtles"));
     myStartingPenColor = Integer.parseInt(myWorkSpaceResources.getString("startingPenColor"));
     myStartingBackgroundColor = Integer.parseInt(myWorkSpaceResources.getString("startingBGColor"));
@@ -238,7 +228,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   /**
    * Takes in a command result for the visualizer to process (after all other queued command results finish)
-   * @param result a CommandResult from controller, OR null if this is called by the step function
+   * @param result a CommandResult from the controller, OR null if this is called by the step function
    */
   public void processResult(CommandResult result){
     if(!isReady){
@@ -754,7 +744,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(String menuType : MENU_TYPES){
       myMenuOptions.add(Arrays.asList(myWorkSpaceResources.getString(menuType+"Options").split(",")));
     }
-
     int penIndex = MENU_TYPES.indexOf("PenColor");
     int backIndex = MENU_TYPES.indexOf("Background");
     List<String> colorIndices = new ArrayList<>();
@@ -896,7 +885,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void executeInstruction(String instruction) {
-    myHistory.addEntry(instruction, null, text->myCommandBox.setText(text));
+    myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
     if(instruction != myCurrentlyHighlighted && isReady) { // want to compare object references here
       myHistory.highlightNext();
       myCurrentlyHighlighted = instruction;
@@ -930,5 +919,13 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void changeHelpImage(String imageName, VBox vBox){
     vBox.getChildren().remove(1);
     vBox.getChildren().add(new ImageView("slogo/frontEnd/Resources/" + imageName + ".png"));
+  }
+  private void makeNewUserProperties(int fileNum){
+    System.out.println(myColorPalette + "Vis");
+    PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(fileNum),myColorPalette);
+
+  }
+  private void savePrefs(){
+    makeNewUserProperties(myFileNum);
   }
 }
