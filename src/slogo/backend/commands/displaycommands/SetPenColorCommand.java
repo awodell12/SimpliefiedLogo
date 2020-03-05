@@ -1,11 +1,11 @@
 package slogo.backend.commands.displaycommands;
 
-import java.util.ArrayList;
 import java.util.List;
 import slogo.CommandResult;
 import slogo.backend.BackEndInternal;
 import slogo.backend.Command;
 import slogo.backend.CommandResultBuilder;
+import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 
 public class SetPenColorCommand implements Command {
@@ -25,7 +25,7 @@ public class SetPenColorCommand implements Command {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-                                       BackEndInternal backEnd) throws ParseException {
+        BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
         int index = (int) Math.round(arguments.get(0));
         backEnd.setPathColor(index);
         System.out.println("Changed pen color to index " + index);

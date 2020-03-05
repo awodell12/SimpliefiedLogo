@@ -5,6 +5,7 @@ import java.util.List;
 import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
+import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
@@ -25,7 +26,7 @@ public class IfElseCommand implements Command {
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-      BackEndInternal backEnd) throws ParseException {
+      BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
     double returnVal;
     List<CommandResult> results;
     int firstListLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
@@ -35,11 +36,12 @@ public class IfElseCommand implements Command {
     if (arguments.get(0) != 0) {
       System.out.println("IF evaluated to TRUE");
       BackEndUtil.printRemainingTokens(Arrays.copyOfRange(tokens,1,firstListLength),0);
-      results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,firstListLength));
+      results = interpreter.parseCommandsList(Arrays.copyOfRange(tokens,1,firstListLength));
     }
     else {
       System.out.println("IF evaluated to FALSE");
-      results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1));
+      BackEndUtil.printRemainingTokens(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1),0);
+      results = interpreter.parseCommandsList(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1));
     }
     returnVal = results.get(results.size()-1).getReturnVal();
     results.add(backEnd.makeCommandResult(returnVal,firstListLength+secondListLength+2));

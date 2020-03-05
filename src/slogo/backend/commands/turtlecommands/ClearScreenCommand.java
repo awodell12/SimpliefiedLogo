@@ -1,13 +1,11 @@
 package slogo.backend.commands.turtlecommands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
+import slogo.backend.Interpreter;
 
 public class ClearScreenCommand implements Command {
 
@@ -25,7 +23,8 @@ public class ClearScreenCommand implements Command {
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
+    public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+        BackEndInternal backEnd, Interpreter interpreter) {
         double retVal = backEnd.getTurtles().get(0).setPos(0, 0);
         backEnd.getTurtles().get(0).setHeading(0);
         System.out.println("Went home, cleared paths \n " +

@@ -5,9 +5,10 @@ import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
+import slogo.backend.Interpreter;
 import slogo.backend.Turtle;
 
-public class BackCommand implements Command {
+public class BackCommand extends TurtleCommand implements Command {
 
     private static final int NUM_ARGS = 1;
     private static final String COMMAND_NAME = "Forward";
@@ -23,7 +24,8 @@ public class BackCommand implements Command {
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
+    public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+        BackEndInternal backEnd, Interpreter interpreter) {
         Integer id = backEnd.getActiveTurtleID();
         System.out.println("id = " + id);
 
@@ -42,6 +44,19 @@ public class BackCommand implements Command {
             builder.setPathStart(prevPos);
             return List.of(builder.buildCommandResult());
         }
+    }
+
+    @Override
+    protected void applyToTurtle(Turtle turtle, List<Double> args) {
+        turtle.moveBack(args.get(0));
+    }
+
+    @Override
+    protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
+        List<Double> prevPos, BackEndInternal backEnd) {
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+        builder.setPathStart(prevPos);
+        return builder.buildCommandResult();
     }
 
     @Override

@@ -14,7 +14,7 @@ import slogo.CommandResult;
 /**
  *
  */
-public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
+public class SLogoBackEnd implements BackEndExternal, BackEndInternal, Interpreter {
 
   private static final String RESOURCES_PACKAGE = "resources/languages/";
   private List<Entry<String, Pattern>> myLanguage;
@@ -213,7 +213,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     List<Double> argList = BackEndUtil.getArgsFromStack(commandValues, command.getNumArgs());
     List<CommandResult> results = new ArrayList<>((command.execute(argList, variableNames,
         Arrays.copyOfRange(tokenList, programCounter, tokenList.length),
-        this)));
+        this, this)));
     CommandResult lastResult = results.get(results.size() - 1);
     results.add(makeCommandResult(lastResult.getReturnVal(),
         lastResult.getTokensParsed() + programCounter));
@@ -429,6 +429,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   public List<CommandResult> undo() {
     List<CommandResult> results = new ArrayList<>();
+    System.out.println("myTimelineLocation = " + myTimelineLocation);
     if (myTimelineLocation > 0) {
       myTimelineLocation -= 1;
       results = loadStateFromMemento(myPrevStates.get(myTimelineLocation),true,false);
@@ -438,7 +439,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public List<CommandResult> redo() {
-
     List<CommandResult> results = new ArrayList<>();
     if (myTimelineLocation < myPrevStates.size()-1) {
       myTimelineLocation += 1;
@@ -490,5 +490,9 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       results.add(builder.buildCommandResult());
     }
     return results;
+  }
+
+  public void setActiveTurtleID(Integer id) {
+    myActiveTurtleID = id;
   }
 }

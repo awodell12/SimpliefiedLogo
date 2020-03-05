@@ -6,6 +6,7 @@ import java.util.List;
 import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
+import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
@@ -25,7 +26,8 @@ public class ForLoopCommand implements Command {
   }
 
   @Override
-  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd)
+  public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+      BackEndInternal backEnd, Interpreter interpreter)
       throws ParseException {
     System.out.println("Beginning FOR Loop");
     double start = arguments.get(0);
@@ -41,7 +43,7 @@ public class ForLoopCommand implements Command {
     int listLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length));
     for (double i = start; i <= end; i += increment) {
       backEnd.setVariable(var,i);
-      results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)));
+      results.addAll(interpreter.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)));
       returnVal = results.get(results.size()-1).getReturnVal();    }
     System.out.println("Ending FOR Loop.");
     results.add(backEnd.makeCommandResult(returnVal,listLength+2));

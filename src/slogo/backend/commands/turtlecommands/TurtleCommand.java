@@ -4,13 +4,14 @@ import java.util.List;
 import slogo.CommandResult;
 import slogo.backend.BackEndInternal;
 import slogo.backend.Command;
-import slogo.backend.CommandResultBuilder;
+import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
 public abstract class TurtleCommand implements Command {
   @Override
-  public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd)
+  public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+      BackEndInternal backEnd, Interpreter interpreter)
   throws ParseException {
     Integer id = backEnd.getActiveTurtleID();
     System.out.println("id = " + id);

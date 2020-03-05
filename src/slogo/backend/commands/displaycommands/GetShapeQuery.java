@@ -6,6 +6,7 @@ import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
+import slogo.backend.Interpreter;
 
 public class GetShapeQuery implements Command {
 
@@ -23,7 +24,8 @@ public class GetShapeQuery implements Command {
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
+    public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+        BackEndInternal backEnd, Interpreter interpreter) {
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
         builder.setRetVal(backEnd.getShapeIndex());
         return List.of(builder.buildCommandResult());

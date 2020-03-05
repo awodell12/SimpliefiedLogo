@@ -7,8 +7,8 @@ import slogo.CommandResult;
 import slogo.backend.BackEndInternal;
 import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
+import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
-import slogo.backend.Turtle;
 
 public class AskWithCommand implements Command {
 
@@ -24,7 +24,7 @@ public class AskWithCommand implements Command {
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-      BackEndInternal backEnd) throws ParseException {
+      BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
     List<Integer> originalActives = backEnd.getActiveTurtleNumbers();
     double returnVal;
     List<CommandResult> results = new ArrayList<>();
@@ -35,7 +35,7 @@ public class AskWithCommand implements Command {
       System.out.println("Evaluation: " + results.get(results.size()-1).getReturnVal());
       System.out.println("backEnd.getActiveTurtleNumbers().toString() = " + backEnd.getActiveTurtleNumbers().toString());
       if (results.get(results.size()-1).getReturnVal() == 1) { //condition evaluates to true
-        results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1)));
+        results.addAll(interpreter.parseCommandsList(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1)));
       }
     backEnd.setActiveTurtles(originalActives);
     returnVal = results.get(results.size()-1).getReturnVal();

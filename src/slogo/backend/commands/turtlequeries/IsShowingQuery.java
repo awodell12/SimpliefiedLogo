@@ -4,6 +4,7 @@ import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
+import slogo.backend.Interpreter;
 
 public class IsShowingQuery implements Command {
 
@@ -21,7 +22,8 @@ public class IsShowingQuery implements Command {
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
+    public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+        BackEndInternal backEnd, Interpreter interpreter) {
         double retVal = 0;
         if(backEnd.getTurtles().get(0).getVisible()) retVal = 1;
         return List.of(backEnd.makeCommandResult(retVal,0));
