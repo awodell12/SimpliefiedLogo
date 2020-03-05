@@ -54,7 +54,6 @@ public class CommandResultBuilder {
     shapeIndex = shape;
     penSize = size;
     errorMessage = "";
-    //TODO: change these so that stuff doesn't automatically get set to zero
     newPaletteIndex = 0;
     activeTurtles = new ArrayList<>(activeTurtleNumbers);
     actualCommand = true;

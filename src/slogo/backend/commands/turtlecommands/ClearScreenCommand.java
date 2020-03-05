@@ -33,7 +33,6 @@ public class ClearScreenCommand extends TurtleCommand implements Command {
     @Override
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
                                                 List<Double> prevPos, BackEndInternal backEnd) {
-        //todo: change return value to dist moved (for each turtle)
         CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(), myRetVal);
         builder.setMyScreenClear(true);
         return builder.buildCommandResult();
