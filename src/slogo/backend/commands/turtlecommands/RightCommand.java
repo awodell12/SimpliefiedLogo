@@ -1,9 +1,9 @@
 package slogo.backend.commands.turtlecommands;
 
+import java.util.ArrayList;
 import java.util.List;
-import slogo.backend.Command;
-import slogo.backend.BackEndInternal;
-import slogo.backend.ParseException;
+
+import slogo.backend.*;
 import slogo.CommandResult;
 
 public class RightCommand implements Command {
@@ -25,14 +25,41 @@ public class RightCommand implements Command {
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, BackEndInternal backEnd)
       throws ParseException {
-    backEnd.getTurtles().get(0).turn(arguments.get(0));
-    System.out.println("Turning right by " + arguments.get(0) + " degrees.");
-    System.out.println("Heading is now " + backEnd.getTurtles().get(0).getHeading() + " degrees.");
-    return List.of(backEnd.makeCommandResult(arguments.get(0),0));
+    List<CommandResult> results = new ArrayList<>();
+    for (Turtle turtle : backEnd.getActiveTurtles()) {
+      List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
+      turtle.turn(arguments.get(0));
+      System.out.println("Turtle " + turtle.getId() + " turned right by " + arguments.get(0) + " degrees");
+      CommandResultBuilder builder = new CommandResultBuilder(
+              turtle.getId(),
+              turtle.getHeading(),
+              turtle.getPosition(),
+              turtle.getPenUp(),
+              backEnd.getActiveTurtleNumbers(),
+              backEnd.getPathColor(),
+              backEnd.getBackgroundColor(),
+              backEnd.getShapeIndex(),
+              backEnd.getPenSize(),
+              backEnd.getPenUp()
+      );
+      builder.retVal(arguments.get(0));
+      builder.setPathStart(prevPos);
+      builder.setPathColor(backEnd.getPathColor());
+      results.add(builder.buildCommandResult());
+    }
+    if (results.isEmpty()) {
+      results.add(backEnd.makeCommandResult(arguments.get(0),0));
+    }
+    return results;
   }
 
   @Override
   public List<String> findVars(String[] tokenList) {
     return null;
+  }
+
+  @Override
+  public boolean runsPerTurtle() {
+    return true;
   }
 }

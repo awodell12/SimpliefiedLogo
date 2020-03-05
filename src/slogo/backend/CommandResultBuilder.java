@@ -133,6 +133,8 @@ public class CommandResultBuilder {
 
   public void setPenSize(double size){ penSize = size; }
 
+  public void setPenUp(boolean isUp){ penUp = isUp; }
+
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
         startPos, pathColorIndex, varName, varValue, udcName, udcScript,

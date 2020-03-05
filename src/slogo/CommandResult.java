@@ -63,7 +63,6 @@ public class CommandResult {
   public CommandResult(double retVal, int tokensParsed){
     returnVal = retVal;
     myTokensParsed = tokensParsed;
-
     myRotation = 0;
     myPosition = new ArrayList<>();
     myPosition.add(0.0); myPosition.add(0.0);
