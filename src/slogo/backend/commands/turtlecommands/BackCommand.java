@@ -27,6 +27,7 @@ public class BackCommand extends TurtleCommand implements Command {
     protected void applyToTurtle(Turtle turtle, List<Double> args) {
         myRetVal = args.get(0);
         turtle.moveBack(args.get(0));
+        System.out.println("Moving back by " + args.get(0));
     }
 
     @Override

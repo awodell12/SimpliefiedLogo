@@ -4,12 +4,14 @@ import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
+import slogo.backend.CommandResultBuilder;
+import slogo.backend.Turtle;
+import slogo.backend.commands.turtlecommands.TurtleCommand;
 
-public class HeadingQuery implements Command {
+public class HeadingQuery extends TurtleCommand implements Command {
 
     private static final int NUM_ARGS = 0;
     private static final int NUM_VARS = 0;
-
 
     @Override
     public int getNumArgs() {
@@ -22,8 +24,15 @@ public class HeadingQuery implements Command {
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
-        return List.of(backEnd.makeCommandResult(backEnd.getTurtles().get(0).getHeading(),0));
+    protected void applyToTurtle(Turtle turtle, List<Double> args) {
+        myRetVal = turtle.getHeading();
+    }
+
+    @Override
+    protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
+                                                List<Double> prevPos, BackEndInternal backEnd) {
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),myRetVal);
+        return builder.buildCommandResult();
     }
 
     @Override
@@ -31,4 +40,8 @@ public class HeadingQuery implements Command {
         return null;
     }
 
+    @Override
+    public boolean runsPerTurtle() {
+        return true;
+    }
 }
