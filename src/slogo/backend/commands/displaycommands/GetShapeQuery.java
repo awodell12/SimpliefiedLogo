@@ -25,7 +25,7 @@ public class GetShapeQuery implements Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
-        builder.retVal(backEnd.getShapeIndex());
+        builder.setRetVal(backEnd.getShapeIndex());
         return List.of(builder.buildCommandResult());
     }
 

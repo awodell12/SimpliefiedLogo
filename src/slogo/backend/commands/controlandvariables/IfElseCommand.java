@@ -2,6 +2,7 @@ package slogo.backend.commands.controlandvariables;
 
 import java.util.Arrays;
 import java.util.List;
+import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.backend.ParseException;
@@ -27,8 +28,8 @@ public class IfElseCommand implements Command {
       BackEndInternal backEnd) throws ParseException {
     double returnVal;
     List<CommandResult> results;
-    int firstListLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
-    int secondListLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,firstListLength+2,tokens.length));
+    int firstListLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
+    int secondListLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,firstListLength+2,tokens.length));
     System.out.println("firstListLength = " + firstListLength);
     System.out.println("secondListLength = " + secondListLength);
     if (arguments.get(0) != 0) {

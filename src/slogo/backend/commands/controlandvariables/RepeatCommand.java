@@ -3,6 +3,7 @@ package slogo.backend.commands.controlandvariables;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.backend.ParseException;
@@ -29,7 +30,7 @@ public class RepeatCommand implements Command {
     double numLoops = arguments.get(0);
     double returnVal = 0;
     List<CommandResult> results = new ArrayList<>();
-    int listLength = backEnd.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
+    int listLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
     for (double i = 1; i <= numLoops; i ++) {
       backEnd.setVariable("repcount",i);
       results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,listLength)));

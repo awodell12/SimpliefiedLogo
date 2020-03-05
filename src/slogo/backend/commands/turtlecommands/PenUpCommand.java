@@ -25,12 +25,7 @@ public class PenUpCommand implements Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
         backEnd.setPenUp(true);
-        double retVal = 0;
-        CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
-        builder.retVal(retVal);
-        builder.setPenUp(backEnd.getPenUp());
-        //System.out.println("Pen is up");
-        return List.of(builder.buildCommandResult());
+        return List.of(backEnd.startCommandResult(0).buildCommandResult());
     }
 
     @Override

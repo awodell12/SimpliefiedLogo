@@ -1,7 +1,9 @@
 package slogo.backend;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import slogo.CommandResult;
 
 public class CommandResultBuilder {
@@ -13,10 +15,8 @@ public class CommandResultBuilder {
   private List<Double> turtlePos;
   private List<Double> startPos;
   private int pathColorIndex;
-  private String varName;
-  private double varValue;
-  private String udcName;
-  private String udcScript;
+  private Map<String, Double> variables;
+  private Map<String, String> userCommands;
   private boolean clear;
   private boolean penUp;
   private boolean turtleVis;
@@ -29,50 +29,46 @@ public class CommandResultBuilder {
   private String errorMessage;
   private int newPaletteIndex;
   private boolean actualCommand;
+  private boolean isUndo;
+  private boolean isRedo;
 
 
-  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers,
-                              int pathColor, int bgColor, int shape, double size, boolean isUp) {
+  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition,
+      List<Integer> activeTurtleNumbers,
+      int pathColor, int bgColor, int shape, double size, boolean isUp,
+      Map<String, Double> varMap, Map<String, String> commandMap) {
     myRetVal = 0;
     myTokensParsed = 0;
-    turtleID = 0;
+    turtleID = turtleNumber;
     turtlePos = turtlePosition;
     turtleHeading = turtleFacing;
     startPos = null;
     pathColorIndex = pathColor;
-    varName = null;
-    varValue = 0;
-    udcName = null;
-    udcScript = null;
+    variables = varMap;
+    userCommands = commandMap;
     clear = false;
-    penUp = isUp;
     turtleVis = true;
     turtleReset = false;
     bgColorIndex = bgColor;
     newColor = null;
-    penSize = size;
     shapeIndex = shape;
+    penSize = size;
     errorMessage = "";
     //TODO: change these so that stuff doesn't automatically get set to zero
     newPaletteIndex = 0;
     activeTurtles = new ArrayList<>(activeTurtleNumbers);
     actualCommand = true;
+    penUp = isUp;
+    isUndo = false;
+    isRedo = false;
   }
 
-  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles,
-                              int pathColor, int bgColor, int shape, double size, boolean isUp) {
-    this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape, size, isUp);
-    turtleID = turtleNumber;
-    penUp = turtlePenUp;
-  }
-
-
-  public void retVal(double val) {
-    myRetVal = val;
-  }
-
-  public void tokensParsed(int val) {
+  public void setTokensParsed(int val) {
     myTokensParsed = val;
+  }
+
+  public void setRetVal(double val) {
+    myRetVal = val;
   }
 
   public void setTurtleID (int val) {
@@ -91,21 +87,7 @@ public class CommandResultBuilder {
     pathColorIndex = index;
   }
 
-  public void variableName(String name) {
-    varName = name;
-  }
-
-  public void varValue(double val) {
-    varValue = val;
-  }
-
-  public void userDefinedCommandName(String name) {
-    udcName = name;
-  }
-
-  public void userDefinedCommandScript(String script) {
-    udcScript = script;
-  }
+  public void setPenSize(double size) { penSize = size; }
 
   public void activeTurtleIDs(List<Integer> turtles) {
     activeTurtles = new ArrayList<>(turtles);
@@ -123,6 +105,10 @@ public class CommandResultBuilder {
 
   public void setMyScreenClear(boolean value){ clear = value; }
 
+  public void setPenUp(boolean penIsUp) {
+    penUp = penIsUp;
+  }
+
   public void setBackgroundColor(int index){ bgColorIndex = index; }
 
   public void setColor(List<Integer> color){ newColor = color; }
@@ -131,14 +117,27 @@ public class CommandResultBuilder {
 
   public void setPaletteIndex(int index){ newPaletteIndex = index; }
 
-  public void setPenSize(double size){ penSize = size; }
+  public void setIsUndo(boolean undo) {
+    isUndo = undo;
+  }
 
-  public void setPenUp(boolean isUp){ penUp = isUp; }
+  public void setIsRedo(boolean redo) {
+    isRedo = redo;
+  }
+
+  public void setVariables(Map<String, Double> vars) {
+    variables = vars;
+  }
+
+  public void setUserCommands(Map<String,String> commands) {
+    userCommands = commands;
+  }
+
 
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
-        startPos, pathColorIndex, varName, varValue, udcName, udcScript,
+        startPos, pathColorIndex, variables, userCommands,
         clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles, shapeIndex,
-            newPaletteIndex, errorMessage, actualCommand);
+            newPaletteIndex, errorMessage, actualCommand, isUndo, isRedo);
   }
 }
