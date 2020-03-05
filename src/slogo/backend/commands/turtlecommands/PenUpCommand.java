@@ -27,7 +27,7 @@ public class PenUpCommand implements Command {
         backEnd.setPenUp(true);
         double retVal = 0;
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
-        builder.retVal(retVal);
+        builder.setRetVal(retVal);
         //System.out.println("Pen is up");
         return List.of(backEnd.makeCommandResult(retVal,0));
     }

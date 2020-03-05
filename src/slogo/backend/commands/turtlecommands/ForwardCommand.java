@@ -32,18 +32,8 @@ public class ForwardCommand implements Command {
       List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
       turtle.moveForward(arguments.get(0));
       System.out.println("Turtle " + turtle.getId() + " moved forward by " + arguments.get(0) + " and is now at x=" +  turtle.getX() + " y=" + turtle.getY());
-      CommandResultBuilder builder = new CommandResultBuilder(
-          turtle.getId(),
-          turtle.getHeading(),
-          turtle.getPosition(),
-          turtle.getPenUp(),
-          backEnd.getActiveTurtleNumbers(),
-          backEnd.getPathColor(),
-          backEnd.getBackgroundColor(),
-          backEnd.getShapeIndex(),
-              backEnd.getPenSize(),
-              backEnd.getPenUp()
-      );
+      CommandResultBuilder builder = backEnd.startCommandResult(turtle.getHeading(),turtle.getPosition());
+      builder.setTurtleID(turtle.getId());
       builder.setRetVal(arguments.get(0));
       builder.setPathStart(prevPos);
       builder.setPathColor(backEnd.getPathColor());

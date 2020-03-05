@@ -57,15 +57,15 @@ public class CommandResultBuilder {
     newPaletteIndex = 0;
     activeTurtles = new ArrayList<>(activeTurtleNumbers);
     actualCommand = true;
+    penUp = isUp;
     isUndo = false;
     isRedo = false;
   }
 
-  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles,
+  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtles,
                               int pathColor, int bgColor, int shape, double size, boolean isUp) {
     this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape, size, isUp);
     turtleID = turtleNumber;
-    penUp = turtlePenUp;
   }
 
   public void setTokensParsed(int val) {

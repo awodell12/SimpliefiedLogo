@@ -26,7 +26,7 @@ public class IsPenDownQuery implements Command {
         double retVal = 1;
         if(backEnd.getPenUp()) retVal = 0;
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
-        builder.retVal(retVal);
+        builder.setRetVal(retVal);
         return List.of(builder.buildCommandResult());
     }
 
