@@ -199,13 +199,19 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setOriginalColorPalette() {
     String[] defaultColors = myUserConfigurableResources.getString("DefaultPalette").split(" ");
     myPaletteSize = defaultColors.length;
-    myColorPalette = new HashMap<>();
+    myColorPalette = new TreeMap<>(new SortByVal());
     for (String colorString : defaultColors){
       String[] parts = colorString.split(",");
       Color color = Color.rgb(Integer.parseInt(parts[1]),Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
       myColorPalette.put(parts[0], color);
     }
     // System.out.println(myColorPalette);
+  }
+  class SortByVal implements Comparator<String> {
+    public int compare(String a, String b)
+    {
+      return Integer.compare(Integer.parseInt(a), Integer.parseInt(b));
+    }
   }
 
   @Override
