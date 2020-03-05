@@ -8,10 +8,10 @@ import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.Turtle;
 
-public class LeftCommand implements Command {
+public class LeftCommand extends TurtleCommand implements Command {
 
-    public static final int NUM_ARGS = 1;
-    public static final int NUM_VARS = 0;
+    private static final int NUM_ARGS = 1;
+    private static final int NUM_VARS = 0;
 
     @Override
     public int getNumArgs() {
@@ -24,37 +24,25 @@ public class LeftCommand implements Command {
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
-        List<CommandResult> results = new ArrayList<>();
-        for (Turtle turtle : backEnd.getActiveTurtles()) {
-            List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
-            turtle.turn(-arguments.get(0));
-            System.out.println("Turtle " + turtle.getId() + " turned left by " + arguments.get(0) + " degrees");
-            CommandResultBuilder builder = new CommandResultBuilder(
-                    turtle.getId(),
-                    turtle.getHeading(),
-                    turtle.getPosition(),
-                    turtle.getPenUp(),
-                    backEnd.getActiveTurtleNumbers(),
-                    backEnd.getPathColor(),
-                    backEnd.getBackgroundColor(),
-                    backEnd.getShapeIndex(),
-                    backEnd.getPenSize(),
-                    backEnd.getPenUp()
-            );
-            builder.retVal(arguments.get(0));
-            builder.setPathStart(prevPos);
-            builder.setPathColor(backEnd.getPathColor());
-            results.add(builder.buildCommandResult());
-        }
-        if (results.isEmpty()) {
-            results.add(backEnd.makeCommandResult(arguments.get(0),0));
-        }
-        return results;
+    protected void applyToTurtle(Turtle turtle, List<Double> args) {
+        turtle.turn(-args.get(0));
+    }
+
+    @Override
+    protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
+                                                List<Double> prevPos, BackEndInternal backEnd) {
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+        builder.setPathStart(prevPos);
+        return builder.buildCommandResult();
     }
 
     @Override
     public List<String> findVars(String[] tokenList) {
         return null;
+    }
+
+    @Override
+    public boolean runsPerTurtle() {
+        return true;
     }
 }

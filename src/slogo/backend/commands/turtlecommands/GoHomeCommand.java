@@ -7,8 +7,9 @@ import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
+import slogo.backend.Turtle;
 
-public class GoHomeCommand implements Command {
+public class GoHomeCommand extends TurtleCommand implements Command {
 
     private static final int NUM_ARGS = 0;
     private static final int NUM_VARS = 0;
@@ -24,19 +25,25 @@ public class GoHomeCommand implements Command {
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
-        List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
-        double retVal = backEnd.getTurtles().get(0).setPos(0, 0);
-        System.out.println("Went home \n " +
-                "Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-        CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),
-            List.of(backEnd.getTurtles().get(0).getX(),
-                backEnd.getTurtles().get(0).getY()));
-        return List.of(builder.buildCommandResult());
+    protected void applyToTurtle(Turtle turtle, List<Double> args) {
+        turtle.setPos(0, 0);
+    }
+
+    @Override
+    protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
+                                                List<Double> prevPos, BackEndInternal backEnd) {
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+        builder.setPathStart(prevPos);
+        return builder.buildCommandResult();
     }
 
     @Override
     public List<String> findVars(String[] tokenList) {
         return null;
+    }
+
+    @Override
+    public boolean runsPerTurtle() {
+        return true;
     }
 }

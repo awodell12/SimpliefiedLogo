@@ -6,11 +6,10 @@ import java.util.List;
 import slogo.backend.*;
 import slogo.CommandResult;
 
-public class RightCommand implements Command {
+public class RightCommand extends TurtleCommand implements Command {
 
   private static final int NUM_ARGS = 1;
   private static final int NUM_VARS = 0;
-
 
   @Override
   public int getNumArgs() {
@@ -23,34 +22,16 @@ public class RightCommand implements Command {
   }
 
   @Override
-  public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, BackEndInternal backEnd)
-      throws ParseException {
-    List<CommandResult> results = new ArrayList<>();
-    for (Turtle turtle : backEnd.getActiveTurtles()) {
-      List<Double> prevPos = backEnd.getTurtles().get(0).getPosition();
-      turtle.turn(arguments.get(0));
-      System.out.println("Turtle " + turtle.getId() + " turned right by " + arguments.get(0) + " degrees");
-      CommandResultBuilder builder = new CommandResultBuilder(
-              turtle.getId(),
-              turtle.getHeading(),
-              turtle.getPosition(),
-              turtle.getPenUp(),
-              backEnd.getActiveTurtleNumbers(),
-              backEnd.getPathColor(),
-              backEnd.getBackgroundColor(),
-              backEnd.getShapeIndex(),
-              backEnd.getPenSize(),
-              backEnd.getPenUp()
-      );
-      builder.retVal(arguments.get(0));
-      builder.setPathStart(prevPos);
-      builder.setPathColor(backEnd.getPathColor());
-      results.add(builder.buildCommandResult());
-    }
-    if (results.isEmpty()) {
-      results.add(backEnd.makeCommandResult(arguments.get(0),0));
-    }
-    return results;
+  protected void applyToTurtle(Turtle turtle, List<Double> args) {
+    turtle.turn(args.get(0));
+  }
+
+  @Override
+  protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
+                                              List<Double> prevPos, BackEndInternal backEnd) {
+    CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+    builder.setPathStart(prevPos);
+    return builder.buildCommandResult();
   }
 
   @Override
