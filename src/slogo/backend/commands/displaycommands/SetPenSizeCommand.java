@@ -29,7 +29,7 @@ public class SetPenSizeCommand implements Command {
         double size = arguments.get(0);
         backEnd.setPenSize(size);
         System.out.println("Changed pen size to " + size + " pixels wide");
-        CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
+        CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
         builder.setRetVal(size);
         builder.setPenSize(backEnd.getPenSize());
         return List.of(builder.buildCommandResult());

@@ -41,7 +41,8 @@ public class AskCommand implements Command {
     for (Turtle newlyActive : backEnd.getActiveTurtles()) {
       CommandResultBuilder builder = backEnd.startCommandResult(
           newlyActive.getHeading(),
-          newlyActive.getPosition());
+          newlyActive.getPosition(),
+              newlyActive.getVisible());
       builder.setRetVal(0);
       builder.setTokensParsed(programCounter+1);
       builder.activeTurtleIDs(activeTurtleNums);
@@ -50,7 +51,7 @@ public class AskCommand implements Command {
     }
     results.addAll(backEnd.parseCommandsList(Arrays.copyOfRange(tokens,numTokens+3,tokens.length)));
     backEnd.setActiveTurtles(originalActives);
-    CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition());
+    CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
     builder.setRetVal(0);
     builder.setTokensParsed(numTokens + totalParsed +4);
     results.add(builder.buildCommandResult());

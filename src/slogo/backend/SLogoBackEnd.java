@@ -137,7 +137,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     List<CommandResult> results = new ArrayList<>();
     String currentTokenType = getSymbol(tokenList[0]);
     if (isValue(currentTokenType)) {
-      CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition());
+      CommandResultBuilder builder = startCommandResult(myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition(), myTurtles.get(0).getVisible());
       builder.setRetVal(parseValue(currentTokenType,tokenList[0]));
       return List.of(builder.buildCommandResult());
     }
@@ -386,14 +386,14 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     return ret;
   }
 
-  public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
-    return new CommandResultBuilder(0, turtleFacing,turtlePosition,getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp, myVariables,myUserCommandManager.getScriptMap());
+  public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition, boolean turtleVisible) {
+    return new CommandResultBuilder(0, turtleFacing,turtlePosition,getActiveTurtleNumbers(), turtleVisible, myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp, myVariables,myUserCommandManager.getScriptMap());
   }
 
   @Override
   public CommandResultBuilder startCommandResult(int turtleID, double retVal) {
     Turtle turtle = getTurtleWithID(turtleID);
-    CommandResultBuilder ret =  new CommandResultBuilder(turtleID, turtle.getHeading(),turtle.getPosition(),getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp, myVariables,myUserCommandManager.getScriptMap());
+    CommandResultBuilder ret =  new CommandResultBuilder(turtleID, turtle.getHeading(),turtle.getPosition(),getActiveTurtleNumbers(), turtle.getVisible(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp, myVariables,myUserCommandManager.getScriptMap());
     ret.setRetVal(retVal);
     return ret;
   }
@@ -401,7 +401,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   @Override
   public CommandResultBuilder startCommandResult(double retVal) {
     CommandResultBuilder ret = new CommandResultBuilder(0,myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition(),
-                                    getActiveTurtleNumbers(),myPathColor,myBackgroundColor,myShapeIndex,myPenSize,penUp, myVariables, myUserCommandManager.getScriptMap());
+                                    getActiveTurtleNumbers(), myTurtles.get(0).getVisible() ,myPathColor,myBackgroundColor,myShapeIndex,myPenSize,penUp, myVariables, myUserCommandManager.getScriptMap());
     ret.setRetVal(retVal);
     return ret;
   }
@@ -485,7 +485,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
     ArrayList<CommandResult> results = new ArrayList<>();
     for (Turtle turtle : myTurtles) {
-      CommandResultBuilder builder = startCommandResult(turtle.getHeading(),turtle.getPosition());
+      CommandResultBuilder builder = startCommandResult(turtle.getHeading(),turtle.getPosition(), turtle.getVisible());
       builder.setTurtleID(turtle.getId());
       builder.setPenUp(turtle.getPenUp());
       builder.setIsUndo(isUndo);

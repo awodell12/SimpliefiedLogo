@@ -39,7 +39,8 @@ public class TellCommand implements Command {
     for (Turtle newlyActive : backEnd.getActiveTurtles()) {
       CommandResultBuilder builder = backEnd.startCommandResult(
           newlyActive.getHeading(),
-          newlyActive.getPosition());
+          newlyActive.getPosition(),
+              newlyActive.getVisible());
       builder.setRetVal(lastTurtleNum);
       builder.setTokensParsed(programCounter+1);
       builder.activeTurtleIDs(activeTurtleNums);
@@ -49,7 +50,8 @@ public class TellCommand implements Command {
     if (results.isEmpty()) {
       CommandResultBuilder builder = backEnd.startCommandResult(
       backEnd.getTurtles().get(0).getHeading(),
-      backEnd.getTurtles().get(0).getPosition());
+      backEnd.getTurtles().get(0).getPosition(),
+              backEnd.getTurtles().get(0).getVisible());
       builder.setRetVal(lastTurtleNum);
       builder.setTokensParsed(programCounter+1);
       results.add(builder.buildCommandResult());
