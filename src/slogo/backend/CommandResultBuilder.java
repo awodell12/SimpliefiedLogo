@@ -33,8 +33,10 @@ public class CommandResultBuilder {
   private boolean isRedo;
 
 
-  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers,
-                              int pathColor, int bgColor, int shape, double size, boolean isUp) {
+  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition,
+      List<Integer> activeTurtleNumbers,
+      int pathColor, int bgColor, int shape, double size, boolean isUp,
+      Map<String, Double> varMap, Map<String, String> commandMap) {
     myRetVal = 0;
     myTokensParsed = 0;
     turtleID = 0;
@@ -42,8 +44,8 @@ public class CommandResultBuilder {
     turtleHeading = turtleFacing;
     startPos = null;
     pathColorIndex = pathColor;
-    variables = new HashMap<>();
-    userCommands = new HashMap<>();
+    variables = varMap;
+    userCommands = commandMap;
     clear = false;
     penUp = isUp;
     turtleVis = true;
@@ -60,12 +62,6 @@ public class CommandResultBuilder {
     penUp = isUp;
     isUndo = false;
     isRedo = false;
-  }
-
-  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtles,
-                              int pathColor, int bgColor, int shape, double size, boolean isUp) {
-    this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape, size, isUp);
-    turtleID = turtleNumber;
   }
 
   public void setTokensParsed(int val) {
