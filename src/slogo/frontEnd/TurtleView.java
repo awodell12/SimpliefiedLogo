@@ -27,7 +27,7 @@ public class TurtleView extends Group{
     private final Map<Integer, Turtle> myTurtles = new HashMap<>();
     private final Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
     private final List<Integer> existingTurtleIDs = new ArrayList<>();
-    private final List<List<Path>> pathsHistory = new ArrayList<>(new ArrayList<>());
+    private final List<List<Path>> pathsHistory = new ArrayList<>(){{add(new ArrayList<>());}};
     private int currentPathHistoryIndex = 0;
     private boolean pathCreateMode = true;
     private Color myPenColor = Color.BLACK;
@@ -93,6 +93,7 @@ public class TurtleView extends Group{
             pathsHistory.subList(currentPathHistoryIndex+1, pathsHistory.size()).clear();
         if(copyPrevious) pathsHistory.add(new ArrayList<>(pathsHistory.get(currentPathHistoryIndex)));
         else pathsHistory.add(new ArrayList<>());
+        currentPathHistoryIndex++;
     }
 
     /**

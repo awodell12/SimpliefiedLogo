@@ -149,7 +149,8 @@ public class Visualizer extends Application implements FrontEndExternal{
           false, false, true, false, 0, null,
           1.0, Collections.singletonList(0), 0, 0, "", true);
   private CommandResult currentResult = previousResult;*/
-  private int undoCommandsIssued = 0;
+  private List<String> undoCommandsIssued = new ArrayList<>();
+  private int numUndoCommandsIssued = 0;
   private String myCurrentlyHighlighted = null;
   private String myCurrentInstruction = null;
   private Timeline animation;
@@ -335,27 +336,29 @@ public class Visualizer extends Application implements FrontEndExternal{
       myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
     }
     setPenText();
-    if(originalInstruction != myCurrentlyHighlighted) {
-      myHistory.highlightNext();
-      myCurrentlyHighlighted = originalInstruction;
-      if(isUndoCommand){
-        undoCommandsIssued++;
+    if(undoCommandsIssued.size() > 0 && undoCommandsIssued.get(0) == originalInstruction) {
+      undoCommandsIssued.remove(0);
+      if (isUndoCommand) {
         myTurtleView.clearPaths();
         myTurtleView.incrementPathHistoryIndex(-1);
         myTurtleView.setPathCreateMode(false);
         myTurtleView.setDisplayedPaths();
-      } else if(isRedoCommand){
-        undoCommandsIssued--;
+      } else if (isRedoCommand) {
         myTurtleView.clearPaths();
         myTurtleView.incrementPathHistoryIndex(1);
         myTurtleView.setPathCreateMode(false);
         myTurtleView.setDisplayedPaths();
-      } else{
-        myTurtleView.setPathCreateMode(true);
-        myTurtleView.addPathHistory(!clearScreen);
-        // trim everything in pathHistory beyond the current path history index
-        // add a new empty list to pathHistory. Copy pathHistory[index] to it, unless clearscreen is true
       }
+    }
+    else if(originalInstruction != myCurrentlyHighlighted){
+      myTurtleView.setPathCreateMode(true);
+      myTurtleView.addPathHistory(!clearScreen);
+      // trim everything in pathHistory beyond the current path history index
+      // add a new empty list to pathHistory. Copy pathHistory[index] to it, unless clearscreen is true
+    }
+    if(originalInstruction != myCurrentlyHighlighted) {
+      myHistory.highlightNext();
+      myCurrentlyHighlighted = originalInstruction;
     }
     myRightVBox.requestLayout(); // make sure everything is updated graphically
   }
@@ -410,7 +413,8 @@ public class Visualizer extends Application implements FrontEndExternal{
       } catch (Exception ex) {
         //ex.printStackTrace();
         // note that this should ideally never be thrown
-        showError(ex.getMessage(), myLanguageResources);
+        System.out.println(ex.getMessage());
+        //showError(ex.getMessage(), myLanguageResources);
       }
     });
 
@@ -434,23 +438,23 @@ public class Visualizer extends Application implements FrontEndExternal{
    * note that we don't use the config file because we change the language at the last step
    */
   private void setUpDefaults(){
-    executeInstruction("setbackground " + myStartingBackgroundColor);
-    executeInstruction("setpencolor " + myStartingPenColor);
+    executeInstruction("setbackground " + myStartingBackgroundColor, false, false);
+    executeInstruction("setpencolor " + myStartingPenColor, false, false);
     StringBuilder instruction = new StringBuilder("tell" + " [ ");
     for(int id=0; id<myStartingNumTurtles; id++){
       instruction.append(id).append(" ");
     }
     instruction.append("]");
-    executeInstruction(instruction.toString());
-    executeInstruction("setshape " + myStartingImage);
+    executeInstruction(instruction.toString(), false, false);
+    executeInstruction("setshape " + myStartingImage, false, false);
     for(String scriptName : myScripts){
       String script = myWorkSpaceResources.getString(scriptName);
-      executeInstruction("to " + scriptName + " [ ] [ " + script + " ]");
+      executeInstruction("to " + scriptName + " [ ] [ " + script + " ]", false, false);
       //myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
     }
     for(String variableName : myStartingVariables){
       double value = Double.parseDouble(myWorkSpaceResources.getString(variableName));
-      executeInstruction("make :" + variableName + " " + value);
+      executeInstruction("make :" + variableName + " " + value, false, false);
       //addVariable(variableName, value);
     }
     myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + myStartingLanguage);
@@ -485,7 +489,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       instruction.append(id).append(" ");
     }
     instruction.append("]");
-    executeInstruction(instruction.toString());
+    executeInstruction(instruction.toString(), false, false);
   }
 
   private void setUpRightPane() {
@@ -561,7 +565,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     // update the displayed value as slider is dragged, but only send command to change it when slider is dropped
     penSlider.valueChangingProperty().addListener((val, wasChanging, changing) -> {
       if(wasChanging)
-        executeInstruction(myLanguageResources.getString("setPenSize") + " " + String.format("%.2f", penSlider.getValue()));
+        executeInstruction(myLanguageResources.getString("setPenSize") + " " + String.format("%.2f", penSlider.getValue()), false, false);
     });
     penSlider.setMinorTickCount(PEN_SLIDER_TICKS);
     penSlider.setShowTickMarks(true);
@@ -607,24 +611,23 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void moveForward(){
-    executeInstruction(myLanguageResources.getString("fd") + " " + turtleMovementButtons.get(0).getText());
+    executeInstruction(myLanguageResources.getString("fd") + " " + turtleMovementButtons.get(0).getText(), false, false);
   }
 
   private void moveBackward(){
-    executeInstruction(myLanguageResources.getString("bk") + " " + turtleMovementButtons.get(1).getText());
+    executeInstruction(myLanguageResources.getString("bk") + " " + turtleMovementButtons.get(1).getText(), false, false);
   }
 
   private void rotateRight(){
-    executeInstruction(myLanguageResources.getString("rt") + " " + turtleMovementButtons.get(2).getText());
+    executeInstruction(myLanguageResources.getString("rt") + " " + turtleMovementButtons.get(2).getText(), false, false);
   }
 
   private void rotateLeft(){
-    executeInstruction(myLanguageResources.getString("lt") + " " + turtleMovementButtons.get(3).getText());
+    executeInstruction(myLanguageResources.getString("lt") + " " + turtleMovementButtons.get(3).getText(), false, false);
   }
 
   private void resetAnimation() {
-    //TODO: make this reset the animation too (e.g. desired position)??
-    executeInstruction(myLanguageResources.getString("clearscreen"));
+    executeInstruction(myLanguageResources.getString("clearscreen"), false, true);
   }
 
   private void newWorkspace(){
@@ -632,28 +635,31 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void undoButton(){
-
-    executeInstruction(myLanguageResources.getString("undo"));
+    numUndoCommandsIssued++;
+    undoCommandsIssued.add(myLanguageResources.getString("undo"));
+    executeInstruction(myLanguageResources.getString("undo"), true, false);
   }
 
   private void redoButton(){
-    if(undoCommandsIssued > 0) {
-      executeInstruction(myLanguageResources.getString("redo"));
+    if(numUndoCommandsIssued > 0) {
+      numUndoCommandsIssued--;
+      undoCommandsIssued.add(myLanguageResources.getString("redo"));
+      executeInstruction(myLanguageResources.getString("redo"), true, false);
     }
   }
 
   private void setPenColor(String colorIndex){
-    executeInstruction(myLanguageResources.getString("setpencolor") + " " + colorIndex);
+    executeInstruction(myLanguageResources.getString("setpencolor") + " " + colorIndex, false, false);
     //myTurtleView.setPenColor(myColorPalette.get(colorIndex), Integer.parseInt(colorIndex));
     setPenText();
   }
 
   private void setPenUp(String menuName){
-    executeInstruction(myLanguageResources.getString(menuName) + ""); // need the blank string so it registers as a new distinct string object
+    executeInstruction(myLanguageResources.getString(menuName) + "", false, false); // need the blank string so it registers as a new distinct string object
   }
 
   private void setBackGroundColor(String colorIndex){
-    executeInstruction(myLanguageResources.getString("setbackground") + " " + colorIndex);
+    executeInstruction(myLanguageResources.getString("setbackground") + " " + colorIndex, false, false);
     //myTurtleView.setBackGroundColor(myColorPalette.get(colorIndex));
   }
 
@@ -670,12 +676,12 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void setTurtleImageIndex(String num){
     //Image image = imageList.get(Integer.parseInt(num));
     //myTurtleView.setTurtleImage(image);
-    executeInstruction(myLanguageResources.getString("setshape") + " " + Integer.parseInt(num));
+    executeInstruction(myLanguageResources.getString("setshape") + " " + Integer.parseInt(num), false, false);
   }
 
   private void runButton(){
     String instruction = myCommandBox.getContents();
-    executeInstruction(instruction);
+    executeInstruction(instruction, false, false);
   }
 
   private void clearButton(){
@@ -857,18 +863,22 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void addVariable(String name, double value){
     myVariables.addEntry(name + " : " + value, name, newValue->executeInstruction(myLanguageResources.getString("make")
-            + " :"+name+" "+newValue));
+            + " :"+name+" "+newValue, false, false));
   }
 
   private void addUserDefinedCommand(String name, String command){
     myUserDefinedCommands.addEntry(name + ":\n" + command, name, e->myCommandBox.setText(name));
   }
 
-  private void executeInstruction(String instruction) {
+  private void executeInstruction(String instruction, boolean isUndoOrRedo, boolean clearScreen) {
     myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
     if(instruction != myCurrentlyHighlighted && isReady) { // want to compare object references here
       myHistory.highlightNext();
       myCurrentlyHighlighted = instruction;
+      if(!isUndoOrRedo) {
+        myTurtleView.setPathCreateMode(true);
+        myTurtleView.addPathHistory(!clearScreen);
+      }
     }
     myRightVBox.requestLayout(); // make sure everything is updated graphically
     myInstructionQueue.add(instruction);
