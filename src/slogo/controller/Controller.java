@@ -6,9 +6,11 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.stage.Stage;
+import slogo.backend.BackEndExternal;
 import slogo.backend.SLogoBackEnd;
 import slogo.backend.SLogoLanguageChanger;
 import slogo.CommandResult;
+import slogo.backend.SLogoParser;
 import slogo.frontEnd.Visualizer;
 
 public class Controller extends Application{
@@ -21,7 +23,7 @@ public class Controller extends Application{
             "rifare", "refazer", "povtorit", "rehacer", "urduredo");
 
     private final List<Visualizer> myVisualizers = new ArrayList<>();
-    private final List<SLogoBackEnd> myModels = new ArrayList<>();
+    private final List<BackEndExternal> myModels = new ArrayList<>();
     private int numWorkspaces = 0;
 
     public static void main (String[] args) {
@@ -40,7 +42,7 @@ public class Controller extends Application{
      */
     @Override
     public void start(Stage primaryStage) {
-        myModels.add(new SLogoBackEnd());
+        myModels.add(new SLogoParser());
         int thisWorkspace = numWorkspaces; // need this variable because we don't want to pass in a dynamic value!
         ListChangeListener<String> instructionQueueListener = c -> processInstructionQueueEvent(thisWorkspace);
         myVisualizers.add(new Visualizer(instructionQueueListener, c-> {
