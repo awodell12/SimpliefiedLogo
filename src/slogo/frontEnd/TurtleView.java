@@ -203,14 +203,6 @@ public class TurtleView extends Group{
         }
     }
 
-    /*protected void clearPaths(){
-        int numChildren = this.getChildren().size();
-        if(numChildren >= 2) this.getChildren().remove(1, numChildren);
-        for(Map.Entry<Integer, Turtle> turtle : myTurtles.entrySet()){
-            if(turtle.getValue().getVisibility()) this.getChildren().add(turtle.getValue());
-        }
-    }*/
-
     /**
      * change the turtle image. Image is determined by the file chooser
      * @param newTurtleImage image object to set the turtle image to
@@ -223,13 +215,7 @@ public class TurtleView extends Group{
 
     protected void setTurtleVisibility(boolean turtleVisibility, int id) {
         Turtle myTurtle = myTurtles.get(id);
-        if(turtleVisibility && !myTurtle.getVisibility()){
-            this.getChildren().add(myTurtle);
-        }
-        else if(!turtleVisibility && myTurtle.getVisibility()){
-            this.getChildren().remove(myTurtle);
-        }
-        myTurtle.setVisibility(turtleVisibility);
+        myTurtle.setVisible(turtleVisibility);
     }
 
     /**
