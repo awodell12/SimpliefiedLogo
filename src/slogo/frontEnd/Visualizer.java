@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
-//@SuppressWarnings("unused") // TODO: uncomment this out
+@SuppressWarnings({"unused", "StringEquality"})
 public class Visualizer extends Application implements FrontEndExternal{
   private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.";
   private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "config");
@@ -153,7 +153,6 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final List<String> myStartingVariables;
   private final int myStartingImage;
   private boolean clearedAtStart = true;
-  private int myPaletteSize;
   private boolean clearScreenScheduled;
 
   /**
@@ -190,7 +189,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
   private void setOriginalColorPalette() {
     String[] defaultColors = myUserConfigurableResources.getString("DefaultPalette").split(" ");
-    myPaletteSize = defaultColors.length;
+    int myPaletteSize = defaultColors.length;
     myColorPalette = new TreeMap<>(new SortByVal());
     for (String colorString : defaultColors){
       String[] parts = colorString.split(",");
@@ -199,7 +198,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
     // System.out.println(myColorPalette);
   }
-  class SortByVal implements Comparator<String> {
+  static class SortByVal implements Comparator<String> {
     public int compare(String a, String b)
     {
       return Integer.compare(Integer.parseInt(a), Integer.parseInt(b));
@@ -706,10 +705,12 @@ public class Visualizer extends Application implements FrontEndExternal{
     return imageView;
   }
 
+  @SuppressWarnings("SameReturnValue")
   private Node getLanguageLabel(String irrelevant){
     return null;
   }
 
+  @SuppressWarnings("SameReturnValue")
   private Node getPenUpLabel(String irrelevant){
     return null;
   }
@@ -746,9 +747,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     int penIndex = MENU_TYPES.indexOf("PenColor");
     int backIndex = MENU_TYPES.indexOf("Background");
     List<String> colorIndices = new ArrayList<>();
-    for (String s : myColorPalette.keySet()){
-      colorIndices.add(s);
-    }
+    colorIndices.addAll(myColorPalette.keySet());
     myMenuOptions.set(penIndex,colorIndices);
     myMenuOptions.set(backIndex,colorIndices);
     myMenuBar = new MenuBar();
