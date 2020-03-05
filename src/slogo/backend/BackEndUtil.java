@@ -94,4 +94,14 @@ public class BackEndUtil {
     Collections.reverse(argList);
     return argList;
   }
+
+  public static List<Entry<String, Pattern>> interpretPatterns(String syntax) {
+    List<Entry<String, Pattern>> patterns = new ArrayList<>();
+    ResourceBundle resources = ResourceBundle.getBundle(RESOURCES_PACKAGE + syntax);
+    for (String key : Collections.list(resources.getKeys())) {
+      String regex = resources.getString(key);
+      patterns.add(new SimpleEntry<>(key, Pattern.compile(regex, Pattern.CASE_INSENSITIVE)));
+    }
+    return patterns;
+  }
 }
