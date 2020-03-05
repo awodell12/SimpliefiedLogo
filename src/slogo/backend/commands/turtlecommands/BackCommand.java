@@ -53,9 +53,4 @@ public class BackCommand implements Command {
     public String toString() {
         return COMMAND_NAME;
     }
-
-    @Override
-    public boolean runsPerTurtle() {
-        return true;
-    }
 }

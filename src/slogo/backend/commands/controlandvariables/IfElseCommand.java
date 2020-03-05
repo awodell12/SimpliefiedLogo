@@ -34,7 +34,8 @@ public class IfElseCommand implements Command {
     System.out.println("secondListLength = " + secondListLength);
     if (arguments.get(0) != 0) {
       System.out.println("IF evaluated to TRUE");
-      results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,2,firstListLength));
+      BackEndUtil.printRemainingTokens(Arrays.copyOfRange(tokens,1,firstListLength),0);
+      results = backEnd.parseCommandsList(Arrays.copyOfRange(tokens,1,firstListLength));
     }
     else {
       System.out.println("IF evaluated to FALSE");

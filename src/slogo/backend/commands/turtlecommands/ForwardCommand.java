@@ -41,8 +41,4 @@ public class ForwardCommand extends TurtleCommand implements Command {
     return null;
   }
 
-  @Override
-  public boolean runsPerTurtle() {
-    return true;
-  }
 }
