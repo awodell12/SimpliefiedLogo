@@ -100,8 +100,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final double MAX_SPEED = 50;
   private static final double DEFAULT_SPEED = 1;
   private static final String LANGUAGE_INSTRUCTION_STRING = "language: ";
-  private static final int PEN_SLIDER_TICKS = ;
-  private static final String DEFAULT_MOVE_BUTTON_VALUE = ;
+  private static final int PEN_SLIDER_TICKS = 10;
+  private static final String DEFAULT_MOVE_BUTTON_VALUE = "45";
   private final int myFileNum;
 
   private ResourceBundle myLanguageResources;
@@ -173,22 +173,39 @@ public class Visualizer extends Application implements FrontEndExternal{
    */
   public Visualizer(ListChangeListener<String> instructionQueueListener, Consumer<Integer> onNewWorkSpaceClicked, int configFileNum) {
     myInstructionQueue = new ObservableQueue();
-    myFileNum=configFileNum;
     myInstructionQueue.addListener(instructionQueueListener);
     myOnNewWorkSpaceClicked = onNewWorkSpaceClicked;
+    myFileNum = configFileNum;
     try {
       myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace" + configFileNum);
     } catch(MissingResourceException ex){
       myWorkSpaceResources = ResourceBundle.getBundle("slogo/frontEnd/Resources.workspace0");
     }
     myStartingLanguage = myWorkSpaceResources.getString("Language");
-    myLanguageResources = ResourceBundle.getBundle("slogo/frontEnd/Resources." + myStartingLanguage + "config");
+    myLanguageResources = ResourceBundle.getBundle(RESOURCE_LOCATION + myStartingLanguage + "config");
+    try {
+      myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable"+ configFileNum);
+    } catch(MissingResourceException ex){
+      myUserConfigurableResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "UserConfigurable0");
+    }
     myStartingNumTurtles = Integer.parseInt(myWorkSpaceResources.getString("numTurtles"));
     myStartingPenColor = Integer.parseInt(myWorkSpaceResources.getString("startingPenColor"));
     myStartingBackgroundColor = Integer.parseInt(myWorkSpaceResources.getString("startingBGColor"));
     myScripts = Arrays.asList(myWorkSpaceResources.getString("Scripts").split(","));
     myStartingVariables = Arrays.asList(myWorkSpaceResources.getString("Variables").split(","));
     myStartingImage = Integer.parseInt(myWorkSpaceResources.getString("startingImage"));
+    setOriginalColorPalette();
+  }
+  private void setOriginalColorPalette() {
+    String[] defaultColors = myUserConfigurableResources.getString("DefaultPalette").split(" ");
+    myPaletteSize = defaultColors.length;
+    myColorPalette = new HashMap<>();
+    for (String colorString : defaultColors){
+      String[] parts = colorString.split(",");
+      Color color = Color.rgb(Integer.parseInt(parts[1]),Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+      myColorPalette.put(parts[0], color);
+    }
+    // System.out.println(myColorPalette);
   }
 
   @Override
@@ -725,6 +742,14 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(String menuType : MENU_TYPES){
       myMenuOptions.add(Arrays.asList(myWorkSpaceResources.getString(menuType+"Options").split(",")));
     }
+    int penIndex = MENU_TYPES.indexOf("PenColor");
+    int backIndex = MENU_TYPES.indexOf("Background");
+    List<String> colorIndices = new ArrayList<>();
+    for (String s : myColorPalette.keySet()){
+      colorIndices.add(s);
+    }
+    myMenuOptions.set(penIndex,colorIndices);
+    myMenuOptions.set(backIndex,colorIndices);
     myMenuBar = new MenuBar();
     myLeftVBox.getChildren().add(myMenuBar);
     for(int i=0; i<myMenuNames.size(); i++){
@@ -896,7 +921,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     vBox.getChildren().add(new ImageView("slogo/frontEnd/Resources/" + imageName + ".png"));
   }
   private void makeNewUserProperties(int fileNum){
+    System.out.println(myColorPalette + "Vis");
     PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(fileNum),myColorPalette);
+
   }
   private void savePrefs(){
     makeNewUserProperties(myFileNum);
