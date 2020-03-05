@@ -98,7 +98,6 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
         ResourceBundle oldLanguageProperties = ResourceBundle.getBundle("resources.languages." + myLanguage);
         StringBuilder translatedScript = new StringBuilder();
         for(String scriptPiece : script.split("\\s+")) {// split for any whitespace
-            System.out.println(scriptPiece);
             boolean foundMatch = false;
             for (String key : oldLanguageProperties.keySet()) {
                 if (scriptPiece.matches(oldLanguageProperties.getString(key))) {
