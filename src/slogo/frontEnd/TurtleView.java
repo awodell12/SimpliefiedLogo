@@ -185,6 +185,7 @@ public class TurtleView extends Group{
             path.setStroke(myPenColor);
             path.setStrokeWidth(myPenThickness);
             this.getChildren().add(path);
+            pathsHistory.get(currentPathHistoryIndex).add(path);
         }
     }
 
