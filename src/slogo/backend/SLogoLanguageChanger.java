@@ -8,7 +8,7 @@ public class SLogoLanguageChanger implements Changer {
   }
 
   @Override
-  public void doChanges(BackEndInternal backEnd) {
+  public void doChanges(Interpreter backEnd) {
     backEnd.setLanguage(myLanguage);
   }
 }

@@ -89,7 +89,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
 
   @Override
   public void applyChanger(Changer changer) {
-
+    changer.doChanges(this);
   }
 
   public List<CommandResult> parseCommandsList(String[] tokenList) {
@@ -252,6 +252,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
     return identity.equals("Variable");
   }
 
+  @Override
   public void setLanguage(String language) {
     myLanguage = BackEndUtil.interpretPatterns(language);
   }

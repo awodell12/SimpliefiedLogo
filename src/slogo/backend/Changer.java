@@ -1,5 +1,5 @@
 package slogo.backend;
 
 interface Changer {
-  void doChanges(BackEndInternal backEnd);
+  void doChanges(Interpreter backEnd);
 }
