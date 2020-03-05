@@ -9,14 +9,14 @@ import java.util.regex.Pattern;
 import slogo.CommandResult;
 
 public class SLogoParser implements BackEndExternal, Interpreter{
-  private SLogoBackEnd myBackEnd;
+  private BackEndInternal myBackEnd;
   private List<Entry<String, Pattern>> myLanguage;
   private List<Entry<String, Pattern>> mySyntax;
 
   private List<SLogoMemento> myPrevStates;
   private int myTimelineLocation;
 
-  public SLogoParser(SLogoBackEnd backEnd) {
+  public SLogoParser(BackEndInternal backEnd) {
     myBackEnd = backEnd;
     myPrevStates = new ArrayList<>();
     myTimelineLocation = -1;
@@ -132,6 +132,21 @@ public class SLogoParser implements BackEndExternal, Interpreter{
       retVal = results.get(results.size() - 1).getReturnVal();
     }
     return retVal;
+  }
+
+  public List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException {
+    int programCounter = 0;
+    List<CommandResult> results = new ArrayList<>();
+    String currentTokenType = getSymbol(tokenList[0]);
+    if (isValue(currentTokenType)) {
+      CommandResultBuilder builder = myBackEnd.startCommandResult(parseValue(currentTokenType,tokenList[0]));
+      return List.of(builder.buildCommandResult());
+    }
+    Command command = identifyCommand(tokenList[0]);
+    List<CommandResult> listResult = parseSingleCommand(command,
+        Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+    results.addAll(listResult);
+    return results;
   }
 
   private Command identifyCommand(String rawToken) throws ParseException {

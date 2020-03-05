@@ -31,7 +31,7 @@ public class AskWithCommand implements Command {
     int firstListLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
     int secondListLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,firstListLength+2,tokens.length));
     backEnd.setActiveTurtles(List.of(backEnd.getActiveTurtleID()));
-      results.addAll(backEnd.parseForRetVal(Arrays.copyOfRange(tokens,1,firstListLength)));
+      results.addAll(interpreter.parseForRetVal(Arrays.copyOfRange(tokens,1,firstListLength)));
       System.out.println("Evaluation: " + results.get(results.size()-1).getReturnVal());
       System.out.println("backEnd.getActiveTurtleNumbers().toString() = " + backEnd.getActiveTurtleNumbers().toString());
       if (results.get(results.size()-1).getReturnVal() == 1) { //condition evaluates to true
