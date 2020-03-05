@@ -24,6 +24,7 @@ public class BackEndUtil {
   private static ResourceBundle myResources = ResourceBundle.getBundle(RESOURCES_PACKAGE + SYNTAX_FILENAME);
 
   public static int distanceToEndBracket(String[] tokenList) {
+    //FIXME: deal with brackets without spaces before/after IDs
     int extraBrackets = 0;
     for (int i = 0; i < tokenList.length; i ++) {
       String token = tokenList[i];

@@ -63,13 +63,13 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(30, 30);
-  private static final Rectangle TOP_RIGHT_BUTTON_SHAPE = new Rectangle(75, 50);
+  private static final Rectangle TOP_RIGHT_BUTTON_SHAPE = new Rectangle(75, 20);
   private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
   private static final Rectangle TURTLE_MOVEMENT_LABEL_SHAPE = new Rectangle(20, 5);
   private static final Rectangle TURTLE_INFO_SHAPE = new Rectangle(275 ,75);
   private static final double SPACING = 10;
-  private static final double MARGIN = 25;
+  private static final double MARGIN = 5;
   private static final double BOTTOM_INSET = 0.15;
   private static final double MENU_LABEL_SIZE = 20;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
@@ -90,7 +90,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
   private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace", "savePrefs"};
   private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight",
-      "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
+          "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
 
   private static final String DEFAULT_HELP_CATEGORY_FILE = "Basic_Syntax";
   private static final double FPS = 24;
@@ -158,7 +158,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   /**
    * Constructor for the visualizer class, which manages the display components and state
    * @param instructionQueueListener listener for the instruction queue
-   * @param onNewWorkSpaceClicked what happens when the create new workspace button is clicked
+   * @param onNewWorkSpaceClicked what happens when the New workspace button is clicked
    * @param configFileNum this indicates we will set defaults for this workspace using file workspaceX.properties
    *                      default to workspace 0 if file not found
    */
@@ -343,19 +343,19 @@ public class Visualizer extends Application implements FrontEndExternal{
       undoCommandsIssued.remove(0);
       if (isUndoCommand) {
         myTurtleView.clearPaths();
-        myTurtleView.incrementPathHistoryIndex(-1);
-        myTurtleView.setPathCreateMode(false);
-        myTurtleView.setDisplayedPaths();
+        myTurtleView.clearTurtles();
+        myTurtleView.incrementHistoryIndex(-1);
+        setPathsAndTurtles();
       } else if (isRedoCommand) {
         myTurtleView.clearPaths();
-        myTurtleView.incrementPathHistoryIndex(1);
-        myTurtleView.setPathCreateMode(false);
-        myTurtleView.setDisplayedPaths();
+        myTurtleView.clearTurtles();
+        myTurtleView.incrementHistoryIndex(1);
+        setPathsAndTurtles();
       }
     }
     else if(originalInstruction != myCurrentInstruction){
       myTurtleView.setPathCreateMode(true);
-      myTurtleView.addPathHistory(!clearScreen);
+      myTurtleView.addTimelineElement(!clearScreen);
       myCurrentInstruction = originalInstruction;
       // trim everything in pathHistory beyond the current path history index
       // add a new empty list to pathHistory. Copy pathHistory[index] to it, unless clearscreen is true
@@ -367,6 +367,15 @@ public class Visualizer extends Application implements FrontEndExternal{
     myRightVBox.requestLayout(); // make sure everything is updated graphically
   }
 
+  private void setPathsAndTurtles() {
+    myTurtleView.setPathCreateMode(false);
+    myTurtleView.setDisplayedPathsAndTurtles();
+    myTurtleInfo.getChildren().clear();
+    for(int id : myTurtleView.getExistingTurtleIDs()){
+      myTurtleInfo.getChildren().add(new Text(buildTurtleInfoString(id)));
+    }
+  }
+
   private void updateColorMenus(int paletteIndex, Color newColor) {
     myColorPalette.put(Integer.toString(paletteIndex), newColor);
     addMenuItem(MENU_TYPES.indexOf("Background"),  Integer.toString(paletteIndex));
@@ -375,7 +384,6 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
     myTurtleView.makeTurtle(turtleID, this::activateTurtle);
-    myTurtleView.getExistingTurtleIDs().add(turtleID);
     myTurtleView.getUnalteredTurtlePositions().put(turtleID, turtlePos);
     myTurtleInfo.getChildren().add(new Text(buildTurtleInfoString(myCurrentTurtleID)));
   }
@@ -415,7 +423,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       try {
         step(false);
       } catch (Exception ex) {
-        //ex.printStackTrace();
+        ex.printStackTrace();
         // note that this should ideally never be thrown
         System.out.println(ex.getMessage());
         //showError(ex.getMessage(), myLanguageResources);
@@ -581,11 +589,13 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setUpTopButtons() {
-    HBox topButtons = new HBox(SPACING);
-    for(String methodName : TOP_RIGHT_BUTTON_METHODS){
-      Button button = makeButton(methodName, TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources);
-      topButtons.getChildren().add(button);
-      myDisplayableTextHolder.addButton(button, methodName);
+    GridPane topButtons = new GridPane();
+    topButtons.setVgap(SPACING/2);
+    topButtons.setHgap(SPACING);
+    for(int i=0; i<TOP_RIGHT_BUTTON_METHODS.length; i++){
+      Button button = makeButton(TOP_RIGHT_BUTTON_METHODS[i], TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources);
+      topButtons.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
+      myDisplayableTextHolder.addButton(button, TOP_RIGHT_BUTTON_METHODS[i]);
     }
     myRightVBox.getChildren().add(topButtons);
   }

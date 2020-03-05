@@ -25,13 +25,14 @@ public class ForwardCommand extends TurtleCommand implements Command {
 
   @Override
   protected void applyToTurtle(Turtle turtle, List<Double> args) {
+    myRetVal = args.get(0);
     turtle.moveForward(args.get(0));
   }
 
   @Override
   protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
       List<Double> prevPos, BackEndInternal backEnd) {
-    CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+    CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),myRetVal);
     builder.setPathStart(prevPos);
     return builder.buildCommandResult();
   }

@@ -26,7 +26,7 @@ public class PenUpCommand implements Command {
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) {
         backEnd.setPenUp(true);
-        return List.of(backEnd.startCommandResult(1).buildCommandResult());
+        return List.of(backEnd.startCommandResult(0).buildCommandResult());
     }
 
     @Override

@@ -6,8 +6,6 @@ import java.util.List;
 
 
 public class Path {
-    //TODO: add hexadecimal vals for colors
-    private static final String BLACK = "";
 
     private List<Double> myStart;
     private List<Double> myEnd;

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Stack;
 import java.util.regex.Pattern;
 import slogo.CommandResult;
 
@@ -182,7 +181,9 @@ public class SLogoBackEnd implements BackEndInternal {
   @Override
   public CommandResultBuilder startCommandResult(int turtleID, double retVal) {
     Turtle turtle = getTurtleWithID(turtleID);
-    return new CommandResultBuilder(turtleID, turtle.getHeading(),turtle.getPosition(),getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp, myVariables,myUserCommandManager.getScriptMap());
+    CommandResultBuilder ret =  new CommandResultBuilder(turtleID, turtle.getHeading(),turtle.getPosition(),getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp, myVariables,myUserCommandManager.getScriptMap());
+    ret.setRetVal(retVal);
+    return ret;
   }
 
   @Override

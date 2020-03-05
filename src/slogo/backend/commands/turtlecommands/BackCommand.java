@@ -1,5 +1,6 @@
 package slogo.backend.commands.turtlecommands;
 
+import java.util.ArrayList;
 import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
@@ -11,7 +12,7 @@ import slogo.backend.Turtle;
 public class BackCommand extends TurtleCommand implements Command {
 
     private static final int NUM_ARGS = 1;
-    private static final String COMMAND_NAME = "Forward";
+    private static final int NUM_VARS = 0;
 
     @Override
     public int getNumArgs() {
@@ -20,41 +21,20 @@ public class BackCommand extends TurtleCommand implements Command {
 
     @Override
     public int getNumVars() {
-        return 0;
-    }
-
-    @Override
-    public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-        BackEndInternal backEnd, Interpreter interpreter) {
-        Integer id = backEnd.getActiveTurtleID();
-        System.out.println("id = " + id);
-
-        if (id == null) {
-            System.out.println("ID was null");
-            return List.of(backEnd.startCommandResult(0).buildCommandResult());
-        }
-        else {
-            System.out.println(backEnd.getTurtles(List.of(0)));
-            Turtle turtle = backEnd.getTurtles(List.of(id)).get(0);
-            List<Double> prevPos = turtle.getPosition();
-            turtle.moveBack(arguments.get(0));
-            System.out.println("Moved BACK by " + arguments.get(0));
-            System.out.println("Turtle " + turtle.getId() + " is now at x=" +  turtle.getX() + " y=" + turtle.getY());
-            CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
-            builder.setPathStart(prevPos);
-            return List.of(builder.buildCommandResult());
-        }
+        return NUM_VARS;
     }
 
     @Override
     protected void applyToTurtle(Turtle turtle, List<Double> args) {
+        myRetVal = args.get(0);
         turtle.moveBack(args.get(0));
+        System.out.println("Moving back by " + args.get(0));
     }
 
     @Override
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
-        List<Double> prevPos, BackEndInternal backEnd) {
-        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+                                                List<Double> prevPos, BackEndInternal backEnd) {
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),myRetVal);
         builder.setPathStart(prevPos);
         return builder.buildCommandResult();
     }
@@ -62,10 +42,5 @@ public class BackCommand extends TurtleCommand implements Command {
     @Override
     public List<String> findVars(String[] tokenList) {
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return COMMAND_NAME;
     }
 }

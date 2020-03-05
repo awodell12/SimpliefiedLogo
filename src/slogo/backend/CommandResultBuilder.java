@@ -54,7 +54,6 @@ public class CommandResultBuilder {
     shapeIndex = shape;
     penSize = size;
     errorMessage = "";
-    //TODO: change these so that stuff doesn't automatically get set to zero
     newPaletteIndex = 0;
     activeTurtles = new ArrayList<>(activeTurtleNumbers);
     actualCommand = true;
@@ -132,6 +131,9 @@ public class CommandResultBuilder {
   public void setUserCommands(Map<String,String> commands) {
     userCommands = commands;
   }
+
+  public void setVisible(boolean vis){ turtleVis = vis; }
+
 
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
