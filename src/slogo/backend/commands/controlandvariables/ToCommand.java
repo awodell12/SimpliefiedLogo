@@ -8,8 +8,8 @@ import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.backend.CommandResultBuilder;
+import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
-import slogo.backend.SLogoBackEnd;
 import slogo.CommandResult;
 
 public class ToCommand implements Command {
@@ -29,7 +29,7 @@ public class ToCommand implements Command {
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-      BackEndInternal backEnd) throws ParseException {
+      BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
     //TODO: Find out why adding an empty instruction doesn't parse the correct number of tokens.
     int programCounter = 0;
     String cmdName = tokens[programCounter];

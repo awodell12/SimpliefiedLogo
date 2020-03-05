@@ -196,7 +196,6 @@ public class Visualizer extends Application implements FrontEndExternal{
       Color color = Color.rgb(Integer.parseInt(parts[1]),Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
       myColorPalette.put(parts[0], color);
     }
-    // System.out.println(myColorPalette);
   }
   static class SortByVal implements Comparator<String> {
     public int compare(String a, String b)
@@ -423,10 +422,9 @@ public class Visualizer extends Application implements FrontEndExternal{
       try {
         step(false);
       } catch (Exception ex) {
-        ex.printStackTrace();
         // note that this should ideally never be thrown
         System.out.println(ex.getMessage());
-        //showError(ex.getMessage(), myLanguageResources);
+        myErrorMessage.setText(myLanguageResources.getString("IOError"));
       }
     });
 
@@ -856,8 +854,8 @@ public class Visualizer extends Application implements FrontEndExternal{
       // skip the animations if a clear screen command is coming (so that reset can interrupt animation)
     }
     if(!paused || overridePause) {
-      if (myDesiredTurtlePosition != null && (Math.abs(myCurrentTurtlePosition.getX() - myDesiredTurtlePosition.getX()) >= SIGNIFICANT_DIFFERENCE ||
-              Math.abs(myCurrentTurtlePosition.getY() - myDesiredTurtlePosition.getY()) >= SIGNIFICANT_DIFFERENCE)) {
+      if (myDesiredTurtlePosition != null && (notAlmostEqual(myCurrentTurtlePosition.getX(), myDesiredTurtlePosition.getX()) ||
+              notAlmostEqual(myCurrentTurtlePosition.getY(), myDesiredTurtlePosition.getY()))) {
         myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX() + xIncrement, myCurrentTurtlePosition.getY() + yIncrement);
         myTurtleView.getUnalteredTurtlePositions().put(myCurrentTurtleID, myCurrentTurtlePosition);
         myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY(), myCurrentTurtleID);
@@ -873,6 +871,10 @@ public class Visualizer extends Application implements FrontEndExternal{
         }
       }
     }
+  }
+
+  private boolean notAlmostEqual(double a, double b){
+    return Math.abs(a - b) >= SIGNIFICANT_DIFFERENCE;
   }
 
   private void updateTurtleInfo(int id) {
@@ -931,7 +933,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     vBox.getChildren().add(new ImageView("slogo/frontEnd/Resources/" + imageName + ".png"));
   }
   private void makeNewUserProperties(int fileNum){
-    System.out.println(myColorPalette + "Vis");
     PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(fileNum),myColorPalette);
 
   }

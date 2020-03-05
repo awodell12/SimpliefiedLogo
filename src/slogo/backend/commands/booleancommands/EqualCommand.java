@@ -3,6 +3,7 @@ package slogo.backend.commands.booleancommands;
 import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
+import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
@@ -22,10 +23,10 @@ public class EqualCommand implements Command {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
-                                       BackEndInternal backEnd) throws ParseException {
+        BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
         System.out.println("Checking equality of " + arguments.get(0) + " and " + arguments.get(1));
         double retVal = 0;
-        if(arguments.get(0) == arguments.get(1)){ retVal = 1;}
+        if(arguments.get(0).equals(arguments.get(1))){ retVal = 1;}
         return List.of(backEnd.makeCommandResult(retVal,0));
     }
 

@@ -82,8 +82,6 @@ public interface BackEndInternal {
 
   void setLanguage(String language);
 
-  List<CommandResult> parseCommandsList(String[] tokenList);
-
   CommandResult makeCommandResult(double retVal, int tokensParsed);
 
   void setActiveTurtles(List<Integer> turtleIDs);
@@ -100,13 +98,11 @@ public interface BackEndInternal {
 
   List<Integer> getActiveTurtleNumbers();
 
-  CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition);
+  CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition, boolean turtleVisible);
 
   CommandResultBuilder startCommandResult(int turtleID, double retVal);
 
   CommandResultBuilder startCommandResult(double retVal);
-
-  List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException;
 
   int getPathColor();
 
@@ -130,9 +126,10 @@ public interface BackEndInternal {
 
   Integer getActiveTurtleID();
 
-  List<CommandResult> undo();
+  SLogoMemento saveStateToMemento();
 
-  List<CommandResult> redo();
+  List<CommandResult> loadStateFromMemento(SLogoMemento memento, boolean isUndo, boolean isRedo);
 
+  void setActiveTurtleID(Integer id);
 }
 

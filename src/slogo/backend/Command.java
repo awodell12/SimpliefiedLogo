@@ -22,7 +22,8 @@ public interface Command {
    * instance.
    */
 
-  List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens, BackEndInternal backEnd)
+  List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+      BackEndInternal backEnd, Interpreter interpreter)
       throws ParseException;
 
   List<String> findVars(String[] tokenList);

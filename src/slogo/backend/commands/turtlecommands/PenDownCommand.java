@@ -4,7 +4,7 @@ import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
-import slogo.backend.CommandResultBuilder;
+import slogo.backend.Interpreter;
 
 public class PenDownCommand implements Command {
 
@@ -22,7 +22,8 @@ public class PenDownCommand implements Command {
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
+    public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+        BackEndInternal backEnd, Interpreter interpreter) {
         backEnd.setPenUp(false);
         return List.of(backEnd.startCommandResult(1).buildCommandResult());
     }

@@ -34,8 +34,4 @@ public class CommandFactory {
   public static boolean hasCommand(String type) {
     return RESOURCES.containsKey(type);
   }
-
-  public static void main(String[] args) throws ParseException {
-    CommandFactory.makeCommand("Forward");
-  }
 }
