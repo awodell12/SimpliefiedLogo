@@ -33,7 +33,8 @@ public class CommandResultBuilder {
   private boolean isRedo;
 
 
-  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers, int pathColor, int bgColor, int shape) {
+  public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers,
+                              int pathColor, int bgColor, int shape, double size, boolean isUp) {
     myRetVal = 0;
     myTokensParsed = 0;
     turtleID = 0;
@@ -44,27 +45,27 @@ public class CommandResultBuilder {
     variables = new HashMap<>();
     userCommands = new HashMap<>();
     clear = false;
-    penUp = false; //TODO: change this so pen doesn't always go down
+    penUp = isUp;
     turtleVis = true;
     turtleReset = false;
     bgColorIndex = bgColor;
     newColor = null;
-    shapeIndex = 0;
     shapeIndex = shape;
+    penSize = size;
     errorMessage = "";
     //TODO: change these so that stuff doesn't automatically get set to zero
     newPaletteIndex = 0;
     activeTurtles = new ArrayList<>(activeTurtleNumbers);
-    penSize = 1.0;
     actualCommand = true;
+    penUp = isUp;
     isUndo = false;
     isRedo = false;
   }
 
-  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles, int pathColor, int bgColor, int shape) {
-    this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape);
+  public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtles,
+                              int pathColor, int bgColor, int shape, double size, boolean isUp) {
+    this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape, size, isUp);
     turtleID = turtleNumber;
-    penUp = turtlePenUp;
   }
 
   public void setTokensParsed(int val) {

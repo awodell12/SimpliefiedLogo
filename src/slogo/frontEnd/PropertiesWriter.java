@@ -3,6 +3,7 @@ package slogo.frontEnd;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import javafx.scene.control.Alert;
@@ -19,6 +20,11 @@ public class PropertiesWriter {
   private static final int COLOR_MAX = 255;
   private OutputStream myOutput;
   private Properties myProperties;
+  private static final Map<String, Color> defaultMap = new HashMap<>(){{
+      put("0", Color.WHITE);
+      put("1", Color.BLACK);
+      put("2", Color.RED);
+}};
   /**
    * Constructor that does the writing to a new file
    * @param fileNum the number of the UserConfigurable file to be put in front end resources file. Must end with .properties
@@ -35,23 +41,28 @@ public class PropertiesWriter {
     }
 
   }
+  public PropertiesWriter(String fileNum){
+    this(fileNum, defaultMap);
+  }
   private void saveColorPalette(Map<String, Color> colorPaletteMap) throws IOException {
-
+    //System.out.println(colorPaletteMap);
     StringBuilder colors = new StringBuilder();
     // set the properties value
     for (String s : colorPaletteMap.keySet()) {
       Color color = colorPaletteMap.get(s);
       colors.append(s);
       colors.append(',');
-      colors.append((int)color.getRed()* COLOR_MAX);
+      colors.append((int)(color.getRed()* COLOR_MAX));
       colors.append(',');
-      colors.append((int)color.getGreen()* COLOR_MAX);
+      colors.append((int)(color.getGreen()* COLOR_MAX));
       colors.append(',');
-      colors.append((int)color.getBlue() * COLOR_MAX);
+      colors.append((int)(color.getBlue() * COLOR_MAX));
       colors.append(' ');
+      //System.out.println(colors.toString());
     }
-
+    //System.out.println(colors.toString());
     myProperties.setProperty("DefaultPalette", colors.toString());
+
 
     // save properties to project root folder
     myProperties.store(myOutput, null);
