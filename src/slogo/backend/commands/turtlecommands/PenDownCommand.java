@@ -27,7 +27,7 @@ public class PenDownCommand implements Command {
         double retVal = 1;
         //System.out.println("Pen is down");
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
-        builder.retVal(retVal);
+        builder.setRetVal(retVal);
         return List.of(backEnd.makeCommandResult(retVal,0));
     }
 

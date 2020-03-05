@@ -28,7 +28,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
   private int myPathColor = 0;
-  private int myBackgroundColor = 0;
+  private int myBackgroundColor = 5;
   private int myShapeIndex = 0;
   private double myPenSize = 1;
   private boolean penUp = false;
@@ -397,7 +397,10 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public CommandResultBuilder startCommandResult(double retVal) {
-    return null;
+    CommandResultBuilder ret = new CommandResultBuilder(0,myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition(),
+                                    getActiveTurtleNumbers(),myPathColor,myBackgroundColor,myShapeIndex,myPenSize,penUp);
+    ret.setRetVal(retVal);
+    return ret;
   }
 
   @Override
@@ -439,7 +442,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     List<CommandResult> results = new ArrayList<>();
     if (myTimelineLocation < myPrevStates.size()-1) {
       myTimelineLocation += 1;
-      loadStateFromMemento(myPrevStates.get(myTimelineLocation), false, true);
+      results = loadStateFromMemento(myPrevStates.get(myTimelineLocation), false, true);
     }
     return results;
   }

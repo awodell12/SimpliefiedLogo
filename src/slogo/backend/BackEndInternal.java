@@ -104,8 +104,6 @@ public interface BackEndInternal {
 
   CommandResultBuilder startCommandResult(double retVal);
 
-  Integer getActiveTurtleID();
-
   List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException;
 
   int getPathColor();
@@ -120,7 +118,6 @@ public interface BackEndInternal {
 
   void setShapeIndex(int index);
 
-<<<<<<< HEAD
   double getPenSize();
 
   void setPenSize(double size);
@@ -130,11 +127,10 @@ public interface BackEndInternal {
   void setPenUp(boolean isUp);
 
   Integer getActiveTurtleID();
-=======
+
   List<CommandResult> undo();
 
   List<CommandResult> redo();
->>>>>>> cary
 
 }
 
