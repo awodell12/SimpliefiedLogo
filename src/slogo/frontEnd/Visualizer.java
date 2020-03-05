@@ -111,7 +111,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     add(new Image(myResources.getString("Duval")));
   }};
   private List<String> myMenuNames;
-  private final Map<String, Color> myColorPalette = new HashMap<>(){{
+  /*private final Map<String, Color> myColorPalette = new HashMap<>(){{
     put("0", Color.RED);
     put("1", Color.WHITE);
     put("2", Color.GRAY);
@@ -123,7 +123,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     put("8", Color.BLACK);
     put("9", Color.MAGENTA);
     put("10", Color.ORANGE);
-  }};
+  }};*/
 
   private CommandBox myCommandBox;
   private History myHistory;
@@ -195,6 +195,24 @@ public class Visualizer extends Application implements FrontEndExternal{
     myScripts = Arrays.asList(myWorkSpaceResources.getString("Scripts").split(","));
     myStartingVariables = Arrays.asList(myWorkSpaceResources.getString("Variables").split(","));
     myStartingImage = Integer.parseInt(myWorkSpaceResources.getString("startingImage"));
+    setOriginalColorPalette();
+  }
+  private void setOriginalColorPalette() {
+    String[] defaultColors = myUserConfigurableResources.getString("DefaultPalette").split(" ");
+    int myPaletteSize = defaultColors.length;
+    myColorPalette = new TreeMap<>(new SortByVal());
+    for (String colorString : defaultColors){
+      String[] parts = colorString.split(",");
+      Color color = Color.rgb(Integer.parseInt(parts[1]),Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+      myColorPalette.put(parts[0], color);
+    }
+    // System.out.println(myColorPalette);
+  }
+  static class SortByVal implements Comparator<String> {
+    public int compare(String a, String b)
+    {
+      return Integer.compare(Integer.parseInt(a), Integer.parseInt(b));
+    }
   }
 
   @Override
@@ -697,10 +715,12 @@ public class Visualizer extends Application implements FrontEndExternal{
     return imageView;
   }
 
+  @SuppressWarnings("SameReturnValue")
   private Node getLanguageLabel(String irrelevant){
     return null;
   }
 
+  @SuppressWarnings("SameReturnValue")
   private Node getPenUpLabel(String irrelevant){
     return null;
   }
@@ -734,6 +754,13 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(String menuType : MENU_TYPES){
       myMenuOptions.add(Arrays.asList(myWorkSpaceResources.getString(menuType+"Options").split(",")));
     }
+
+    int penIndex = MENU_TYPES.indexOf("PenColor");
+    int backIndex = MENU_TYPES.indexOf("Background");
+    List<String> colorIndices = new ArrayList<>();
+    colorIndices.addAll(myColorPalette.keySet());
+    myMenuOptions.set(penIndex,colorIndices);
+    myMenuOptions.set(backIndex,colorIndices);
     myMenuBar = new MenuBar();
     myLeftVBox.getChildren().add(myMenuBar);
     for(int i=0; i<myMenuNames.size(); i++){
