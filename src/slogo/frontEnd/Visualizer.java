@@ -63,13 +63,13 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final Rectangle CLEAR_HISTORY_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_UDC_BUTTON_SHAPE = new Rectangle(30, 30);
   private static final Rectangle CLEAR_VARIABLES_BUTTON_SHAPE = new Rectangle(30, 30);
-  private static final Rectangle TOP_RIGHT_BUTTON_SHAPE = new Rectangle(75, 50);
+  private static final Rectangle TOP_RIGHT_BUTTON_SHAPE = new Rectangle(75, 20);
   private static final Rectangle TURTLE_BUTTON_SHAPE = new Rectangle(60, 30);
   private static final Rectangle HELP_WINDOW_SHAPE = new Rectangle(600, 600);
   private static final Rectangle TURTLE_MOVEMENT_LABEL_SHAPE = new Rectangle(20, 5);
   private static final Rectangle TURTLE_INFO_SHAPE = new Rectangle(275 ,75);
   private static final double SPACING = 10;
-  private static final double MARGIN = 25;
+  private static final double MARGIN = 5;
   private static final double BOTTOM_INSET = 0.15;
   private static final double MENU_LABEL_SIZE = 20;
   private static final int NUM_TURTLE_MOVE_BUTTONS = 4;
@@ -158,7 +158,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   /**
    * Constructor for the visualizer class, which manages the display components and state
    * @param instructionQueueListener listener for the instruction queue
-   * @param onNewWorkSpaceClicked what happens when the create new workspace button is clicked
+   * @param onNewWorkSpaceClicked what happens when the New workspace button is clicked
    * @param configFileNum this indicates we will set defaults for this workspace using file workspaceX.properties
    *                      default to workspace 0 if file not found
    */
@@ -581,11 +581,13 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setUpTopButtons() {
-    HBox topButtons = new HBox(SPACING);
-    for(String methodName : TOP_RIGHT_BUTTON_METHODS){
-      Button button = makeButton(methodName, TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources);
-      topButtons.getChildren().add(button);
-      myDisplayableTextHolder.addButton(button, methodName);
+    GridPane topButtons = new GridPane();
+    topButtons.setVgap(SPACING/2);
+    topButtons.setHgap(SPACING);
+    for(int i=0; i<TOP_RIGHT_BUTTON_METHODS.length; i++){
+      Button button = makeButton(TOP_RIGHT_BUTTON_METHODS[i], TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources);
+      topButtons.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
+      myDisplayableTextHolder.addButton(button, TOP_RIGHT_BUTTON_METHODS[i]);
     }
     myRightVBox.getChildren().add(topButtons);
   }

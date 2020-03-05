@@ -76,7 +76,7 @@ public class TurtleView extends Group{
     }
 
     /**
-     * we need this so that we don't create new paths when we are undoing or redoing
+     * we need this so that we don't New paths when we are undoing or redoing
      * @param value whether path create mode is on
      */
     protected void setPathCreateMode(boolean value){
