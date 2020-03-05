@@ -5,7 +5,6 @@ import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
-import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
 public class BackCommand implements Command {
@@ -27,20 +26,26 @@ public class BackCommand implements Command {
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
         Integer id = backEnd.getActiveTurtleID();
         System.out.println("id = " + id);
-        System.out.println(backEnd.getTurtles(List.of(0)));
-        System.out.println("Got your turtles");
-        Turtle turtle = backEnd.getTurtles(List.of(id)).get(0);
-        List<Double> prevPos = turtle.getPosition();
-        turtle.moveBack(arguments.get(0));
-        System.out.println("Moved BACK by " + arguments.get(0));
-        System.out.println("Turtle is now at x=" +  turtle.getX() + " y=" + turtle.getY());
-        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getHeading(),turtle.getPosition());
+
+        if (id == null) {
+            System.out.println("ID was null");
+            return List.of(backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),
+                backEnd.getTurtles().get(0).getPosition()).buildCommandResult());
+        }
+        else {
+            System.out.println(backEnd.getTurtles(List.of(0)));
+            Turtle turtle = backEnd.getTurtles(List.of(id)).get(0);
+            List<Double> prevPos = turtle.getPosition();
+            turtle.moveBack(arguments.get(0));
+            System.out.println("Moved BACK by " + arguments.get(0));
+            System.out.println("Turtle " + turtle.getId() + " is now at x=" +  turtle.getX() + " y=" + turtle.getY());
+            CommandResultBuilder builder = backEnd.startCommandResult(turtle.getHeading(),turtle.getPosition());
             builder.setTurtleID(id);
-            builder.retVal(arguments.get(0));
-            builder.tokensParsed(0);
-            builder.setPathColor(0);
+            builder.setRetVal(arguments.get(0));
+            builder.setTokensParsed(0);
             builder.setPathStart(prevPos);
-        return List.of(builder.buildCommandResult());
+            return List.of(builder.buildCommandResult());
+        }
     }
 
     @Override

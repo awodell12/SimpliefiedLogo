@@ -1,7 +1,9 @@
 package slogo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class CommandResult {
@@ -11,9 +13,11 @@ public class CommandResult {
   private double myRotation;
   private List<Double> myPosition;
   private String myVariableName;
+  private Map<String,Double> myVariables;
   private double myVariableValue;
   private String myUDCName;
   private String myUDCText;
+  private Map<String, String> myUserCommands;
   private boolean myScreenClear;
   private boolean myPenUp;
   private boolean myTurtleVisible;
@@ -29,21 +33,25 @@ public class CommandResult {
   private String myOriginalInstruction;
   private boolean actualCommand;
   private int paletteIndex;
+  boolean isUndo;
+  boolean isRedo;
 
   public CommandResult(double retVal, int tokensParsed, int turtleID, double heading, List<Double> pos, List<Double> pathStart, int penColor,
-                       String variableName, double variableVal, String udcName, String udcText,
+                       Map<String, Double> variables, Map<String,String> userCommands,
                        boolean clearScreen, boolean penUp, boolean turtleVisible, boolean turtleReset,
                        int backgroundColor, List<Integer> newPaletteColor, double penSize, List<Integer> activeTurtles,
-                       int shapeIndex, int newPaletteIndex, String errorMessage, boolean doesSomething) {
+                       int shapeIndex, int newPaletteIndex, String errorMessage, boolean doesSomething, boolean undo, boolean redo) {
     returnVal = retVal;
     myTokensParsed = tokensParsed;
     myErrorMessage = errorMessage;
     myRotation = heading;
     myPosition = pos;
-    myVariableName = variableName;
-    myVariableValue = variableVal;
-    myUDCName = udcName;
-    myUDCText = udcText;
+    myVariableName = "";
+    myVariableValue = 0;
+    myVariables = variables;
+    myUDCName = "";
+    myUDCText = "";
+    myUserCommands = userCommands;
     myScreenClear = clearScreen;
     myPenUp = penUp;
     myTurtleVisible = turtleVisible;
@@ -58,27 +66,9 @@ public class CommandResult {
     myTurtleID = turtleID;
     paletteIndex = newPaletteIndex;
     actualCommand = doesSomething;
+    isUndo = undo;
+    isRedo = redo;
   }
-
-  public CommandResult(double retVal, int tokensParsed){
-    returnVal = retVal;
-    myTokensParsed = tokensParsed;
-
-    myRotation = 0;
-    myPosition = new ArrayList<>();
-    myPosition.add(0.0); myPosition.add(0.0);
-    myVariableName = "varName";
-    myVariableValue = 0;
-    myUDCName = "udcName";
-    myUDCText = "udcText";
-    myScreenClear = false;
-    myPenUp = false;
-    myTurtleVisible = true;
-    myTurtleReset = false;
-    actualCommand = false;
-    myErrorMessage = "";
-  }
-
 
   public void setErrorMessage(String msg) {
     myErrorMessage = msg;
@@ -186,5 +176,25 @@ public class CommandResult {
 
   public void setMyScreenClear(boolean value){
     myScreenClear = value;
+  }
+
+  public Map<String, Double> getVariables() {
+    return myVariables;
+  }
+
+  public Map<String, String> getUserDefinedCommands() {
+    return myUserCommands;
+  }
+
+  public void setTokensParsed(int tokensParsed) {
+    myTokensParsed = tokensParsed;
+  }
+
+  public boolean isUndo() {
+    return isUndo;
+  }
+
+  public boolean isRedo() {
+    return isRedo;
   }
 }

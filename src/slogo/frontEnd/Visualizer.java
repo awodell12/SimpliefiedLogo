@@ -133,16 +133,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   private boolean isReady = true;
   private boolean paused = false;
   private final Queue<CommandResult> resultQueue = new LinkedList<>();
-  private CommandResult previousResult = new CommandResult(0, 0, 0, 0,
-      List.of(0.0,0.0), null, 0, null, 0.0, null, null,
-      false, false, true, false, 0, null,
-      1.0, Collections.singletonList(0), 0, 0, "", true);
-  private CommandResult currentResult = previousResult;
-  //private Map<String, Double> previousVariableMapping = new HashMap<>(); //TODO: move this to variable class?
-  //private Map<String, Double> currentVariableMapping = previousVariableMapping;
-  //private Map<String, Double> previousUDCMapping = new HashMap<>(); //TODO: move this to variable class?
-  //private Map<String, Double> currentUDCMapping = previousUDCMapping; // TODO: make a state class?
-  private boolean undone = false;
+  private List<String> undoCommandsIssued = new ArrayList<>();
+  private int numUndoCommandsIssued = 0;
   private String myCurrentlyHighlighted = null;
   private String myCurrentInstruction = null;
   private Timeline animation;
@@ -259,25 +251,16 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void dissectCommand(CommandResult result) {
-    if(result.getMyOriginalInstruction() != myCurrentInstruction) {
-      previousResult = currentResult;
-      //previousVariableMapping = currentVariableMapping;
-      //previousUDCMapping = currentUDCMapping;
-      myCurrentInstruction = result.getMyOriginalInstruction();
-    }
-    currentResult = result;
-    //currentVariableMapping = myVariables.getMap();
-    //currentUDCMapping = myUserDefinedCommands.getMap();
     Point2D startPos = null;
     if(result.getPathStart() != null){
       startPos = new Point2D(result.getPathStart().get(0), -result.getPathStart().get(1));
     }
     interpretResult(result.getMyRotation(), new Point2D(result.getTurtlePosition().get(0), -result.getTurtlePosition().get(1)),
-            startPos, result.getMyVariableName(),
-            result.getMyVariableValue(), result.getMyUDCName(), result.getMyUDCText(), result.isMyScreenClear(),
+            startPos, result.getVariables(), result.getUserDefinedCommands(), result.isMyScreenClear(),
             result.isMyPenUp(), result.isMyTurtleVisible(), result.getErrorMessage(), result.getMyOriginalInstruction(),
             result.getTurtleID(), result.getActiveTurtleIDs(), result.getPaletteIndex(), result.getPenColor(),
-            result.getBackgroundColor(), result.getNewPaletteColor(), result.getShapeIndex(), result.getPenSize());
+            result.getBackgroundColor(), result.getNewPaletteColor(), result.getShapeIndex(), result.getPenSize(),
+            result.isUndo(), result.isRedo());
   }
 
   /**
@@ -290,10 +273,8 @@ public class Visualizer extends Application implements FrontEndExternal{
    * @param turtleRotate new angle to set turtle to
    * @param turtlePos new coordinates for turtle
    * @param startPos start of path to draw
-   * @param variableName string name for variable to be created/overwritten
-   * @param variableValue value for new variable
-   * @param udcName name of the newly created user defined command
-   * @param udcText the actual commands that entail the user defined command
+   * @param variables map of variable names and values
+   * @param userDefinedCommands map of user defined command names and scripts
    * @param clearScreen whether or not the turtle view should be cleared
    * @param isPenUp whether or not the pen is up
    * @param turtleVisibility whether or not to show the turtle
@@ -307,18 +288,15 @@ public class Visualizer extends Application implements FrontEndExternal{
    * @param newColorRGB the rgb values for a new color that's being created
    * @param imageIndex what image to set all turtles to
    * @param penSize what thickness to set the pen to (for all turtles)
-   *                take in a turtle id as well. if it doesn't exist create it.
-   *                     store a list of active turtles, and a list of existing turtles
-   *                     clicking on a turtle executes a tell command, adding that turtle to active turtles and then doing tell for the whole list
-   *                     commands also return a list of active turtles
-   *                     color: index for palette, color for palette, index for pen, index for background
-   *                     image: index for the turtle's image
+   * @param isUndoCommand is this command part of an undo instruction
+   * @param isRedoCommand is this command part of a redo instruction
    */
-  private void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, String variableName,
-                               double variableValue, String udcName, String udcText, boolean clearScreen,
-                               boolean isPenUp, boolean turtleVisibility, String errorMessage, String originalInstruction,
-                               int turtleID, List<Integer> activeTurtles, int paletteIndex, int penColorIndex,
-                               int backgroundColorIndex, List<Integer> newColorRGB, int imageIndex, double penSize) {
+  private void interpretResult(double turtleRotate, Point2D turtlePos, Point2D startPos, Map<String, Double> variables,
+                               Map<String, String> userDefinedCommands, boolean clearScreen, boolean isPenUp,
+                               boolean turtleVisibility, String errorMessage, String originalInstruction, int turtleID,
+                               List<Integer> activeTurtles, int paletteIndex, int penColorIndex,
+                               int backgroundColorIndex, List<Integer> newColorRGB, int imageIndex, double penSize,
+                               boolean isUndoCommand, boolean isRedoCommand) {
     myCurrentTurtleID = turtleID;
     if(!myTurtleView.getExistingTurtleIDs().contains(turtleID)){
       createTurtle(turtlePos, turtleID);
@@ -337,8 +315,12 @@ public class Visualizer extends Application implements FrontEndExternal{
     xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
     yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
     myStartPos = startPos;
-    if(variableName != null) addVariable(variableName, variableValue);
-    if(udcName != null) addUserDefinedCommand(udcName, udcText);
+    for(Map.Entry<String, Double> variable : variables.entrySet()){
+      addVariable(variable.getKey(), variable.getValue());
+    }
+    for(Map.Entry<String, String> UDC : userDefinedCommands.entrySet()){
+      addUserDefinedCommand(UDC.getKey(), UDC.getValue());
+    }
     if(clearScreen) {
       myTurtleView.clearPaths();
       clearScreenScheduled = false;
@@ -358,11 +340,31 @@ public class Visualizer extends Application implements FrontEndExternal{
       myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
     }
     setPenText();
+    if(undoCommandsIssued.size() > 0 && undoCommandsIssued.get(0) == originalInstruction) {
+      undoCommandsIssued.remove(0);
+      if (isUndoCommand) {
+        myTurtleView.clearPaths();
+        myTurtleView.incrementPathHistoryIndex(-1);
+        myTurtleView.setPathCreateMode(false);
+        myTurtleView.setDisplayedPaths();
+      } else if (isRedoCommand) {
+        myTurtleView.clearPaths();
+        myTurtleView.incrementPathHistoryIndex(1);
+        myTurtleView.setPathCreateMode(false);
+        myTurtleView.setDisplayedPaths();
+      }
+    }
+    else if(originalInstruction != myCurrentInstruction){
+      myTurtleView.setPathCreateMode(true);
+      myTurtleView.addPathHistory(!clearScreen);
+      myCurrentInstruction = originalInstruction;
+      // trim everything in pathHistory beyond the current path history index
+      // add a new empty list to pathHistory. Copy pathHistory[index] to it, unless clearscreen is true
+    }
     if(originalInstruction != myCurrentlyHighlighted) {
       myHistory.highlightNext();
       myCurrentlyHighlighted = originalInstruction;
     }
-    undone = false;
     myRightVBox.requestLayout(); // make sure everything is updated graphically
   }
 
@@ -416,7 +418,8 @@ public class Visualizer extends Application implements FrontEndExternal{
       } catch (Exception ex) {
         //ex.printStackTrace();
         // note that this should ideally never be thrown
-        showError(ex.getMessage(), myLanguageResources);
+        System.out.println(ex.getMessage());
+        //showError(ex.getMessage(), myLanguageResources);
       }
     });
 
@@ -451,9 +454,8 @@ public class Visualizer extends Application implements FrontEndExternal{
     executeInstruction("setshape " + myStartingImage);
     for(String scriptName : myScripts){
       String script = myWorkSpaceResources.getString(scriptName);
-      //executeInstruction("to " + scriptName + " [ ] [ " + script + " ]");
-      //TODO: comment in above line when to command is fixed, and comment out below line
-      myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
+      executeInstruction("to " + scriptName + " [ ] [ " + script + " ]");
+      //myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
     }
     for(String variableName : myStartingVariables){
       double value = Double.parseDouble(myWorkSpaceResources.getString(variableName));
@@ -630,8 +632,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void resetAnimation() {
-    //TODO: make this reset the animation too (e.g. desired position)??
-    executeInstruction(myLanguageResources.getString("clearscreen"));
+    executeInstruction(myLanguageResources.getString("clearscreen") + "");
   }
 
   private void newWorkspace(){
@@ -639,24 +640,18 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void undoButton(){
-    myHistory.addEntry(myLanguageResources.getString("undo") + " " + myCurrentInstruction, null, e->myCommandBox.setText(myCurrentInstruction));
-    /*myVariables.clearEntryBox();
-    for(Map.Entry<String, Double> entry : previousVariableMapping.entrySet()){
-      addVariable(entry.getKey(), entry.getValue());
-    }
-    myUserDefinedCommands.clearEntryBox();
-    for(Map.Entry<String, String> entry : previousUDCMapping.entrySet()){
-      addUserDefinedCommand(entry.getKey(), entry.getValue());
-    }*/
-    processResult(previousResult);
-    // TODO: make this work for multiple turtles
-    undone = true;
+    numUndoCommandsIssued++;
+    String instruction = myLanguageResources.getString("undo") + "";
+    undoCommandsIssued.add(instruction);
+    executeInstruction(instruction);
   }
 
   private void redoButton(){
-    if(undone) {
-      myHistory.addEntry(myLanguageResources.getString("redo") + " " + myCurrentInstruction, null, e->myCommandBox.setText(myCurrentInstruction));
-      processResult(previousResult);
+    if(numUndoCommandsIssued > 0) {
+      numUndoCommandsIssued--;
+      String instruction = myLanguageResources.getString("redo") + "";
+      undoCommandsIssued.add(instruction);
+      executeInstruction(instruction);
     }
   }
 
@@ -692,7 +687,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void runButton(){
-    String instruction = myCommandBox.getContents();
+    String instruction = myCommandBox.getContents() + "";
     executeInstruction(instruction);
   }
 

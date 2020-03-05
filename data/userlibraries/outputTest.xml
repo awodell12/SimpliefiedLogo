@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<UserLib>
+    <VariableList>
+        <Variable name="a" value="44.4"/>
+        <Variable name="b" value="99.0"/>
+    </VariableList>
+    <CommandsList>
+        <Command contents="fd 50" name="func">
+            <argument label="arg"/>
+            <argument label="farg"/>
+        </Command>
+    </CommandsList>
+</UserLib>

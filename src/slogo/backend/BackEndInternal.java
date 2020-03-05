@@ -62,6 +62,8 @@ public interface BackEndInternal {
    */
   Collection<String> getUserCommandScript(String name);
 
+  Command getUserCommand(String name);
+
   /**
    * @return A list of all Turtles in this instance of the model.
    */
@@ -82,14 +84,6 @@ public interface BackEndInternal {
 
   List<CommandResult> parseCommandsList(String[] tokenList);
 
-  int distanceToEndBracket(String[] tokenList);
-
-  CommandResult makeCommandResult(double retVal, int tokensParsed, List<Double> pathStart, int pathColor);
-
-  CommandResult makeCommandResult(double retVal, int tokensParsed, String varName, double varValue);
-
-  CommandResult makeCommandResult(double retVal, int tokensParsed, String udcName, String udcScript);
-
   CommandResult makeCommandResult(double retVal, int tokensParsed);
 
   void setActiveTurtles(List<Integer> turtleIDs);
@@ -108,6 +102,12 @@ public interface BackEndInternal {
 
   CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition);
 
+  CommandResultBuilder startCommandResult(double retVal);
+
+  Integer getActiveTurtleID();
+
+  List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException;
+
   int getPathColor();
 
   void setPathColor(int index);
@@ -120,11 +120,17 @@ public interface BackEndInternal {
 
   void setShapeIndex(int index);
 
+<<<<<<< HEAD
   double getPenSize();
 
   void setPenSize(double size);
 
   Integer getActiveTurtleID();
+=======
+  List<CommandResult> undo();
+
+  List<CommandResult> redo();
+>>>>>>> cary
 
 }
 

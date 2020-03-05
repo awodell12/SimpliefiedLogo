@@ -27,6 +27,9 @@ public class TurtleView extends Group{
     private final Map<Integer, Turtle> myTurtles = new HashMap<>();
     private final Map<Integer, Point2D> unalteredTurtlePositions = new HashMap<>();
     private final List<Integer> existingTurtleIDs = new ArrayList<>();
+    private final List<List<Path>> pathsHistory = new ArrayList<>(){{add(new ArrayList<>());}};
+    private int currentPathHistoryIndex = 0;
+    private boolean pathCreateMode = true;
     private Color myPenColor = Color.BLACK;
     private int myPenColorIndex;
     private double myPenThickness = 1;
@@ -60,6 +63,51 @@ public class TurtleView extends Group{
         resetTurtle(id);
         myTurtle.setOnMouseClicked(event -> toggleActive(id, onClicked));
         this.getChildren().add(myTurtle);
+    }
+
+    /**
+     * increments or decrements the path history index. Limits it to list range bounds.
+     * @param value what to add to the index
+     */
+    protected void incrementPathHistoryIndex(int value){
+        currentPathHistoryIndex += value;
+        assert currentPathHistoryIndex >= 0;
+        assert currentPathHistoryIndex <= pathsHistory.size()-1;
+    }
+
+    /**
+     * we need this so that we don't create new paths when we are undoing or redoing
+     * @param value whether path create mode is on
+     */
+    protected void setPathCreateMode(boolean value){
+        pathCreateMode = value;
+    }
+
+    /**
+     * defines procedure for adding a new entry to the paths history. First we must trim everything past the current
+     *      index to prevent the user from redoing after a non-undo command
+     * @param copyPrevious whether or not to maintain the current state or start fresh
+     */
+    protected void addPathHistory(boolean copyPrevious){
+        if(currentPathHistoryIndex < pathsHistory.size()-1)
+            pathsHistory.subList(currentPathHistoryIndex+1, pathsHistory.size()).clear();
+        if(copyPrevious) pathsHistory.add(new ArrayList<>(pathsHistory.get(currentPathHistoryIndex)));
+        else pathsHistory.add(new ArrayList<>());
+        currentPathHistoryIndex++;
+    }
+
+    /**
+     * Removes all of the taken paths displayed on the screen
+     */
+    protected void clearPaths(){
+        this.getChildren().removeAll(pathsHistory.get(currentPathHistoryIndex));
+    }
+
+    /**
+     * set the displayed paths to what's at the current path history
+     */
+    protected void setDisplayedPaths(){
+        this.getChildren().addAll(pathsHistory.get(currentPathHistoryIndex));
     }
 
     /**
@@ -121,7 +169,7 @@ public class TurtleView extends Group{
      * @param turtlePos the turtle current position
      */
     protected void addPath(Point2D startPos, Point2D turtlePos){
-        if(!isPenUp) {
+        if(!isPenUp && pathCreateMode) {
             Path path = new Path();
             double turtleX = boundX(turtlePos.getX()) + TURTLE_SIZE/2;
             double turtleY = boundY(turtlePos.getY()) + TURTLE_SIZE/2;
@@ -137,20 +185,17 @@ public class TurtleView extends Group{
             path.setStroke(myPenColor);
             path.setStrokeWidth(myPenThickness);
             this.getChildren().add(path);
+            pathsHistory.get(currentPathHistoryIndex).add(path);
         }
     }
 
-    /**
-     * Removes all of the taken paths displayed on the screen by clearing the display and returns all turtles
-     * back to the starting position
-     */
-    protected void clearPaths(){
+    /*protected void clearPaths(){
         int numChildren = this.getChildren().size();
         if(numChildren >= 2) this.getChildren().remove(1, numChildren);
         for(Map.Entry<Integer, Turtle> turtle : myTurtles.entrySet()){
             if(turtle.getValue().getVisibility()) this.getChildren().add(turtle.getValue());
         }
-    }
+    }*/
 
     /**
      * change the turtle image. Image is determined by the file chooser

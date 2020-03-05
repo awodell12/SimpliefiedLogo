@@ -123,4 +123,13 @@ public class SLogoTurtle implements Turtle {
     public int getId() {
         return myId;
     }
+
+    @Override
+    public Turtle getClone() {
+        Turtle ret = new SLogoTurtle(myId);
+        ret.setPos(myX,myY);
+        ret.setHeading(myHeading);
+        ret.setPenUp(myPenUp);
+        return ret;
+    }
 }

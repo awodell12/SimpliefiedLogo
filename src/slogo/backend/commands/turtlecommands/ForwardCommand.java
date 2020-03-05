@@ -43,7 +43,7 @@ public class ForwardCommand implements Command {
           backEnd.getShapeIndex(),
               backEnd.getPenSize()
       );
-      builder.retVal(arguments.get(0));
+      builder.setRetVal(arguments.get(0));
       builder.setPathStart(prevPos);
       builder.setPathColor(backEnd.getPathColor());
       results.add(builder.buildCommandResult());

@@ -96,4 +96,6 @@ public interface Turtle {
 
   public int getId();
 
+  Turtle getClone();
+
 }
