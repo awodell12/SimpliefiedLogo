@@ -31,7 +31,6 @@ public class SetHeadingCommand extends TurtleCommand implements Command {
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
                                                 List<Double> prevPos, BackEndInternal backEnd) {
         CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
-        builder.setPathStart(prevPos);
         return builder.buildCommandResult();
     }
 
