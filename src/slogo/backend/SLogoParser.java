@@ -135,18 +135,16 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   }
 
   public List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException {
-    int programCounter = 0;
-    List<CommandResult> results = new ArrayList<>();
+
     String currentTokenType = getSymbol(tokenList[0]);
     if (isValue(currentTokenType)) {
       CommandResultBuilder builder = myBackEnd.startCommandResult(parseValue(currentTokenType,tokenList[0]));
       return List.of(builder.buildCommandResult());
     }
+
     Command command = identifyCommand(tokenList[0]);
-    List<CommandResult> listResult = parseSingleCommand(command,
-        Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
-    results.addAll(listResult);
-    return results;
+    return parseSingleCommand(command,
+        Arrays.copyOfRange(tokenList, 1, tokenList.length));
   }
 
   private Command identifyCommand(String rawToken) throws ParseException {

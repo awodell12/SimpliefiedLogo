@@ -1,8 +1,11 @@
 package slogo.backend;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import slogo.CommandResult;
 
 /**
@@ -10,37 +13,29 @@ import slogo.CommandResult;
  */
 public class SLogoBackEnd implements BackEndInternal {
 
-  private static final String RESOURCES_PACKAGE = "resources/languages/";
-  private List<Entry<String, Pattern>> myLanguage;
-  private List<Entry<String, Pattern>> mySyntax;
+  public static final int INITIAL_BG_COLOR = 5;
   private Map<String, Double> myVariables;
   private UserCommandManager myUserCommandManager;
   private List<Turtle> myTurtles;
   private List<Turtle> myActiveTurtles;
   private Map<Integer, List<Integer>> myPalette;
   private int myPathColor = 0;
-  private int myBackgroundColor = 5;
+  private int myBackgroundColor;
   private int myShapeIndex = 0;
   private double myPenSize = 1;
   private boolean penUp = false;
   private Integer myActiveTurtleID;
-  private List<SLogoMemento> myPrevStates;
-  private int myTimelineLocation;
 
 
   public SLogoBackEnd() {
-    myLanguage = new ArrayList<>();
     myVariables = new HashMap<>();
     myUserCommandManager = new UserCommandManager();
     myTurtles = new ArrayList<>();
     myTurtles.add(new SLogoTurtle(0));
     myActiveTurtles = List.of(myTurtles.get(0));
-    myLanguage = BackEndUtil.interpretPatterns("English");
-    mySyntax = BackEndUtil.interpretPatterns("Syntax");
     myActiveTurtleID = null;
     myPalette = new HashMap<>();
-    myPrevStates = new ArrayList<>();
-    myTimelineLocation = -1;
+    myBackgroundColor = INITIAL_BG_COLOR;
   }
 
   @Override
@@ -106,11 +101,6 @@ public class SLogoBackEnd implements BackEndInternal {
   @Override
   public void clearTurtles() {
     myTurtles.clear();
-  }
-
-  @Override
-  public void setLanguage(String language) {
-    myLanguage = BackEndUtil.interpretPatterns(language);
   }
 
   @Override
@@ -234,7 +224,7 @@ public class SLogoBackEnd implements BackEndInternal {
     }
     return new SLogoMemento(turtleCopy,getActiveTurtleNumbers(),new HashMap<>(myPalette),
                             myBackgroundColor,myPathColor,
-                            myShapeIndex, myPenSize,new ArrayList<>(myLanguage),
+                            myShapeIndex, myPenSize,
                             new HashMap<>(myVariables),new UserCommandManager(myUserCommandManager));
   }
 
@@ -247,7 +237,6 @@ public class SLogoBackEnd implements BackEndInternal {
     myPathColor = memento.getPenColorIndex();
     myPenSize = memento.getPenSize();
     myShapeIndex = memento.getShapeIndex();
-    myLanguage = memento.getLanguage();
     myVariables = memento.getVariables();
     myUserCommandManager = memento.getUserCommandManager();
 
