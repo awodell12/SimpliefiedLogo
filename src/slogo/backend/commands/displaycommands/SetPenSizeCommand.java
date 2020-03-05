@@ -8,7 +8,7 @@ import slogo.backend.Command;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.ParseException;
 
-public class SetPenColorCommand implements Command {
+public class SetPenSizeCommand implements Command {
 
     private static final int NUM_ARGS = 1;
     private static final int NUM_VARS = 0;
@@ -26,13 +26,12 @@ public class SetPenColorCommand implements Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
                                        BackEndInternal backEnd) throws ParseException {
-        int index = (int) Math.round(arguments.get(0));
-        backEnd.setPathColor(index);
-        System.out.println("Changed pen color to index " + index);
+        double size = arguments.get(0);
+        backEnd.setPenSize(size);
+        System.out.println("Changed pen size to " + size + " pixels wide");
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
-        builder.setRetVal(index);
-        //TODO error handling if this is not a valid index or not an integer
-        builder.setPathColor(backEnd.getPathColor());
+        builder.retVal(size);
+        builder.setPenSize(backEnd.getPenSize());
         return List.of(builder.buildCommandResult());
     }
 

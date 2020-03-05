@@ -189,4 +189,12 @@ public class CommandResult {
   public void setTokensParsed(int tokensParsed) {
     myTokensParsed = tokensParsed;
   }
+
+  public boolean isUndo() {
+    return isUndo;
+  }
+
+  public boolean isRedo() {
+    return isRedo;
+  }
 }

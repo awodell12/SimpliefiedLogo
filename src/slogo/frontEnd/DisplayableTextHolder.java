@@ -17,18 +17,14 @@ public class DisplayableTextHolder implements DisplayableTextOwner{
   private final Map<Text, String> texts = new HashMap<>();
   private final Map<Button, String> buttons = new HashMap<>();
 
-  public DisplayableTextHolder() {
-
-  }
-
   /**
    * change the language and translate all displayable texts to the new language
-   *
-   * @param languageResources the new language config to translate with
+   * @param languageResources the new language config file to translate with
    */
   @Override
   public void setDisplayableTexts(ResourceBundle languageResources) {
     for(Map.Entry<MenuItem, String> entry : menuItems.entrySet()){
+      if(Visualizer.isNonNumeric(entry.getValue()))
       entry.getKey().setText(languageResources.getString(entry.getValue()));
     }
     for(Map.Entry<Menu, String> entry : menus.entrySet()){

@@ -15,6 +15,10 @@ public class Controller extends Application{
 
     private static final String LANGUAGE_INSTRUCTION = "language:";
     private static final int LI_LENGTH = LANGUAGE_INSTRUCTION.length();
+    private static final List<String> UNDO_INSTRUCTIONS = List.of("undo", "chexiao", "annuler", "rückgängigmachen",
+            "disfare", "desfazer", "otmenit", "deshacer", "urduundo");
+    private static final List<String> REDO_INSTRUCTIONS = List.of("redo", "chongzuo", "refaire", "wiederholen",
+            "rifare", "refazer", "povtorit", "rehacer", "urduredo");
 
     private final List<Visualizer> myVisualizers = new ArrayList<>();
     private final List<SLogoBackEnd> myModels = new ArrayList<>();
@@ -33,10 +37,9 @@ public class Controller extends Application{
      *                     the application scene can be set.
      *                     Applications may create other stages, if needed, but they will not be
      *                     primary stages.
-     * @throws Exception if something goes wrong
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         myModels.add(new SLogoBackEnd());
         int thisWorkspace = numWorkspaces; // need this variable because we don't want to pass in a dynamic value!
         ListChangeListener<String> instructionQueueListener = c -> processInstructionQueueEvent(thisWorkspace);
@@ -64,7 +67,14 @@ public class Controller extends Application{
             myModels.get(workspace).applyChanger(languageChanger);
         }
         else {
-            ArrayList<CommandResult> resultList = (ArrayList<CommandResult>) myModels.get(workspace).parseScript(input);
+            ArrayList<CommandResult> resultList;
+            if(UNDO_INSTRUCTIONS.contains(input)){
+                resultList = (ArrayList<CommandResult>) myModels.get(workspace).undo();
+            } else if(REDO_INSTRUCTIONS.contains(input)){
+                resultList = (ArrayList<CommandResult>) myModels.get(workspace).redo();
+            } else {
+                resultList = (ArrayList<CommandResult>) myModels.get(workspace).parseScript(input);
+            }
             for (CommandResult result : resultList) {
                 if(result.isActualCommand()) {
                     result.setMyOriginalInstruction(input);

@@ -120,9 +120,21 @@ public interface BackEndInternal {
 
   void setShapeIndex(int index);
 
+<<<<<<< HEAD
+  double getPenSize();
+
+  void setPenSize(double size);
+
+  boolean getPenUp();
+
+  void setPenUp(boolean isUp);
+
+  Integer getActiveTurtleID();
+=======
   List<CommandResult> undo();
 
   List<CommandResult> redo();
+>>>>>>> cary
 
 }
 

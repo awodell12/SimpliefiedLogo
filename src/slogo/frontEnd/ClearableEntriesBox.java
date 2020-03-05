@@ -30,6 +30,7 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
     protected final Button clearButton;
     protected final List<Text> displayableEntries = new ArrayList<>();
     private final String myDescriptionKey;
+    private String myLanguage;
 
     private static final double SPACING = 10;
 
@@ -56,18 +57,20 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
         myTextFlow.getChildren().add(descriptionText);
         myTextFlow.getChildren().add(new Text("\n\n\n\n\n"));
         entryList = new ArrayList<>();
+        myLanguage = languageResources.getString("LanguageName");
     }
 
     /**
      * change the language and translate all displayable texts to the new language
-     * @param languageResources the new language config to translate with
+     * @param newLanguageResources the new language config to translate with
      */
     @Override
-    public void setDisplayableTexts(ResourceBundle languageResources){
-        clearButton.setText(languageResources.getString("clearButton"));
-        clearButton.setTooltip(new Tooltip(languageResources.getString("HoverText")));
-        descriptionText.setText(languageResources.getString(myDescriptionKey) + "\n");
-        setChildDisplayableTexts(languageResources);
+    public void setDisplayableTexts(ResourceBundle newLanguageResources){
+        clearButton.setText(newLanguageResources.getString("clearButton"));
+        clearButton.setTooltip(new Tooltip(newLanguageResources.getString("HoverText")));
+        descriptionText.setText(newLanguageResources.getString(myDescriptionKey) + "\n");
+        setChildDisplayableTexts(newLanguageResources);
+        myLanguage = newLanguageResources.getString("LanguageName");
     }
 
     /**
@@ -81,9 +84,33 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
         }
     }
 
+    /**
+     * split it
+     * get symbol with source properties file, if it isn't a match don't translate it
+     * then translate each command using the destination properties file
+     * @param script the series of commands to translate
+     * @param languageResources the new language resource bundle
+     * @return the translated script
+     */
     protected String translateCommand(String script, ResourceBundle languageResources){
-        //return script;
-        return languageResources.getBaseBundleName() + script; //TODO: implement this
+        String newLanguageName = languageResources.getString("LanguageName");
+        ResourceBundle newLanguageProperties = ResourceBundle.getBundle("resources.languages." + newLanguageName);
+        ResourceBundle oldLanguageProperties = ResourceBundle.getBundle("resources.languages." + myLanguage);
+        StringBuilder translatedScript = new StringBuilder();
+        for(String scriptPiece : script.split("\\s+")) {// split for any whitespace
+            System.out.println(scriptPiece);
+            boolean foundMatch = false;
+            for (String key : oldLanguageProperties.keySet()) {
+                if (scriptPiece.matches(oldLanguageProperties.getString(key))) {
+                    translatedScript.append(newLanguageProperties.getString(key).split("\\|")[0]).append(" ");
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if(!foundMatch) translatedScript.append(scriptPiece).append(" ");
+        }
+        translatedScript.append("\n");
+        return translatedScript.toString();
     }
 
     /**
