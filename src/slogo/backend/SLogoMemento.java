@@ -36,7 +36,11 @@ public class SLogoMemento {
   }
 
   public List<Turtle> getTurtles() {
-    return new ArrayList<>(myTurtles);
+    List<Turtle> retList = new ArrayList<>();
+    for (Turtle turtle : myTurtles) {
+      retList.add(turtle.getClone());
+    }
+    return retList;
   }
 
   public List<Integer> getActiveTurtles() {
