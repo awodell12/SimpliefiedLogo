@@ -41,7 +41,8 @@ public class ForwardCommand implements Command {
           backEnd.getPathColor(),
           backEnd.getBackgroundColor(),
           backEnd.getShapeIndex(),
-              backEnd.getPenSize()
+              backEnd.getPenSize(),
+              backEnd.getPenUp()
       );
       builder.setRetVal(arguments.get(0));
       builder.setPathStart(prevPos);

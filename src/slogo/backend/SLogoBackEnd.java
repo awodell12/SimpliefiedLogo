@@ -31,6 +31,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   private int myBackgroundColor = 0;
   private int myShapeIndex = 0;
   private double myPenSize = 1;
+  private boolean penUp = false;
   private Integer myActiveTurtleID;
   private SLogoCareTaker careTaker = new SLogoCareTaker();
   private List<SLogoMemento> myPrevStates;
@@ -391,30 +392,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
-    CommandResultBuilder builder = new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(),
-        myPathColor, myBackgroundColor, myShapeIndex, myPenSize);
-    builder.setIsActualCommand(true);
-    builder.setVariables(new HashMap<>(myVariables));
-    builder.setUserCommands(myUserCommandManager.getScriptMap());
-    return builder;
+    return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp);
   }
 
   @Override
   public CommandResultBuilder startCommandResult(double retVal) {
-    Turtle activeTurtle;
-    if (myActiveTurtleID != null) {
-      activeTurtle = getTurtleWithID(myActiveTurtleID);
-    }
-    else {
-      activeTurtle = myTurtles.get(0);
-    }
-
-    CommandResultBuilder builder = new CommandResultBuilder(activeTurtle.getHeading(),activeTurtle.getPosition(),
-            getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex,myPenSize);
-    builder.setTurtleID(activeTurtle.getId());
-    builder.setRetVal(retVal);
-    builder.setPenSize(-1);
-    return builder;
+    return null;
   }
 
   @Override
@@ -460,6 +443,12 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     }
     return results;
   }
+
+  @Override
+  public boolean getPenUp(){ return penUp; }
+
+  @Override
+  public void setPenUp(boolean isUp){ penUp = isUp; }
 
   public Integer getActiveTurtleID() {
     return myActiveTurtleID;

@@ -34,7 +34,7 @@ public class CommandResultBuilder {
 
 
   public CommandResultBuilder(double turtleFacing, List<Double> turtlePosition, List<Integer> activeTurtleNumbers,
-                              int pathColor, int bgColor, int shape, double size) {
+                              int pathColor, int bgColor, int shape, double size, boolean isUp) {
     myRetVal = 0;
     myTokensParsed = 0;
     turtleID = 0;
@@ -45,7 +45,7 @@ public class CommandResultBuilder {
     variables = new HashMap<>();
     userCommands = new HashMap<>();
     clear = false;
-    penUp = false; //TODO: change this so pen doesn't always go down
+    penUp = isUp;
     turtleVis = true;
     turtleReset = false;
     bgColorIndex = bgColor;
@@ -62,8 +62,8 @@ public class CommandResultBuilder {
   }
 
   public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition, boolean turtlePenUp, List<Integer> activeTurtles,
-                              int pathColor, int bgColor, int shape, double size) {
-    this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape, size);
+                              int pathColor, int bgColor, int shape, double size, boolean isUp) {
+    this(turtleFacing,turtlePosition, activeTurtles, pathColor, bgColor, shape, size, isUp);
     turtleID = turtleNumber;
     penUp = turtlePenUp;
   }
@@ -139,7 +139,6 @@ public class CommandResultBuilder {
   }
 
   public CommandResult buildCommandResult() {
-    System.out.println("pen thickness is " + penSize);
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
         startPos, pathColorIndex, variables, userCommands,
         clear, penUp, turtleVis, turtleReset, bgColorIndex, newColor, penSize, activeTurtles, shapeIndex,

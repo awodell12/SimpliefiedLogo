@@ -125,6 +125,10 @@ public interface BackEndInternal {
 
   void setPenSize(double size);
 
+  boolean getPenUp();
+
+  void setPenUp(boolean isUp);
+
   Integer getActiveTurtleID();
 =======
   List<CommandResult> undo();
