@@ -3,6 +3,7 @@ package slogo.frontEnd;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import javafx.scene.control.Alert;
@@ -19,6 +20,11 @@ public class PropertiesWriter {
   private static final int COLOR_MAX = 255;
   private OutputStream myOutput;
   private Properties myProperties;
+  private static final Map<String, Color> defaultMap = new HashMap<>(){{
+      put("0", Color.WHITE);
+      put("1", Color.BLACK);
+      put("2", Color.RED);
+}};
   /**
    * Constructor that does the writing to a new file
    * @param fileNum the number of the UserConfigurable file to be put in front end resources file. Must end with .properties
@@ -34,6 +40,9 @@ public class PropertiesWriter {
       alert.showAndWait();
     }
 
+  }
+  public PropertiesWriter(String fileNum){
+    this(fileNum, defaultMap);
   }
   private void saveColorPalette(Map<String, Color> colorPaletteMap) throws IOException {
     //System.out.println(colorPaletteMap);
