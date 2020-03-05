@@ -343,19 +343,19 @@ public class Visualizer extends Application implements FrontEndExternal{
       undoCommandsIssued.remove(0);
       if (isUndoCommand) {
         myTurtleView.clearPaths();
-        myTurtleView.incrementPathHistoryIndex(-1);
-        myTurtleView.setPathCreateMode(false);
-        myTurtleView.setDisplayedPaths();
+        myTurtleView.clearTurtles();
+        myTurtleView.incrementHistoryIndex(-1);
+        setPathsAndTurtles();
       } else if (isRedoCommand) {
         myTurtleView.clearPaths();
-        myTurtleView.incrementPathHistoryIndex(1);
-        myTurtleView.setPathCreateMode(false);
-        myTurtleView.setDisplayedPaths();
+        myTurtleView.clearTurtles();
+        myTurtleView.incrementHistoryIndex(1);
+        setPathsAndTurtles();
       }
     }
     else if(originalInstruction != myCurrentInstruction){
       myTurtleView.setPathCreateMode(true);
-      myTurtleView.addPathHistory(!clearScreen);
+      myTurtleView.addTimelineElement(!clearScreen);
       myCurrentInstruction = originalInstruction;
       // trim everything in pathHistory beyond the current path history index
       // add a new empty list to pathHistory. Copy pathHistory[index] to it, unless clearscreen is true
@@ -367,6 +367,15 @@ public class Visualizer extends Application implements FrontEndExternal{
     myRightVBox.requestLayout(); // make sure everything is updated graphically
   }
 
+  private void setPathsAndTurtles() {
+    myTurtleView.setPathCreateMode(false);
+    myTurtleView.setDisplayedPathsAndTurtles();
+    myTurtleInfo.getChildren().clear();
+    for(int id : myTurtleView.getExistingTurtleIDs()){
+      myTurtleInfo.getChildren().add(new Text(buildTurtleInfoString(id)));
+    }
+  }
+
   private void updateColorMenus(int paletteIndex, Color newColor) {
     myColorPalette.put(Integer.toString(paletteIndex), newColor);
     addMenuItem(MENU_TYPES.indexOf("Background"),  Integer.toString(paletteIndex));
@@ -375,7 +384,6 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
     myTurtleView.makeTurtle(turtleID, this::activateTurtle);
-    myTurtleView.getExistingTurtleIDs().add(turtleID);
     myTurtleView.getUnalteredTurtlePositions().put(turtleID, turtlePos);
     myTurtleInfo.getChildren().add(new Text(buildTurtleInfoString(myCurrentTurtleID)));
   }
@@ -415,7 +423,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       try {
         step(false);
       } catch (Exception ex) {
-        //ex.printStackTrace();
+        ex.printStackTrace();
         // note that this should ideally never be thrown
         System.out.println(ex.getMessage());
         //showError(ex.getMessage(), myLanguageResources);
