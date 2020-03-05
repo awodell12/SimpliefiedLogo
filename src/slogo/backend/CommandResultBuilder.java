@@ -132,6 +132,8 @@ public class CommandResultBuilder {
     userCommands = commands;
   }
 
+  public void setVisible(boolean vis){ turtleVis = vis; }
+
 
   public CommandResult buildCommandResult() {
     return new CommandResult(myRetVal, myTokensParsed, turtleID, turtleHeading, turtlePos,
