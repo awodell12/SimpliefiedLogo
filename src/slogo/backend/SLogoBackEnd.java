@@ -451,7 +451,7 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
     List<CommandResult> results = new ArrayList<>();
     if (myTimelineLocation < myPrevStates.size()-1) {
       myTimelineLocation += 1;
-      loadStateFromMemento(myPrevStates.get(myTimelineLocation), false, true);
+      results = loadStateFromMemento(myPrevStates.get(myTimelineLocation), false, true);
     }
     return results;
   }
