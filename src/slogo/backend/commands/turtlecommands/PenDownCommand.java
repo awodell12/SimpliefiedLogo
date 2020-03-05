@@ -24,11 +24,7 @@ public class PenDownCommand implements Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
         backEnd.setPenUp(false);
-        double retVal = 1;
-        //System.out.println("Pen is down");
-        CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition());
-        builder.setRetVal(retVal);
-        return List.of(backEnd.makeCommandResult(retVal,0));
+        return List.of(backEnd.startCommandResult(1).buildCommandResult());
     }
 
     @Override

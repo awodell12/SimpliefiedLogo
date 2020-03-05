@@ -47,7 +47,6 @@ public class CommandResultBuilder {
     variables = varMap;
     userCommands = commandMap;
     clear = false;
-    penUp = isUp;
     turtleVis = true;
     turtleReset = false;
     bgColorIndex = bgColor;

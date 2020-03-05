@@ -391,7 +391,8 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
 
   @Override
   public CommandResultBuilder startCommandResult(int turtleID, double retVal) {
-    return new CommandResultBuilder(turtleID, myTurtles.get(turtleID).getHeading(),myTurtles.get(turtleID).getPosition(),getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp, myVariables,myUserCommandManager.getScriptMap());
+    Turtle turtle = getTurtleWithID(turtleID);
+    return new CommandResultBuilder(turtleID, turtle.getHeading(),turtle.getPosition(),getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp, myVariables,myUserCommandManager.getScriptMap());
   }
 
   @Override
