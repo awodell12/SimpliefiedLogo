@@ -143,9 +143,9 @@ public class Visualizer extends Application implements FrontEndExternal{
   private boolean paused = false;
   private final Queue<CommandResult> resultQueue = new LinkedList<>();
   private CommandResult previousResult = new CommandResult(0, 0, 0, 0,
-          List.of(0.0,0.0), null, 0, null, 0.0, null, null,
-          false, false, true, false, 0, null,
-          1.0, Collections.singletonList(0), 0, 0, "", true);
+          List.of(0.0,0.0), null, 0, null, null, false, false,
+          true, false, 0, null,
+          0, List.of(0), 0, 0,"",false,false,false);
   private CommandResult currentResult = previousResult;
   //private Map<String, Double> previousVariableMapping = new HashMap<>(); //TODO: move this to variable class?
   //private Map<String, Double> currentVariableMapping = previousVariableMapping;
