@@ -32,9 +32,9 @@ public class HideTurtleCommand extends TurtleCommand implements Command {
     @Override
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
         List<Double> prevPos, BackEndInternal backEnd) {
-            CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),myRetVal);
-            builder.setVisible(turtle.getVisible());
-            return builder.buildCommandResult();
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),myRetVal);
+        builder.setVisible(turtle.getVisible());
+        return builder.buildCommandResult();
     }
 
     @Override
