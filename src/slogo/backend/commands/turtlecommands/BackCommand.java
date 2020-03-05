@@ -29,8 +29,7 @@ public class BackCommand implements Command {
 
         if (id == null) {
             System.out.println("ID was null");
-            return List.of(backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),
-                backEnd.getTurtles().get(0).getPosition()).buildCommandResult());
+            return List.of(backEnd.startCommandResult(0).buildCommandResult());
         }
         else {
             System.out.println(backEnd.getTurtles(List.of(0)));
@@ -39,10 +38,7 @@ public class BackCommand implements Command {
             turtle.moveBack(arguments.get(0));
             System.out.println("Moved BACK by " + arguments.get(0));
             System.out.println("Turtle " + turtle.getId() + " is now at x=" +  turtle.getX() + " y=" + turtle.getY());
-            CommandResultBuilder builder = backEnd.startCommandResult(turtle.getHeading(),turtle.getPosition());
-            builder.setTurtleID(id);
-            builder.setRetVal(arguments.get(0));
-            builder.setTokensParsed(0);
+            CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
             builder.setPathStart(prevPos);
             return List.of(builder.buildCommandResult());
         }
