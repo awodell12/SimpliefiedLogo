@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -97,8 +98,8 @@ public class SLogoFileBuilder implements FileBuilder{
 
   private Element constructVarList(Map<String,Double> varMap, Document doc) {
     Element varList = doc.createElement("VariableList");
-    for (String varName : varMap.keySet()) {
-      varList.appendChild(makeVariableElement(doc,varName, varMap.get(varName).toString()));
+    for (Entry variable : varMap.entrySet()) {
+      varList.appendChild(makeVariableElement(doc,variable.getKey().toString(), variable.getValue().toString()));
     }
     return varList;
   }

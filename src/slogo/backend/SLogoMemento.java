@@ -16,21 +16,19 @@ public class SLogoMemento {
   private int myPenColorIndex;
   private int myShapeIndex;
   private double myPenSize;
-  private List<Entry<String, Pattern>> myLanguage;
   private Map<String, Double> myVariables;
   private UserCommandManager myUserCommandManager;
 
   public SLogoMemento(List<Turtle> turtles, List<Integer> activeTurtles, Map<Integer,List<Integer>> palette,
-                      int bgIndex, int pcIndex, int shapeIndex, double penSize, List<Entry<String,Pattern>> language,
+                      int bgIndex, int pcIndex, int shapeIndex, double penSize,
                       Map<String,Double> variables, UserCommandManager manager) {
-    myTurtles = turtles;
-    myActiveTurtleIDs = activeTurtles;
+    myTurtles = new ArrayList<>(turtles);
+    myActiveTurtleIDs = new ArrayList<>(activeTurtles);
     myPalette = palette;
     myBackGroundIndex = bgIndex;
     myPenColorIndex = pcIndex;
     myShapeIndex = shapeIndex;
     myPenSize = penSize;
-    myLanguage = language;
     myVariables = variables;
     myUserCommandManager = manager;
   }
@@ -65,10 +63,6 @@ public class SLogoMemento {
 
   public double getPenSize() {
     return myPenSize;
-  }
-
-  public List<Entry<String, Pattern>> getLanguage() {
-    return new ArrayList<>(myLanguage);
   }
 
   public Map<String, Double> getVariables() {

@@ -83,11 +83,14 @@ public class SLogoTurtle implements Turtle {
         double deltaY = y - myY;
 
         double offset = 0;
-        if(deltaX < 0){ offset = OFFSET; }
+        if(deltaX < 0) {
+            offset = OFFSET;
+        }
 
         double newDir = OFFSET/2 - Math.atan(deltaY/deltaX) * TO_DEGREES + offset;
-        if(newDir < 0)
+        if(newDir < 0) {
             newDir = MAX_DEGREES + newDir;
+        }
         double temp = myHeading;
         myHeading = newDir;
         return Math.abs(temp - newDir);

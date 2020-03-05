@@ -1,7 +1,6 @@
 package slogo.backend;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import slogo.CommandResult;
@@ -37,29 +36,38 @@ public class CommandResultBuilder {
       List<Integer> activeTurtleNumbers, boolean visible,
       int pathColor, int bgColor, int shape, double size, boolean isUp,
       Map<String, Double> varMap, Map<String, String> commandMap) {
+    //interpreter info (not used in front end)
     myRetVal = 0;
     myTokensParsed = 0;
+
+    //turtle info
     turtleID = turtleNumber;
-    turtlePos = turtlePosition;
+    turtlePos = new ArrayList<>(turtlePosition);
     turtleHeading = turtleFacing;
+    turtleVis = visible;
+
+    //path info
     startPos = null;
     pathColorIndex = pathColor;
+
+    //state info
     variables = varMap;
     userCommands = commandMap;
-    clear = false;
-    turtleVis = visible;
     turtleReset = false;
     bgColorIndex = bgColor;
     newColor = null;
     shapeIndex = shape;
     penSize = size;
-    errorMessage = "";
     newPaletteIndex = 0;
     activeTurtles = new ArrayList<>(activeTurtleNumbers);
-    actualCommand = true;
     penUp = isUp;
+
+    //meta info
     isUndo = false;
     isRedo = false;
+    clear = false;
+    actualCommand = true;
+    errorMessage = "";
   }
 
   public void setTokensParsed(int val) {
@@ -75,11 +83,11 @@ public class CommandResultBuilder {
   }
 
   public void setTurtlePos(List<Double> pos) {
-    turtlePos = pos;
+    turtlePos = new ArrayList<>(pos);
   }
 
   public void setPathStart(List<Double> pos) {
-    startPos = pos;
+    startPos = new ArrayList<>(pos);
   }
 
   public void setPathColor(int index) {
@@ -110,7 +118,7 @@ public class CommandResultBuilder {
 
   public void setBackgroundColor(int index){ bgColorIndex = index; }
 
-  public void setColor(List<Integer> color){ newColor = color; }
+  public void setColor(List<Integer> color){ newColor = new ArrayList<>(color); }
 
   public void setShapeIndex(int index){ shapeIndex = index; }
 

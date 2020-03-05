@@ -80,8 +80,6 @@ public interface BackEndInternal {
    */
   void clearTurtles();
 
-  void setLanguage(String language);
-
   CommandResult makeCommandResult(double retVal, int tokensParsed);
 
   void setActiveTurtles(List<Integer> turtleIDs);
