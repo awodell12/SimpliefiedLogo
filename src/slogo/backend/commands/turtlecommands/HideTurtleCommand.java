@@ -24,13 +24,14 @@ public class HideTurtleCommand extends TurtleCommand implements Command {
     @Override
     protected void applyToTurtle(Turtle turtle, List<Double> args) {
         System.out.println("Turtle is hidden");
+        myRetVal = 0;
         turtle.setVisible(false);
     }
 
     @Override
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
         List<Double> prevPos, BackEndInternal backEnd) {
-        backEnd.startCommandResult(turtle.getId(),0);
+        backEnd.startCommandResult(turtle.getId(),myRetVal);
         return null;
     }
 

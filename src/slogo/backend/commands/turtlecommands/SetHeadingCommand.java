@@ -24,13 +24,13 @@ public class SetHeadingCommand extends TurtleCommand implements Command {
 
     @Override
     protected void applyToTurtle(Turtle turtle, List<Double> args) {
-        turtle.setHeading(args.get(0));
+        myRetVal = turtle.setHeading(args.get(0));
     }
 
     @Override
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
                                                 List<Double> prevPos, BackEndInternal backEnd) {
-        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),myRetVal);
         return builder.buildCommandResult();
     }
 

@@ -8,8 +8,9 @@ import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
+import slogo.backend.Turtle;
 
-public class ClearScreenCommand implements Command {
+public class ClearScreenCommand extends TurtleCommand implements Command {
 
     private static final int NUM_ARGS = 0;
     private static final int NUM_VARS = 0;
@@ -21,24 +22,30 @@ public class ClearScreenCommand implements Command {
 
     @Override
     public int getNumVars() {
-        return 0;
+        return NUM_VARS;
     }
 
     @Override
-    public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd) {
-        double retVal = backEnd.getTurtles().get(0).setPos(0, 0);
-        backEnd.getTurtles().get(0).setHeading(0);
-        System.out.println("Went home, cleared paths \n " +
-                "Turtle is now at x=" +  backEnd.getTurtles().get(0).getX() + " y=" + backEnd.getTurtles().get(0).getY());
-        CommandResultBuilder clearResult = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),
-            List.of(backEnd.getTurtles().get(0).getX(),
-                backEnd.getTurtles().get(0).getY()));
-        clearResult.setMyScreenClear(true);
-        return List.of(clearResult.buildCommandResult());
+    protected void applyToTurtle(Turtle turtle, List<Double> args) {
+        myRetVal = turtle.setPos(0, 0);
+    }
+
+    @Override
+    protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
+                                                List<Double> prevPos, BackEndInternal backEnd) {
+        //todo: change return value to dist moved (for each turtle)
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(), myRetVal);
+        builder.setMyScreenClear(true);
+        return builder.buildCommandResult();
     }
 
     @Override
     public List<String> findVars(String[] tokenList) {
         return null;
+    }
+
+    @Override
+    public boolean runsPerTurtle() {
+        return true;
     }
 }

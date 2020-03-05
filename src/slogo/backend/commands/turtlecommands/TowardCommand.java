@@ -24,13 +24,14 @@ public class TowardCommand extends TurtleCommand implements Command {
 
     @Override
     protected void applyToTurtle(slogo.backend.Turtle turtle, List<Double> args) {
-        turtle.moveTowards(args.get(0), args.get(1));
+        myRetVal = turtle.moveTowards(args.get(0), args.get(1));
     }
 
     @Override
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
                                                 List<Double> prevPos, BackEndInternal backEnd) {
-        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+        //todo: change return value to dist moved (for each turtle)
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(), myRetVal);
         builder.setPathStart(prevPos);
         return builder.buildCommandResult();
     }

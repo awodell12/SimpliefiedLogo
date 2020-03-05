@@ -25,16 +25,15 @@ public class LeftCommand extends TurtleCommand implements Command {
 
     @Override
     protected void applyToTurtle(Turtle turtle, List<Double> args) {
+        myRetVal = args.get(0);
         turtle.turn(-args.get(0));
-        System.out.println("Turning left by " + args.get(0) + " degrees.");
-        System.out.println("Heading is now " + turtle.getHeading() + " degrees.");
 
     }
 
     @Override
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
                                                 List<Double> prevPos, BackEndInternal backEnd) {
-        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),myRetVal);
         return builder.buildCommandResult();
     }
 

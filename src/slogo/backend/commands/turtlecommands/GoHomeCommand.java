@@ -26,13 +26,14 @@ public class GoHomeCommand extends TurtleCommand implements Command {
 
     @Override
     protected void applyToTurtle(Turtle turtle, List<Double> args) {
-        turtle.setPos(0, 0);
+        myRetVal = turtle.setPos(0, 0);
     }
 
     @Override
     protected CommandResult createCommandResult(Turtle turtle, List<Double> arguments,
                                                 List<Double> prevPos, BackEndInternal backEnd) {
-        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),arguments.get(0));
+        //todo: change return value to dist moved (for each turtle)
+        CommandResultBuilder builder = backEnd.startCommandResult(turtle.getId(),myRetVal);
         builder.setPathStart(prevPos);
         return builder.buildCommandResult();
     }

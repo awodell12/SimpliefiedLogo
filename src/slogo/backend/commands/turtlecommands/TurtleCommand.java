@@ -9,6 +9,9 @@ import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
 public abstract class TurtleCommand implements Command {
+
+  protected double myRetVal;
+
   @Override
   public List<CommandResult> execute(List<Double> arguments,  List<String> vars, String[] tokens, BackEndInternal backEnd)
   throws ParseException {
