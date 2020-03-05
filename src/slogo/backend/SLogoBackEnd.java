@@ -1,15 +1,12 @@
 package slogo.backend;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import slogo.CommandResult;
@@ -113,9 +110,6 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
       }
     }
     results.get(results.size()-1).setTokensParsed(programCounter);
-//    CommandResultBuilder builder = startCommandResult(findRetVal(results));
-//    builder.setTokensParsed(programCounter);
-//    results.add(builder.buildCommandResult());
     return results;
   }
 
@@ -392,13 +386,13 @@ public class SLogoBackEnd implements BackEndExternal, BackEndInternal {
   }
 
   public CommandResultBuilder startCommandResult(double turtleFacing, List<Double> turtlePosition) {
-    return new CommandResultBuilder(turtleFacing,turtlePosition,getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp);
+    return new CommandResultBuilder(0, turtleFacing,turtlePosition,getActiveTurtleNumbers(), myPathColor, myBackgroundColor, myShapeIndex, myPenSize, penUp, myVariables,myUserCommandManager.getScriptMap());
   }
 
   @Override
   public CommandResultBuilder startCommandResult(double retVal) {
     CommandResultBuilder ret = new CommandResultBuilder(0,myTurtles.get(0).getHeading(),myTurtles.get(0).getPosition(),
-                                    getActiveTurtleNumbers(),myPathColor,myBackgroundColor,myShapeIndex,myPenSize,penUp);
+                                    getActiveTurtleNumbers(),myPathColor,myBackgroundColor,myShapeIndex,myPenSize,penUp, myVariables, myUserCommandManager.getScriptMap());
     ret.setRetVal(retVal);
     return ret;
   }
