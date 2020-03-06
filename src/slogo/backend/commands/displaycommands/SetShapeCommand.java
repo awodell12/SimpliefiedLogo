@@ -28,7 +28,6 @@ public class SetShapeCommand implements Command {
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
         int index = (int) Math.round(arguments.get(0));
         backEnd.setShapeIndex(index);
-        System.out.println("Changed turtle shape to index " + backEnd.getShapeIndex());
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
         builder.setRetVal(index);
         builder.setShapeIndex(backEnd.getShapeIndex());

@@ -24,7 +24,6 @@ public class PowerCommand implements Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-        System.out.println("Executed " + arguments.get(0) + " to the power of " + arguments.get(1));
         return List.of(backEnd.makeCommandResult(Math.pow(arguments.get(0), arguments.get(1)),0));
     }
 

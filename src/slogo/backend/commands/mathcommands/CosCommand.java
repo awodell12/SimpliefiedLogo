@@ -26,7 +26,6 @@ public class CosCommand implements Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-        System.out.println("Calculating cosine of " + arguments.get(0));
         return List.of(backEnd.makeCommandResult(Math.cos(arguments.get(0) * Math.PI/180), 0));
     }
 

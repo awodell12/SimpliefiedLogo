@@ -29,7 +29,6 @@ public class SetBackgroundCommand implements Command {
     //TODO error handling if this is not a valid index or not an integer?
     int index = (int) Math.round(arguments.get(0));
     backEnd.setBackgroundColor(index);
-    System.out.println("Changed background color to index " + index);
     CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
     builder.setRetVal(index);
     builder.setBackgroundColor(backEnd.getBackgroundColor());

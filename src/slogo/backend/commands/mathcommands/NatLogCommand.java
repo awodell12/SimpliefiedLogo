@@ -24,7 +24,6 @@ public class NatLogCommand implements Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-        System.out.println("Found natural log of " + arguments.get(0));
         return List.of(backEnd.makeCommandResult(Math.log(arguments.get(0)),0));
     }
 

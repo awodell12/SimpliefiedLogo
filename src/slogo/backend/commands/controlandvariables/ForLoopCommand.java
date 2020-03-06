@@ -29,14 +29,9 @@ public class ForLoopCommand implements Command {
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd, Interpreter interpreter)
       throws ParseException {
-    System.out.println("Beginning FOR Loop");
     double start = arguments.get(0);
     double end = arguments.get(1);
     double increment = arguments.get(2);
-    System.out.println("Start is " + start);
-    System.out.println("End is " + end);
-    System.out.println("Increment is " + increment);
-    //This is because the first 'var' was actually the opening bracket.
     String var = vars.get(1);
     double returnVal = 0;
     List<CommandResult> results = new ArrayList<>();
@@ -46,7 +41,6 @@ public class ForLoopCommand implements Command {
       results.addAll(interpreter.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)));
       returnVal = results.get(results.size()-1).getReturnVal();
     }
-    System.out.println("Ending FOR Loop.");
     results.add(backEnd.makeCommandResult(returnVal,listLength+2));
     return results;
   }

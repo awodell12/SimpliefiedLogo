@@ -24,7 +24,6 @@ public class ArcTanCommand implements Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-        System.out.println("Found arctan of " + arguments.get(0));
         return List.of(backEnd.makeCommandResult(Math.atan(arguments.get(0) * Math.PI/180),0));
     }
 

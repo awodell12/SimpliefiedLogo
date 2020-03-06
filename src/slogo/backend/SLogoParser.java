@@ -52,19 +52,15 @@ public class SLogoParser implements BackEndExternal, Interpreter{
     String[] scriptTokens = BackEndUtil.getTokenList(script).toArray(new String[0]);
     List<CommandResult> retList = parseCommandsList(scriptTokens);
     if (myTimelineLocation < myPrevStates.size()-1) {
-      System.out.println("Deleting previous state timeline");
       myPrevStates = new ArrayList<>(myPrevStates.subList(0,myTimelineLocation+1));
     }
     myTimelineLocation += 1;
-    System.out.println("myTimelineLocation = " + myTimelineLocation);
     myPrevStates.add(myBackEnd.saveStateToMemento());
-    System.out.println("retList.size() = " + retList.size());
     return retList;
   }
 
   @Override
   public List<CommandResult> redo() {
-    System.out.println("REDOING");
     List<CommandResult> results = new ArrayList<>();
     if (myTimelineLocation < myPrevStates.size()-1) {
       myTimelineLocation += 1;
@@ -75,15 +71,11 @@ public class SLogoParser implements BackEndExternal, Interpreter{
 
   @Override
   public List<CommandResult> undo() {
-    System.out.println("UNDOING");
     List<CommandResult> results = new ArrayList<>();
-    System.out.println("myTimelineLocation = " + myTimelineLocation);
     if (myTimelineLocation > 0) {
       myTimelineLocation -= 1;
       results = myBackEnd.loadStateFromMemento(myPrevStates.get(myTimelineLocation),true,false);
     }
-    System.out.println("results.get(0).getTurtleID() = " + results.get(0).getTurtleID());
-    System.out.println("results.get(0).getTurtlePosition() = " + results.get(0).getTurtlePosition());
     return results;
   }
 
@@ -169,13 +161,10 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   }
 
   private List<CommandResult> parseCommandPerTurtle(Command command, String[] tokenList) throws ParseException {
-    System.out.println("Running PER TURTLE in SLogoParser");
     List<CommandResult> results = new ArrayList<>();
 //    myBackEnd.doActionPerTurtle( () -> (results.addAll(parseCommand(command,tokenList))) );
-    System.out.println("myBackEnd.getActiveTurtles().size() = " + myBackEnd.getActiveTurtles().size());
     for (Turtle activeTurtle : myBackEnd.getActiveTurtles()) {
       myBackEnd.setActiveTurtleID(activeTurtle.getId());
-      System.out.println("myActiveTurtleID = " + activeTurtle.getId());
       results.addAll(parseCommand(command,tokenList));
     }
     myBackEnd.setActiveTurtleID(null);

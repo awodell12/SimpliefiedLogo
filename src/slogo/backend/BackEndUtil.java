@@ -14,14 +14,14 @@ public class BackEndUtil {
 
   public static final String RESOURCES_PACKAGE = "resources/languages/";
   public static final String SYNTAX_FILENAME = "Syntax";
+  private static final ResourceBundle SYNTAX_BUNDLE = ResourceBundle.getBundle(RESOURCES_PACKAGE + SYNTAX_FILENAME);
   public static final String NO_MATCH_STRING = "NO MATCH";
-  public static final String LIST_END_LABEL = "ListEnd";
-  public static final String LIST_START_LABEL = "ListStart";
-  public static final String COMMENT_LINE = "(^#(?s).*|\\s+)";
-  public static final String NEWLINE = "\\n+";
-  public static final String WHITESPACE = "\\s+";
+  public static final String LIST_END = SYNTAX_BUNDLE.getString("ListEnd");
+  public static final String LIST_START = SYNTAX_BUNDLE.getString("ListStart");
+  public static final String COMMENT_LINE = "(^#(?s).*|\\s+)"; //The comment line in the resource file was leaving empty strings when splitting
+  public static final String NEWLINE = SYNTAX_BUNDLE.getString("Newline");
+  public static final String WHITESPACE = SYNTAX_BUNDLE.getString("Whitespace");
 
-  private static ResourceBundle myResources = ResourceBundle.getBundle(RESOURCES_PACKAGE + SYNTAX_FILENAME);
 
   private BackEndUtil() {
     //utility classes should not have public constructors, so this empty
@@ -47,8 +47,8 @@ public class BackEndUtil {
   }
 
   public static String getSymbol(String text) {
-    for (String key : myResources.keySet()) {
-      if (text.matches(myResources.getString(key))) {
+    for (String key : SYNTAX_BUNDLE.keySet()) {
+      if (text.matches(SYNTAX_BUNDLE.getString(key))) {
         return key;
       }
     }
@@ -85,10 +85,10 @@ public class BackEndUtil {
   }
 
   private static boolean isClosedBracket(String text) {
-    return (text.matches(myResources.getString(LIST_END_LABEL)));
+    return (text.matches(LIST_END));
   }
   private static boolean isOpenBracket(String text) {
-    return (text.matches(myResources.getString(LIST_START_LABEL)));
+    return (text.matches(LIST_START));
   }
 
   public static List<Double> getArgsFromStack(Stack<Double> values, int numArgs) {
