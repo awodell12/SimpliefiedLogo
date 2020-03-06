@@ -886,21 +886,26 @@ public class Visualizer extends Application implements FrontEndExternal{
       // skip the animations if a clear screen command is coming (so that reset can interrupt animation)
     }
     if(!paused || overridePause) {
-      if (myDesiredTurtlePosition != null && (notAlmostEqual(myCurrentTurtlePosition.getX(), myDesiredTurtlePosition.getX()) ||
-              notAlmostEqual(myCurrentTurtlePosition.getY(), myDesiredTurtlePosition.getY()))) {
-        myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX() + xIncrement, myCurrentTurtlePosition.getY() + yIncrement);
-        myTurtleView.getUnalteredTurtlePositions().put(myCurrentTurtleID, myCurrentTurtlePosition);
-        myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY(), myCurrentTurtleID);
-        if (myStartPos != null) {
-          myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
-          myStartPos = myCurrentTurtlePosition;
-        }
-        updateTurtleInfo(myCurrentTurtleID);
-      } else if (!isReady) {
-        isReady = true;
-        if (resultQueue.size() > 0) {
-          processResult(null);
-        }
+      moveTurtle();
+    }
+  }
+
+  private void moveTurtle() {
+    boolean isYNotAlmostEqual = notAlmostEqual(myCurrentTurtlePosition.getY(), myDesiredTurtlePosition.getY());
+    boolean isXNotAlmostEqual = notAlmostEqual(myCurrentTurtlePosition.getX(), myDesiredTurtlePosition.getX());
+    if (myDesiredTurtlePosition != null && (isXNotAlmostEqual || isYNotAlmostEqual)) {
+      myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX() + xIncrement, myCurrentTurtlePosition.getY() + yIncrement);
+      myTurtleView.getUnalteredTurtlePositions().put(myCurrentTurtleID, myCurrentTurtlePosition);
+      myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY(), myCurrentTurtleID);
+      if (myStartPos != null) {
+        myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
+        myStartPos = myCurrentTurtlePosition;
+      }
+      updateTurtleInfo(myCurrentTurtleID);
+    } else if (!isReady) {
+      isReady = true;
+      if (resultQueue.size() > 0) {
+        processResult(null);
       }
     }
   }
