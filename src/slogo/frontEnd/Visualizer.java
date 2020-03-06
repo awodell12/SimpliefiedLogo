@@ -295,49 +295,52 @@ public class Visualizer extends Application implements FrontEndExternal{
                                List<Integer> activeTurtles, int paletteIndex, int penColorIndex,
                                int backgroundColorIndex, List<Integer> newColorRGB, int imageIndex, double penSize,
                                boolean isUndoCommand, boolean isRedoCommand) {
+    updateTurtleImage(imageIndex);
     myCurrentTurtleID = turtleID;
     if(!myTurtleView.getExistingTurtleIDs().contains(turtleID)){
       createTurtle(turtlePos, turtleID);
-    }
-    Image image = imageList.get(imageIndex);
-    if(myTurtleView.getTurtleImage() != image) {
-      myTurtleView.setTurtleImage(image);
     }
     myTurtleView.activateTurtles(activeTurtles);
     for(int id : myTurtleView.getExistingTurtleIDs()){
       updateTurtleInfo(id);
     }
-    myTurtleView.setTurtleHeading(turtleRotate, turtleID);
-    myDesiredTurtlePosition = turtlePos;
-    myCurrentTurtlePosition = myTurtleView.getUnalteredTurtlePositions().get(turtleID);
-    xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
-    yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
-    myStartPos = startPos;
-    for(Map.Entry<String, Double> variable : variables.entrySet()){
-      addVariable(variable.getKey(), variable.getValue());
-    }
-    for(Map.Entry<String, String> UDC : userDefinedCommands.entrySet()){
-      addUserDefinedCommand(UDC.getKey(), UDC.getValue());
-    }
-    if(clearScreen) {
+    updateTurtleDisplay(turtleRotate, turtlePos, startPos, turtleID);
+    updateUserDefineInfo(variables, userDefinedCommands);
+    clearTurtleView(clearScreen);
+    myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
+    myTurtleView.setIsPenUp(isPenUp);
+    myTurtleView.setPenThickness(penSize);
+    updateColors(paletteIndex, penColorIndex, backgroundColorIndex, newColorRGB);
+    setPenText();
+    handleUndoRedo(clearScreen, originalInstruction, isUndoCommand, isRedoCommand);
+    highlightInHistory(originalInstruction, originalInstruction != myCurrentlyHighlighted);
+    displayErrorMessage(errorMessage);
+    myRightVBox.requestLayout(); // make sure everything is updated graphically
+  }
+
+  private void clearTurtleView(boolean isClearScreen) {
+    if(isClearScreen) {
       myTurtleView.clearPaths();
       clearScreenScheduled = false;
     }
-    myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
-    myTurtleView.setIsPenUp(isPenUp);
-    displayErrorMessage(errorMessage);
-    myTurtleView.setPenThickness(penSize);
-    if (newColorRGB != null){
-      updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
+  }
+
+  private void updateTurtleImage(int imageIndex) {
+    Image image = imageList.get(imageIndex);
+    if(myTurtleView.getTurtleImage() != image) {
+      myTurtleView.setTurtleImage(image);
     }
-    // nothing happens if the requested color is not in color palette
-    if(myColorPalette.containsKey(Integer.toString(backgroundColorIndex))) {
-      myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
+  }
+
+  private void highlightInHistory(String originalInstruction, boolean isHighlightingPrevious) {
+    if (isHighlightingPrevious) {
+      myHistory.highlightNext();
+      myCurrentlyHighlighted = originalInstruction;
     }
-    if(myColorPalette.containsKey(Integer.toString(penColorIndex))) {
-      myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
-    }
-    setPenText();
+  }
+
+  private void handleUndoRedo(boolean clearScreen, String originalInstruction,
+      boolean isUndoCommand, boolean isRedoCommand) {
     if(undoCommandsIssued.size() > 0 && undoCommandsIssued.get(0) == originalInstruction) {
       undoCommandsIssued.remove(0);
       if (isUndoCommand) {
@@ -359,11 +362,40 @@ public class Visualizer extends Application implements FrontEndExternal{
       // trim everything in pathHistory beyond the current path history index
       // add a new empty list to pathHistory. Copy pathHistory[index] to it, unless clearscreen is true
     }
-    if(originalInstruction != myCurrentlyHighlighted) {
-      myHistory.highlightNext();
-      myCurrentlyHighlighted = originalInstruction;
+  }
+
+  private void updateColors(int paletteIndex, int penColorIndex, int backgroundColorIndex,
+      List<Integer> newColorRGB) {
+    if (newColorRGB != null){
+      updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
-    myRightVBox.requestLayout(); // make sure everything is updated graphically
+    // nothing happens if the requested color is not in color palette
+    if(myColorPalette.containsKey(Integer.toString(backgroundColorIndex))) {
+      myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
+    }
+    if(myColorPalette.containsKey(Integer.toString(penColorIndex))) {
+      myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
+    }
+  }
+
+  private void updateUserDefineInfo(Map<String, Double> variables,
+      Map<String, String> userDefinedCommands) {
+    for(Map.Entry<String, Double> variable : variables.entrySet()){
+      addVariable(variable.getKey(), variable.getValue());
+    }
+    for(Map.Entry<String, String> UDC : userDefinedCommands.entrySet()){
+      addUserDefinedCommand(UDC.getKey(), UDC.getValue());
+    }
+  }
+
+  private void updateTurtleDisplay(double turtleRotate, Point2D turtlePos, Point2D startPos,
+      int turtleID) {
+    myTurtleView.setTurtleHeading(turtleRotate, turtleID);
+    myDesiredTurtlePosition = turtlePos;
+    myCurrentTurtlePosition = myTurtleView.getUnalteredTurtlePositions().get(turtleID);
+    xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
+    yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
+    myStartPos = startPos;
   }
 
   private void setPathsAndTurtles() {
@@ -898,10 +930,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void executeInstruction(String instruction) {
     myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
-    if(instruction != myCurrentlyHighlighted && isReady) { // want to compare object references here
-      myHistory.highlightNext();
-      myCurrentlyHighlighted = instruction;
-    }
+    highlightInHistory(instruction, instruction != myCurrentlyHighlighted && isReady);
     myRightVBox.requestLayout(); // make sure everything is updated graphically
     myInstructionQueue.add(instruction);
   }
