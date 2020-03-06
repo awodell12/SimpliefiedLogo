@@ -129,7 +129,6 @@ public class SLogoFileBuilder implements FileBuilder{
       }
       return commandArguments;
     } catch (Exception e) {
-      e.printStackTrace();
       return new HashMap<>();
     }
   }

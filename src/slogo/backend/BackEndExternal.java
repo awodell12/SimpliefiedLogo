@@ -28,5 +28,7 @@ public interface BackEndExternal {
 
   List<CommandResult> loadLibraryFile(String filePath);
 
+  void writeLibraryFile(String filePath);
+
   void applyChanger(Changer changer);
 }

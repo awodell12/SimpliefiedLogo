@@ -243,7 +243,6 @@ public class SLogoBackEnd implements BackEndInternal {
     for (Turtle turtle : myTurtles) {
       CommandResultBuilder builder = startCommandResult(turtle.getHeading(),turtle.getPosition(), turtle.getVisible());
       builder.setTurtleID(turtle.getId());
-      builder.setPenUp(turtle.getPenUp());
       builder.setIsUndo(isUndo);
       builder.setIsRedo(isRedo);
       results.add(builder.buildCommandResult());
@@ -263,5 +262,12 @@ public class SLogoBackEnd implements BackEndInternal {
     myUserCommandManager = new UserCommandManager(fileBuilder.loadCommandArguments(filePath),fileBuilder.loadCommandInstructions(filePath));
     CommandResultBuilder builder = startCommandResult(0);
     return List.of(builder.buildCommandResult());
+  }
+
+  @Override
+  public void writeLibraryFile(String filename) {
+    new SLogoFileBuilder().makeXMLFile(filename,new HashMap<>(myVariables),
+        myUserCommandManager.getArgumentsMap(),
+        myUserCommandManager.getScriptMap());
   }
 }
