@@ -508,16 +508,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     instruction.append("]");
     executeInstruction(instruction.toString());
     executeInstruction("setshape " + myStartingImage);
-    for(String scriptName : myScripts){
-      String script = myWorkSpaceResources.getString(scriptName);
-      executeInstruction("to " + scriptName + " [ ] [ " + script + " ]");
-      //myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
-    }
-    for(String variableName : myStartingVariables){
-      double value = Double.parseDouble(myWorkSpaceResources.getString(variableName));
-      executeInstruction("make :" + variableName + " " + value);
-      //addVariable(variableName, value);
-    }
+
+    loadNewUserProperties(myFileNum, true);
+
     myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + myStartingLanguage);
     // now schedule clear history so the user isn't confused by the commands we used to set up defaults
     clearedAtStart = false;
@@ -653,7 +646,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     topButtons.setHgap(SPACING);
     for(int i=0; i<TOP_RIGHT_BUTTON_METHODS.length; i++){
       Button button = makeButton(TOP_RIGHT_BUTTON_METHODS[i], TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources);
-      System.out.println("Here");
       topButtons.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
       myDisplayableTextHolder.addButton(button, TOP_RIGHT_BUTTON_METHODS[i]);
     }
@@ -998,20 +990,24 @@ public class Visualizer extends Application implements FrontEndExternal{
     vBox.getChildren().remove(1);
     vBox.getChildren().add(new ImageView("slogo/frontEnd/Resources/" + imageName + ".png"));
   }
-  private void makeNewUserProperties(int fileNum){
-    FileChooser fileChooser = new FileChooser();
-    File file = fileChooser.showOpenDialog(myStage);
-    String filePath = "";
-    try {
-      filePath = file.getCanonicalPath();
-    } catch (IOException e) {
-      showError(e.getMessage(), myLanguageResources);
+  private void loadNewUserProperties(int fileNum, boolean isStartUp){
+    if (isStartUp){
+      executeInstruction("Load " + "src/" + RESOURCE_LOCATION + "/saved.xml");
     }
-
-  executeInstruction("Load " + filePath);
+    else {
+      FileChooser fileChooser = new FileChooser();
+      File file = fileChooser.showOpenDialog(myStage);
+      String filePath = "";
+      try {
+        filePath = file.getCanonicalPath();
+      } catch (IOException e) {
+        showError(e.getMessage(), myLanguageResources);
+      }
+      executeInstruction("Load " + filePath);
+    }
   }
   private void loadPrefs(){
-    makeNewUserProperties(myFileNum);
+      loadNewUserProperties(myFileNum, false);
   }
   private void savePrefs(){
     String instruction = "Save src/" + RESOURCE_LOCATION;
