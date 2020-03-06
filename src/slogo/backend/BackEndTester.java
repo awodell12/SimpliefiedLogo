@@ -76,6 +76,9 @@ public class BackEndTester {
 //      System.out.println("result.getTurtlePosition() = " + result.getTurtlePosition());
       System.out.println("result.getVariables().toString() = " + result.getVariables().toString());
       System.out.println("result.getUserDefinedCommands().toString() = " + result.getUserDefinedCommands().toString());
+
     }
+    outerParser.parseScript("make :dummy 5");
+    outerParser.writeLibraryFile("data/userlibraries/writeTest.xml");
   }
 }

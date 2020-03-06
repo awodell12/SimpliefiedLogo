@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,17 +27,30 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class SLogoFileBuilder implements FileBuilder{
-  public static final String FILEPATH = "data/userlibraries/outputtest.xml";
+  private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("slogo/backend/resources/filebuilder");
+  public static final String COMMAND_LABEL = resourceBundle.getString("CommandLabel");
+  public static final String VARIABLE_NAME_LABEL = resourceBundle.getString("VariableNameLabel");
+  public static final String COMMAND_NAME_LABEL = resourceBundle.getString("CommandNameLabel");
+  public static final String COMMAND_CONTENTS_LABEL = resourceBundle.getString("CommandContentsLabel");
+  public static final String VARIABLE_LABEL = resourceBundle.getString("VariableLabel");
+  public static final String VARIABLE_VALUE_LABEL = resourceBundle.getString("VariableValueLabel");
+  public static final String USER_LIBRARY_LABEL = resourceBundle.getString("UserLibraryLabel");
+  public static final String INVALID_DATA_LABEL = resourceBundle.getString("InvalidDataLabel");
+  public static final String COMMAND_ARGUMENT_LABEL = resourceBundle.getString("CommandArgumentLabel");
+  public static final String COMMAND_ARGUMENT_NAME_LABEL = resourceBundle.getString("CommandArgumentNameLabel");
+  public static final String VARIABLE_LIST_LABEL = resourceBundle.getString("VariableListLabel");
+  public static final String COMMAND_LIST_LABEL = resourceBundle.getString("CommandListLabel");
+  public static final String MISALIGNED_ERROR_MESSAGE = resourceBundle.getString("MisalignedErrorMessage");
 
   public void makeXMLFile(String xmlFilePath, Map<String,Double> varMap, Map<String, List<String>> argMap, Map<String,String> instructionMap) {
     try {
       Document doc = instantiateDocument();
-      Element userLib = doc.createElement("UserLib");
+      Element userLib = doc.createElement(USER_LIBRARY_LABEL);
       try {
         Element varList = constructCommandList(argMap, instructionMap,doc);
         userLib.appendChild(varList);
       } catch (FileBuilderException e) {
-        Element errorInfo = doc.createElement("Invalid");
+        Element errorInfo = doc.createElement(INVALID_DATA_LABEL);
         userLib.appendChild(errorInfo);
       }
       Element commandList = constructVarList(varMap,doc);;
@@ -60,26 +75,26 @@ public class SLogoFileBuilder implements FileBuilder{
   }
 
   private Element makeCommandElement(Document doc,  String name, List<String> arguments, String contents) {
-    Element command = doc.createElement("Command");
-    command.setAttribute("name", name);
-    command.setAttribute("contents", contents);
+    Element command = doc.createElement(COMMAND_LABEL);
+    command.setAttribute(COMMAND_NAME_LABEL, name);
+    command.setAttribute(COMMAND_CONTENTS_LABEL, contents);
     for (String arg : arguments) {
-      Element enumArg = doc.createElement("argument");
-      enumArg.setAttribute("label",arg);
+      Element enumArg = doc.createElement(COMMAND_ARGUMENT_LABEL);
+      enumArg.setAttribute(COMMAND_ARGUMENT_NAME_LABEL,arg);
       command.appendChild(enumArg);
     }
     return command;
   }
 
   private Element makeVariableElement(Document doc, String name, String value) {
-    Element command = doc.createElement("Variable");
-    command.setAttribute("name", name);
-    command.setAttribute("value", value);
+    Element command = doc.createElement(VARIABLE_LABEL);
+    command.setAttribute(VARIABLE_NAME_LABEL, name);
+    command.setAttribute(VARIABLE_VALUE_LABEL, value);
     return command;
   }
 
   private Element constructVarList(Map<String,Double> varMap, Document doc) {
-    Element varList = doc.createElement("VariableList");
+    Element varList = doc.createElement(VARIABLE_LIST_LABEL);
     for (Entry variable : varMap.entrySet()) {
       varList.appendChild(makeVariableElement(doc,variable.getKey().toString(), variable.getValue().toString()));
     }
@@ -88,11 +103,11 @@ public class SLogoFileBuilder implements FileBuilder{
 
   private Element constructCommandList(Map<String,List<String>> argMap, Map<String,String> instructionMap, Document doc)
       throws FileBuilderException {
-    Element commandList = doc.createElement("CommandsList");
+    Element commandList = doc.createElement(COMMAND_LIST_LABEL);
     //Traverses through by key instead of by entry because there are two maps that
     //share a keySet. An error is thrown and handled if this isn't the case.
     if (!instructionMap.keySet().equals(argMap.keySet())) {
-      throw new FileBuilderException("Script map not aligned with argument map for commands.");
+      throw new FileBuilderException(MISALIGNED_ERROR_MESSAGE);
     }
     for (String varName : instructionMap.keySet()) {
       commandList.appendChild(makeCommandElement(doc,varName, argMap.get(varName), instructionMap.get(varName)));
@@ -104,11 +119,11 @@ public class SLogoFileBuilder implements FileBuilder{
   public Map<String,String> loadCommandInstructions(String filepath) {
     File info = new File(filepath);
     try {
-      NodeList commandsInFile = getNodesWithTag(info, "Command");
+      NodeList commandsInFile = getNodesWithTag(info, COMMAND_LABEL);
       Map<String,String> commandInstructions = new HashMap<>();
       for (int i = 0; i < commandsInFile.getLength(); i ++) {
-        String cmdName = commandsInFile.item(i).getAttributes().getNamedItem("name").getTextContent();
-        String content = commandsInFile.item(i).getAttributes().getNamedItem("contents").getTextContent();
+        String cmdName = commandsInFile.item(i).getAttributes().getNamedItem(COMMAND_NAME_LABEL).getTextContent();
+        String content = commandsInFile.item(i).getAttributes().getNamedItem(COMMAND_CONTENTS_LABEL).getTextContent();
         commandInstructions.put(cmdName,content);
       }
       return commandInstructions;
@@ -121,7 +136,7 @@ public class SLogoFileBuilder implements FileBuilder{
   public Map<String,List<String>> loadCommandArguments(String filepath) {
     File info = new File(filepath);
     try {
-      NodeList commandsInFile = getNodesWithTag(info, "Command");
+      NodeList commandsInFile = getNodesWithTag(info, COMMAND_LABEL);
       Map<String,List<String>> commandArguments = new HashMap<>();
       for (int i = 0; i < commandsInFile.getLength(); i ++) {
         Entry<String,List<String>> argEntry = makeCommandArgumentEntry(commandsInFile.item(i));
@@ -134,7 +149,7 @@ public class SLogoFileBuilder implements FileBuilder{
   }
 
   private Entry<String, List<String>> makeCommandArgumentEntry(Node command) {
-    String cmdName = command.getAttributes().getNamedItem("name").getTextContent();
+    String cmdName = command.getAttributes().getNamedItem(COMMAND_NAME_LABEL).getTextContent();
     NodeList argsInCommand = command.getChildNodes();
     List<String> args = new ArrayList<>();
     for (int j = 1; j < argsInCommand.getLength(); j += 2) {
@@ -147,11 +162,12 @@ public class SLogoFileBuilder implements FileBuilder{
   public Map<String,Double> loadVariablesFromFile(String filepath) {
     File info = new File(filepath);
     try {
-      NodeList variables = getNodesWithTag(info, "Variable");
+      NodeList variables = getNodesWithTag(info, VARIABLE_LABEL);
       Map<String,Double> vars = new HashMap<>();
       for (int i = 0; i < variables.getLength(); i ++) {
-        String varName = variables.item(i).getAttributes().getNamedItem("name").getTextContent();
-        double varValue = Double.parseDouble(variables.item(i).getAttributes().getNamedItem("value").getTextContent());
+        String varName = variables.item(i).getAttributes().getNamedItem(VARIABLE_NAME_LABEL).getTextContent();
+        double varValue = Double.parseDouble(variables.item(i).getAttributes().getNamedItem(
+            VARIABLE_VALUE_LABEL).getTextContent());
         vars.put(varName,varValue);
       }
       return vars;
@@ -170,16 +186,8 @@ public class SLogoFileBuilder implements FileBuilder{
   }
 
   @Override
-  public void makeLibraryFile(Map<String, Double> variables, Map<String, List<String>> commandArgs, Map<String,String> commandContents) {
-    makeXMLFile(FILEPATH, variables, commandArgs, commandContents);
-  }
-
-  public static void main(String[] args) {
-    Map<String, Double> vars = Map.of("a",3.0,"b",23.1,"c",44.0);
-    Map<String,List<String>> commandArgs = Map.of("foo",List.of("firstvar","secondvar"));
-    Map<String,String> commandInstructions = Map.of("foo","fd :firstvar bk :secondvar");
-
-    new SLogoFileBuilder().makeXMLFile(FILEPATH,vars,commandArgs,commandInstructions);
+  public void makeLibraryFile(String filePath, Map<String, Double> variables, Map<String, List<String>> commandArgs, Map<String,String> commandContents) {
+    makeXMLFile(filePath, variables, commandArgs, commandContents);
   }
 
   private Document instantiateDocument() throws ParserConfigurationException {

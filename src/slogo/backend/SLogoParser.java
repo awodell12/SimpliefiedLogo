@@ -23,20 +23,21 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   }
 
   public SLogoParser() {
-    this(new SLogoBackEnd());
+    this(new SLogoModel());
     mySyntax = BackEndUtil.interpretPatterns("Syntax");
     setLanguage("English");
   }
 
   public String getSymbol(String text) {
-    for (Entry<String, Pattern> e : myLanguage) {
-      if (match(text, e.getValue())) {
-        return e.getKey();
-      }
-    }
-    for (Entry<String, Pattern> e : mySyntax) {
-      if (match(text, e.getValue())) {
-        return e.getKey();
+    return getSymbolInLanguages(text,List.of(myLanguage,mySyntax));
+  }
+
+  private String getSymbolInLanguages(String text, List<List<Entry<String,Pattern>>> languages) {
+    for (List<Entry<String,Pattern>> language : languages) {
+      for (Entry<String, Pattern> e : language) {
+        if (match(text, e.getValue())) {
+          return e.getKey();
+        }
       }
     }
     return "NO MATCH";

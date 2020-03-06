@@ -11,7 +11,7 @@ import slogo.CommandResult;
 /**
  *
  */
-public class SLogoBackEnd implements BackEndInternal {
+public class SLogoModel implements BackEndInternal {
 
   public static final int INITIAL_BG_COLOR = 5;
   private Map<String, Double> myVariables;
@@ -27,7 +27,7 @@ public class SLogoBackEnd implements BackEndInternal {
   private Integer myActiveTurtleID;
 
 
-  public SLogoBackEnd() {
+  public SLogoModel() {
     myVariables = new HashMap<>();
     myUserCommandManager = new UserCommandManager();
     myTurtles = new ArrayList<>();
@@ -266,7 +266,8 @@ public class SLogoBackEnd implements BackEndInternal {
 
   @Override
   public void writeLibraryFile(String filename) {
-    new SLogoFileBuilder().makeXMLFile(filename,new HashMap<>(myVariables),
+    FileBuilder fileBuilder = new SLogoFileBuilder();
+    fileBuilder.makeLibraryFile(filename,new HashMap<>(myVariables),
         myUserCommandManager.getArgumentsMap(),
         myUserCommandManager.getScriptMap());
   }
