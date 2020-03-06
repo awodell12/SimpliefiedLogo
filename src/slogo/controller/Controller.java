@@ -6,9 +6,7 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.stage.Stage;
-import javax.lang.model.util.Types;
 import slogo.backend.BackEndExternal;
-import slogo.backend.Command;
 import slogo.backend.SLogoLanguageChanger;
 import slogo.CommandResult;
 import slogo.backend.SLogoParser;
@@ -22,7 +20,9 @@ public class Controller extends Application{
             "disfare", "desfazer", "otmenit", "deshacer", "urduundo");
     private static final List<String> REDO_INSTRUCTIONS = List.of("redo", "chongzuo", "refaire", "wiederholen",
             "rifare", "refazer", "povtorit", "rehacer", "urduredo");
-  private static final List<String> SAVE_INSTRUCTION = List.of("Load");
+  private static final List<String> LOAD_INSTRUCTION = List.of("Load");
+  private static final List<String> SAVE_INSTRUCTION = List.of("Save");
+
 
   private final List<Visualizer> myVisualizers = new ArrayList<>();
     private final List<BackEndExternal> myModels = new ArrayList<>();
@@ -71,18 +71,20 @@ public class Controller extends Application{
             myModels.get(workspace).applyChanger(languageChanger);
         }
         else {
-            ArrayList<CommandResult> resultList;
+            List<CommandResult> resultList = new ArrayList<>();
             if(UNDO_INSTRUCTIONS.contains(input)){
-                resultList = (ArrayList<CommandResult>) myModels.get(workspace).undo();
+                resultList =  myModels.get(workspace).undo();
             } else if(REDO_INSTRUCTIONS.contains(input)){
-                resultList = (ArrayList<CommandResult>) myModels.get(workspace).redo();
+                resultList =  myModels.get(workspace).redo();
             }
-            else if (SAVE_INSTRUCTION.contains(input.substring(0,4))){
+            else if (input.length() > 4 && LOAD_INSTRUCTION.contains(input.substring(0,4))){
               resultList = myModels.get(workspace).loadLibraryFile(input.substring(5)) ;
-              System.out.println(input);
+            }
+            else if (input.length() > 4 && SAVE_INSTRUCTION.contains(input.substring(0,4))){
+              myModels.get(workspace).writeLibraryFile(input.substring(5));
             }
             else {
-                resultList = (ArrayList<CommandResult>) myModels.get(workspace).parseScript(input);
+                resultList = myModels.get(workspace).parseScript(input);
             }
             for (CommandResult result : resultList) {
                 if(result.isActualCommand()) {
