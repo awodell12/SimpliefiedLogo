@@ -26,7 +26,9 @@ public class GreaterCommand implements Command {
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
     double retValue = 0;
-    if (arguments.get(0) > arguments.get(1)) { retValue = 1; }
+    if (arguments.get(0) > arguments.get(1)) {
+      retValue = 1;
+    }
     return List.of(backEnd.makeCommandResult(retValue,0));
   }
 
