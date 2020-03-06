@@ -109,9 +109,9 @@ public class SLogoParser implements BackEndExternal, Interpreter{
         return results;
       }
     }
-    CommandResultBuilder builder = myBackEnd.startCommandResult(findRetVal(results));
-    builder.setTokensParsed(programCounter);
-    results.add(builder.buildCommandResult());
+//    CommandResultBuilder builder = myBackEnd.startCommandResult(findRetVal(results));
+//    builder.setTokensParsed(programCounter);
+//    results.add(builder.buildCommandResult());
     return results;
   }
 
