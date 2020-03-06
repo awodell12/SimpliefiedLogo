@@ -26,7 +26,7 @@ public interface BackEndExternal {
 
   List<CommandResult> undo();
 
-  void loadLibraryFile(String filePath);
+  List<CommandResult> loadLibraryFile(String filePath);
 
   void applyChanger(Changer changer);
 }

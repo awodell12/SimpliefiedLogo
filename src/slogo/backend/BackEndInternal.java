@@ -130,6 +130,6 @@ public interface BackEndInternal {
 
   void setActiveTurtleID(Integer id);
 
-  void loadLibraryFile(String filename);
+  List<CommandResult> loadLibraryFile(String filename);
 }
 

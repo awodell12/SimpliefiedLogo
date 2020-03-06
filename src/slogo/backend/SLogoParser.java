@@ -87,8 +87,8 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   }
 
   @Override
-  public void loadLibraryFile(String filePath) {
-    myBackEnd.loadLibraryFile(filePath);
+  public List<CommandResult> loadLibraryFile(String filePath) {
+    return myBackEnd.loadLibraryFile(filePath);
   }
 
   @Override

@@ -257,9 +257,11 @@ public class SLogoBackEnd implements BackEndInternal {
   }
 
   @Override
-  public void loadLibraryFile(String filePath) {
+  public List<CommandResult> loadLibraryFile(String filePath) {
     FileBuilder fileBuilder = new SLogoFileBuilder();
     myVariables = new HashMap<>(fileBuilder.loadVariablesFromFile(filePath));
     myUserCommandManager = new UserCommandManager(fileBuilder.loadCommandArguments(filePath),fileBuilder.loadCommandInstructions(filePath));
+    CommandResultBuilder builder = startCommandResult(0);
+    return List.of(builder.buildCommandResult());
   }
 }

@@ -29,9 +29,7 @@ public class SLogoFileBuilder implements FileBuilder{
 
   public void makeXMLFile(String xmlFilePath, Map<String,Double> varMap, Map<String, List<String>> argMap, Map<String,String> instructionMap) {
     try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder docBuilder = factory.newDocumentBuilder();
-      Document doc = docBuilder.newDocument();
+      Document doc = instantiateDocument();
       Element userLib = doc.createElement("UserLib");
       try {
         Element varList = constructCommandList(argMap, instructionMap,doc);
@@ -107,7 +105,6 @@ public class SLogoFileBuilder implements FileBuilder{
     File info = new File(filepath);
     try {
       NodeList commandsInFile = getNodesWithTag(info, "Command");
-      Map<String,List<String>> commandArguments = new HashMap<>();
       Map<String,String> commandInstructions = new HashMap<>();
       for (int i = 0; i < commandsInFile.getLength(); i ++) {
         String cmdName = commandsInFile.item(i).getAttributes().getNamedItem("name").getTextContent();
@@ -127,10 +124,12 @@ public class SLogoFileBuilder implements FileBuilder{
       NodeList commandsInFile = getNodesWithTag(info, "Command");
       Map<String,List<String>> commandArguments = new HashMap<>();
       for (int i = 0; i < commandsInFile.getLength(); i ++) {
-        commandArguments.entrySet().add(makeCommandArgumentEntry(commandsInFile.item(i)));
+        Entry<String,List<String>> argEntry = makeCommandArgumentEntry(commandsInFile.item(i));
+        commandArguments.put(argEntry.getKey(),argEntry.getValue());
       }
       return commandArguments;
     } catch (Exception e) {
+      e.printStackTrace();
       return new HashMap<>();
     }
   }
@@ -182,5 +181,11 @@ public class SLogoFileBuilder implements FileBuilder{
     Map<String,String> commandInstructions = Map.of("foo","fd :firstvar bk :secondvar");
 
     new SLogoFileBuilder().makeXMLFile(FILEPATH,vars,commandArgs,commandInstructions);
+  }
+
+  private Document instantiateDocument() throws ParserConfigurationException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder docBuilder = factory.newDocumentBuilder();
+    return docBuilder.newDocument();
   }
 }
