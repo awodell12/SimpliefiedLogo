@@ -6,6 +6,17 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Queue;
+import java.util.ResourceBundle;
+import java.util.TreeMap;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -18,8 +29,17 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -42,7 +62,6 @@ import javax.imageio.ImageIO;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.*;
 import java.util.function.Consumer;
 
 @SuppressWarnings({"unused", "StringEquality"})
@@ -87,8 +106,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   }}; //TODO: put this into the config file. A bit pointless though since all the help images are in english.
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
-  private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
-  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace", "savePrefs"};
+  private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1), List.of(2,1));
+  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace", "savePrefs","loadPrefs"};
   private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight",
           "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
 
@@ -295,50 +314,53 @@ public class Visualizer extends Application implements FrontEndExternal{
                                List<Integer> activeTurtles, int paletteIndex, int penColorIndex,
                                int backgroundColorIndex, List<Integer> newColorRGB, int imageIndex, double penSize,
                                boolean isUndoCommand, boolean isRedoCommand) {
+    updateTurtleImage(imageIndex);
+    handleUndoRedo(clearScreen, originalInstruction, isUndoCommand, isRedoCommand);
     myCurrentTurtleID = turtleID;
     if(!myTurtleView.getExistingTurtleIDs().contains(turtleID)){
       createTurtle(turtlePos, turtleID);
-    }
-    Image image = imageList.get(imageIndex);
-    if(myTurtleView.getTurtleImage() != image) {
-      myTurtleView.setTurtleImage(image);
     }
     myTurtleView.activateTurtles(activeTurtles);
     for(int id : myTurtleView.getExistingTurtleIDs()){
       updateTurtleInfo(id);
     }
-    myTurtleView.setTurtleHeading(turtleRotate, turtleID);
-    myDesiredTurtlePosition = turtlePos;
-    myCurrentTurtlePosition = myTurtleView.getUnalteredTurtlePositions().get(turtleID);
-    xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
-    yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
-    myStartPos = startPos;
-    for(Map.Entry<String, Double> variable : variables.entrySet()){
-      addVariable(variable.getKey(), variable.getValue());
-    }
-    for(Map.Entry<String, String> UDC : userDefinedCommands.entrySet()){
-      addUserDefinedCommand(UDC.getKey(), UDC.getValue());
-    }
-    if(clearScreen) {
+    updateTurtleDisplay(turtleRotate, turtlePos, startPos, turtleID);
+    updateUserDefineInfo(variables, userDefinedCommands);
+    clearTurtleView(clearScreen);
+    myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
+    myTurtleView.setIsPenUp(isPenUp);
+    myTurtleView.setPenThickness(penSize);
+    updateColors(paletteIndex, penColorIndex, backgroundColorIndex, newColorRGB);
+    setPenText();
+    highlightInHistory(originalInstruction, originalInstruction != myCurrentlyHighlighted);
+    displayErrorMessage(errorMessage);
+    myRightVBox.requestLayout(); // make sure everything is updated graphically
+  }
+
+  private void clearTurtleView(boolean isClearScreen) {
+    if(isClearScreen) {
       myTurtleView.clearPaths();
       clearScreenScheduled = false;
     }
-    myTurtleView.setTurtleVisibility(turtleVisibility, turtleID);
-    myTurtleView.setIsPenUp(isPenUp);
-    displayErrorMessage(errorMessage);
-    myTurtleView.setPenThickness(penSize);
-    if (newColorRGB != null){
-      updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
+  }
+
+  private void updateTurtleImage(int imageIndex) {
+    Image image = imageList.get(imageIndex);
+    if(myTurtleView.getTurtleImage() != image) {
+      myTurtleView.setTurtleImage(image);
     }
-    // nothing happens if the requested color is not in color palette
-    if(myColorPalette.containsKey(Integer.toString(backgroundColorIndex))) {
-      myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
+  }
+
+  private void highlightInHistory(String originalInstruction, boolean isHighlightingPrevious) {
+    if (isHighlightingPrevious) {
+      myHistory.highlightNext();
+      myCurrentlyHighlighted = originalInstruction;
     }
-    if(myColorPalette.containsKey(Integer.toString(penColorIndex))) {
-      myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
-    }
-    setPenText();
-    if(undoCommandsIssued.size() > 0 && undoCommandsIssued.get(0) == originalInstruction) {
+  }
+
+  private void handleUndoRedo(boolean clearScreen, String originalInstruction,
+      boolean isUndoCommand, boolean isRedoCommand) {
+    if(!undoCommandsIssued.isEmpty() && undoCommandsIssued.get(0) == originalInstruction) {
       undoCommandsIssued.remove(0);
       if (isUndoCommand) {
         myTurtleView.clearPaths();
@@ -359,11 +381,40 @@ public class Visualizer extends Application implements FrontEndExternal{
       // trim everything in pathHistory beyond the current path history index
       // add a new empty list to pathHistory. Copy pathHistory[index] to it, unless clearscreen is true
     }
-    if(originalInstruction != myCurrentlyHighlighted) {
-      myHistory.highlightNext();
-      myCurrentlyHighlighted = originalInstruction;
+  }
+
+  private void updateColors(int paletteIndex, int penColorIndex, int backgroundColorIndex,
+      List<Integer> newColorRGB) {
+    if (newColorRGB != null){
+      updateColorMenus(paletteIndex, Color.rgb(newColorRGB.get(0), newColorRGB.get(1),newColorRGB.get(2) ) );
     }
-    myRightVBox.requestLayout(); // make sure everything is updated graphically
+    // nothing happens if the requested color is not in color palette
+    if(myColorPalette.containsKey(Integer.toString(backgroundColorIndex))) {
+      myTurtleView.setBackGroundColor(myColorPalette.get(Integer.toString(backgroundColorIndex)));
+    }
+    if(myColorPalette.containsKey(Integer.toString(penColorIndex))) {
+      myTurtleView.setPenColor(myColorPalette.get(Integer.toString(penColorIndex)), penColorIndex);
+    }
+  }
+
+  private void updateUserDefineInfo(Map<String, Double> variables,
+      Map<String, String> userDefinedCommands) {
+    for(Map.Entry<String, Double> variable : variables.entrySet()){
+      addVariable(variable.getKey(), variable.getValue());
+    }
+    for(Map.Entry<String, String> UDC : userDefinedCommands.entrySet()){
+      addUserDefinedCommand(UDC.getKey(), UDC.getValue());
+    }
+  }
+
+  private void updateTurtleDisplay(double turtleRotate, Point2D turtlePos, Point2D startPos,
+      int turtleID) {
+    myTurtleView.setTurtleHeading(turtleRotate, turtleID);
+    myDesiredTurtlePosition = turtlePos;
+    myCurrentTurtlePosition = myTurtleView.getUnalteredTurtlePositions().get(turtleID);
+    xIncrement = (myDesiredTurtlePosition.getX()-myCurrentTurtlePosition.getX())/FPS;
+    yIncrement = (myDesiredTurtlePosition.getY()-myCurrentTurtlePosition.getY())/FPS;
+    myStartPos = startPos;
   }
 
   private void setPathsAndTurtles() {
@@ -423,7 +474,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         step(false);
       } catch (Exception ex) {
         // note that this should ideally never be thrown
-        System.out.println(ex.getMessage());
+        showError("Animation Error", myLanguageResources);
         myErrorMessage.setText(myLanguageResources.getString("IOError"));
       }
     });
@@ -457,16 +508,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     instruction.append("]");
     executeInstruction(instruction.toString());
     executeInstruction("setshape " + myStartingImage);
-    for(String scriptName : myScripts){
-      String script = myWorkSpaceResources.getString(scriptName);
-      executeInstruction("to " + scriptName + " [ ] [ " + script + " ]");
-      //myUserDefinedCommands.addEntry(scriptName + ":\n" + script, scriptName, e->myCommandBox.setText(script));
-    }
-    for(String variableName : myStartingVariables){
-      double value = Double.parseDouble(myWorkSpaceResources.getString(variableName));
-      executeInstruction("make :" + variableName + " " + value);
-      //addVariable(variableName, value);
-    }
+
+    loadNewUserProperties(myFileNum, true);
+
     myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + myStartingLanguage);
     // now schedule clear history so the user isn't confused by the commands we used to set up defaults
     clearedAtStart = false;
@@ -548,6 +592,22 @@ public class Visualizer extends Application implements FrontEndExternal{
       buttons.add(button);
       myDisplayableTextHolder.addButton(button, buttonName);
     }
+    makeTurtleMoveButtons(buttons);
+    Slider speedSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
+    speedSlider.valueProperty().addListener((ov, old_val, new_val) -> animation.setRate(speedSlider.getValue()));
+    speedSlider.setShowTickMarks(true);
+    speedSlider.setShowTickLabels(true);
+    Text sliderLabel = new Text(myLanguageResources.getString("AnimationSpeed"));
+    myDisplayableTextHolder.addText(sliderLabel, "AnimationSpeed");
+    sliderLabel.setUnderline(true);
+    Slider penSlider = makePenSlider();
+    Text penSliderLabel = new Text(myLanguageResources.getString("PenThicknessString"));
+    myDisplayableTextHolder.addText(penSliderLabel, "PenThicknessString");
+    penSliderLabel.setUnderline(true);
+    myCenterVBox.getChildren().addAll(sliderLabel, speedSlider, penSliderLabel, penSlider);
+  }
+
+  private void makeTurtleMoveButtons(List<Button> buttons) {
     for(int i=0; i<NUM_TURTLE_MOVE_BUTTONS; i++){
       HBox hbox = new HBox(SPACING);
       TextArea valueSetter = new TextArea(DEFAULT_MOVE_BUTTON_VALUE);
@@ -559,31 +619,25 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(Button button : buttons.subList(NUM_TURTLE_MOVE_BUTTONS, buttons.size())){
       myCenterVBox.getChildren().add(button);
     }
-    Slider speedSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
-    speedSlider.valueProperty().addListener((ov, old_val, new_val) -> animation.setRate(speedSlider.getValue()));
-    speedSlider.setShowTickMarks(true);
-    speedSlider.setShowTickLabels(true);
-    Text sliderLabel = new Text(myLanguageResources.getString("AnimationSpeed"));
-    myDisplayableTextHolder.addText(sliderLabel, "AnimationSpeed");
-    sliderLabel.setUnderline(true);
+  }
+
+  private Slider makePenSlider() {
     Slider penSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
     penSlider.valueProperty().addListener((ov, old_val, new_val) -> {
-      myTurtleView.setPenThickness(penSlider.getValue());
+      myTurtleView.setPenThickness(penSlider.getValue()); //TODO: keep an eye on this
       setPenText();
       myRightVBox.requestLayout(); // make sure everything is updated graphically
     });
     // update the displayed value as slider is dragged, but only send command to change it when slider is dropped
     penSlider.valueChangingProperty().addListener((val, wasChanging, changing) -> {
-      if(wasChanging)
-        executeInstruction(myLanguageResources.getString("setPenSize") + " " + String.format("%.2f", penSlider.getValue()));
-    });
+      if(wasChanging) {
+        executeInstruction(myLanguageResources.getString("setPenSize") + " " + String
+            .format("%.2f", penSlider.getValue()));
+      }});
     penSlider.setMinorTickCount(PEN_SLIDER_TICKS);
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
-    Text penSliderLabel = new Text(myLanguageResources.getString("PenThicknessString"));
-    myDisplayableTextHolder.addText(penSliderLabel, "PenThicknessString");
-    penSliderLabel.setUnderline(true);
-    myCenterVBox.getChildren().addAll(sliderLabel, speedSlider, penSliderLabel, penSlider);
+    return penSlider;
   }
 
   private void setUpTopButtons() {
@@ -774,7 +828,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
     String menuType = MENU_TYPES.get(menuNameIndex);
     String menuItemNameTranslation = menuItemName;
-    if(isNonNumeric(menuItemName)) menuItemNameTranslation = myLanguageResources.getString(menuItemName);
+    if(isNonNumeric(menuItemName)) {
+      menuItemNameTranslation = myLanguageResources.getString(menuItemName);
+    }
     MenuItem menuItem = new MenuItem(menuItemNameTranslation);
     myDisplayableTextHolder.addMenuItem(menuItem, menuItemName);
     String methodName = myResources.getString(menuType);
@@ -817,7 +873,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
   }
 
-  private static void showError(String message, ResourceBundle languageResources) {
+  protected static void showError(String message, ResourceBundle languageResources) {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(languageResources.getString("IOError"));
     alert.setContentText(message);
@@ -854,21 +910,26 @@ public class Visualizer extends Application implements FrontEndExternal{
       // skip the animations if a clear screen command is coming (so that reset can interrupt animation)
     }
     if(!paused || overridePause) {
-      if (myDesiredTurtlePosition != null && (notAlmostEqual(myCurrentTurtlePosition.getX(), myDesiredTurtlePosition.getX()) ||
-              notAlmostEqual(myCurrentTurtlePosition.getY(), myDesiredTurtlePosition.getY()))) {
-        myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX() + xIncrement, myCurrentTurtlePosition.getY() + yIncrement);
-        myTurtleView.getUnalteredTurtlePositions().put(myCurrentTurtleID, myCurrentTurtlePosition);
-        myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY(), myCurrentTurtleID);
-        if (myStartPos != null) {
-          myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
-          myStartPos = myCurrentTurtlePosition;
-        }
-        updateTurtleInfo(myCurrentTurtleID);
-      } else if (!isReady) {
-        isReady = true;
-        if (resultQueue.size() > 0) {
-          processResult(null);
-        }
+      moveTurtle();
+    }
+  }
+
+  private void moveTurtle() {
+    boolean isYNotAlmostEqual = notAlmostEqual(myCurrentTurtlePosition.getY(), myDesiredTurtlePosition.getY());
+    boolean isXNotAlmostEqual = notAlmostEqual(myCurrentTurtlePosition.getX(), myDesiredTurtlePosition.getX());
+    if (myDesiredTurtlePosition != null && (isXNotAlmostEqual || isYNotAlmostEqual)) {
+      myCurrentTurtlePosition = new Point2D(myCurrentTurtlePosition.getX() + xIncrement, myCurrentTurtlePosition.getY() + yIncrement);
+      myTurtleView.getUnalteredTurtlePositions().put(myCurrentTurtleID, myCurrentTurtlePosition);
+      myTurtleView.setTurtlePosition(myCurrentTurtlePosition.getX(), myCurrentTurtlePosition.getY(), myCurrentTurtleID);
+      if (myStartPos != null) {
+        myTurtleView.addPath(myStartPos, myCurrentTurtlePosition);
+        myStartPos = myCurrentTurtlePosition;
+      }
+      updateTurtleInfo(myCurrentTurtleID);
+    } else if (!isReady) {
+      isReady = true;
+      if (!resultQueue.isEmpty()) {
+        processResult(null);
       }
     }
   }
@@ -898,11 +959,8 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void executeInstruction(String instruction) {
     myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
-    if(instruction != myCurrentlyHighlighted && isReady) { // want to compare object references here
-      myHistory.highlightNext();
-      myCurrentlyHighlighted = instruction;
-    }
-    myRightVBox.requestLayout(); // make sure everything is updated graphically
+    highlightInHistory(instruction, instruction != myCurrentlyHighlighted && isReady);
+    myRightVBox.requestLayout(); // make sure etopverything is updated graphically
     myInstructionQueue.add(instruction);
   }
 
@@ -932,11 +990,28 @@ public class Visualizer extends Application implements FrontEndExternal{
     vBox.getChildren().remove(1);
     vBox.getChildren().add(new ImageView("slogo/frontEnd/Resources/" + imageName + ".png"));
   }
-  private void makeNewUserProperties(int fileNum){
-    PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(fileNum),myColorPalette);
-
+  private void loadNewUserProperties(int fileNum, boolean isStartUp){
+    if (isStartUp){
+      executeInstruction("Load " + "src/" + RESOURCE_LOCATION + "/saved.xml");
+    }
+    else {
+      FileChooser fileChooser = new FileChooser();
+      File file = fileChooser.showOpenDialog(myStage);
+      String filePath = "";
+      try {
+        filePath = file.getCanonicalPath();
+      } catch (IOException e) {
+        showError(e.getMessage(), myLanguageResources);
+      }
+      executeInstruction("Load " + filePath);
+    }
+  }
+  private void loadPrefs(){
+      loadNewUserProperties(myFileNum, false);
   }
   private void savePrefs(){
-    makeNewUserProperties(myFileNum);
+    String instruction = "Save src/" + RESOURCE_LOCATION;
+    String inst = instruction.substring(0,instruction.length() -1);
+    executeInstruction(inst + "/saved.xml");
   }
 }
