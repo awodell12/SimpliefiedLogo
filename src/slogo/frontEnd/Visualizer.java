@@ -296,6 +296,7 @@ public class Visualizer extends Application implements FrontEndExternal{
                                int backgroundColorIndex, List<Integer> newColorRGB, int imageIndex, double penSize,
                                boolean isUndoCommand, boolean isRedoCommand) {
     updateTurtleImage(imageIndex);
+    handleUndoRedo(clearScreen, originalInstruction, isUndoCommand, isRedoCommand);
     myCurrentTurtleID = turtleID;
     if(!myTurtleView.getExistingTurtleIDs().contains(turtleID)){
       createTurtle(turtlePos, turtleID);
@@ -312,7 +313,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     myTurtleView.setPenThickness(penSize);
     updateColors(paletteIndex, penColorIndex, backgroundColorIndex, newColorRGB);
     setPenText();
-    handleUndoRedo(clearScreen, originalInstruction, isUndoCommand, isRedoCommand);
     highlightInHistory(originalInstruction, originalInstruction != myCurrentlyHighlighted);
     displayErrorMessage(errorMessage);
     myRightVBox.requestLayout(); // make sure everything is updated graphically
