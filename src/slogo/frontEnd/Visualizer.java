@@ -612,7 +612,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private Slider makePenSlider() {
     Slider penSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
     penSlider.valueProperty().addListener((ov, old_val, new_val) -> {
-      myTurtleView.setPenThickness(penSlider.getValue());
+      myTurtleView.setPenThickness(penSlider.getValue()); //TODO: keep an eye on this
       setPenText();
       myRightVBox.requestLayout(); // make sure everything is updated graphically
     });
