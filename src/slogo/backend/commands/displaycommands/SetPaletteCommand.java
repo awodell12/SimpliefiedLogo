@@ -42,6 +42,7 @@ public class SetPaletteCommand implements Command {
         if(isValidColor(color)){
             builder.setColor(paletteColor);
             builder.setPaletteIndex(idx);
+            backEnd.addPaletteColor(idx, paletteColor);
         }
         else
             builder.setErrorMessage(INVALID_COLOR_MESSAGE);

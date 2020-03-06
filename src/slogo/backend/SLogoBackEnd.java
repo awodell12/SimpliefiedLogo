@@ -132,7 +132,7 @@ public class SLogoBackEnd implements BackEndInternal {
 
   @Override
   public void addPaletteColor(int index, List<Integer> rgbColor) {
-
+    myPalette.put(index, rgbColor);
   }
 
   @Override
