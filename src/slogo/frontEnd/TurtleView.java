@@ -1,6 +1,11 @@
 package slogo.frontEnd;
 
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import javafx.geometry.Point2D;
@@ -8,7 +13,11 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 /**
  * The TurtleView class encapsulated the view of the turtle and allows for the current state of the
@@ -95,8 +104,12 @@ public class TurtleView extends Group{
             pathsTimeline.subList(currentTimelineIndex + 1, pathsTimeline.size()).clear();
             existingTurtleTimeline.subList(currentTimelineIndex + 1, existingTurtleTimeline.size()).clear();
         }
-        if(copyPrevious) pathsTimeline.add(new ArrayList<>(pathsTimeline.get(currentTimelineIndex)));
-        else pathsTimeline.add(new ArrayList<>());
+        if(copyPrevious) {
+          pathsTimeline.add(new ArrayList<>(pathsTimeline.get(currentTimelineIndex)));
+        }
+        else{
+          pathsTimeline.add(new ArrayList<>());
+        }
         existingTurtleTimeline.add(new ArrayList<>(existingTurtleTimeline.get(currentTimelineIndex)));
         currentTimelineIndex++;
     }
@@ -241,7 +254,9 @@ public class TurtleView extends Group{
     protected List<Integer> getActiveTurtles(){
         List<Integer> activeTurtles = new ArrayList<>();
         for(Map.Entry<Integer, Turtle> turtleEntry : myTurtles.entrySet()){
-            if(turtleEntry.getValue().isActive()) activeTurtles.add(turtleEntry.getKey());
+            if(turtleEntry.getValue().isActive()){
+              activeTurtles.add(turtleEntry.getKey());
+            }
         }
         return activeTurtles;
     }
@@ -300,15 +315,23 @@ public class TurtleView extends Group{
 
     private double boundX(double x){
         x = x + xOffset;
-        while(x > myWidth) x -= myWidth;
-        while(x < 0) x += myWidth;
+        while(x > myWidth){
+          x -= myWidth;
+        }
+        while(x < 0){
+          x += myWidth;
+        }
         return x;
     }
 
     private double boundY(double y){
         y = y + yOffset;
-        while(y > myHeight) y -= myHeight;
-        while(y < 0) y += myHeight;
+        while(y > myHeight) {
+          y -= myHeight;
+        }
+        while(y < 0){
+          y += myHeight;
+        }
         return y;
     }
 
