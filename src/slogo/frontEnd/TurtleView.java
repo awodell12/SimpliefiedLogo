@@ -125,7 +125,7 @@ public class TurtleView extends Group{
      * Removes all of the taken paths displayed on the screen
      */
     protected void clearPaths(){
-        this.getChildren().removeAll(pathsTimeline.get(currentTimelineIndex));
+        this.getChildren().removeIf(node -> node.getClass().equals(Path.class));
     }
 
     /**
