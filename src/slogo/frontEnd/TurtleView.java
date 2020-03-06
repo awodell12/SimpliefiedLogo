@@ -184,7 +184,7 @@ public class TurtleView extends Group{
      */
     protected void addPath(Point2D startPos, Point2D turtlePos){
         if(!isPenUp && pathCreateMode) {
-            Path path = new Path();
+
             double turtleX = boundX(turtlePos.getX()) + TURTLE_SIZE/2;
             double turtleY = boundY(turtlePos.getY()) + TURTLE_SIZE/2;
             double startX = boundX(startPos.getX())+TURTLE_SIZE/2;
@@ -194,6 +194,7 @@ public class TurtleView extends Group{
             }
             MoveTo moveTo = new MoveTo(turtleX , turtleY);
             LineTo line = new LineTo(startX, startY);
+            Path path = new Path();
             path.getElements().add(moveTo);
             path.getElements().add(line);
             path.setStroke(myPenColor);
