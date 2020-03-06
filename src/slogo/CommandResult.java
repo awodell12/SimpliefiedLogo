@@ -12,11 +12,7 @@ public class CommandResult {
   private String myErrorMessage;
   private double myRotation;
   private List<Double> myPosition;
-  private String myVariableName;
   private Map<String,Double> myVariables;
-  private double myVariableValue;
-  private String myUDCName;
-  private String myUDCText;
   private Map<String, String> myUserCommands;
   private boolean myScreenClear;
   private boolean myPenUp;
@@ -46,11 +42,7 @@ public class CommandResult {
     myErrorMessage = errorMessage;
     myRotation = heading;
     myPosition = pos;
-    myVariableName = "";
-    myVariableValue = 0;
     myVariables = variables;
-    myUDCName = "";
-    myUDCText = "";
     myUserCommands = userCommands;
     myScreenClear = clearScreen;
     myPenUp = penUp;
@@ -86,7 +78,7 @@ public class CommandResult {
     return myTokensParsed;
   }
 
-  public double getMyRotation() {
+  public double getTurtleHeading() {
     return myRotation;
   }
 
@@ -96,22 +88,6 @@ public class CommandResult {
 
   public List<Double> getPathStart(){
       return myPathStart;
-  }
-
-  public String getMyVariableName() {
-    return myVariableName;
-  }
-
-  public double getMyVariableValue() {
-    return myVariableValue;
-  }
-
-  public String getMyUDCName() {
-    return myUDCName;
-  }
-
-  public String getMyUDCText() {
-    return myUDCText;
   }
 
   public boolean isMyScreenClear() {

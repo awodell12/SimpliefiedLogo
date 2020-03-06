@@ -7,7 +7,6 @@ import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.stage.Stage;
 import slogo.backend.BackEndExternal;
-import slogo.backend.SLogoBackEnd;
 import slogo.backend.SLogoLanguageChanger;
 import slogo.CommandResult;
 import slogo.backend.SLogoParser;
