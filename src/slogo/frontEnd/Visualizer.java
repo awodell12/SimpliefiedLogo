@@ -106,8 +106,8 @@ public class Visualizer extends Application implements FrontEndExternal{
   }}; //TODO: put this into the config file. A bit pointless though since all the help images are in english.
   private static final String[] BOTTOM_BUTTON_METHOD_NAMES = new String[]{"runButton", "clearButton", "undoButton", "redoButton"};
   private static final String[] BOTTOM_BUTTON_HOVER_NAMES = new String[]{"RunHover", "ClearHover", "UndoHover", "RedoHover"};
-  private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1));
-  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace", "savePrefs"};
+  private static final List<List<Integer>> BOTTOM_BUTTON_POSITIONS = List.of(List.of(0,0), List.of(0,1), List.of(1,0), List.of(1,1), List.of(2,1));
+  private static final String[] TOP_RIGHT_BUTTON_METHODS = new String[]{"displayHelp", "setTurtleImage", "newWorkspace", "savePrefs","loadPrefs"};
   private static final String[] TOP_CENTER_BUTTON_METHODS = new String[]{"moveForward", "moveBackward", "rotateRight",
           "rotateLeft", "endPause", "setPause", "resetAnimation", "singleStep"};
 
@@ -653,6 +653,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     topButtons.setHgap(SPACING);
     for(int i=0; i<TOP_RIGHT_BUTTON_METHODS.length; i++){
       Button button = makeButton(TOP_RIGHT_BUTTON_METHODS[i], TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources);
+      System.out.println("Here");
       topButtons.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
       myDisplayableTextHolder.addButton(button, TOP_RIGHT_BUTTON_METHODS[i]);
     }
@@ -967,7 +968,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void executeInstruction(String instruction) {
     myHistory.addEntry(instruction, null, e->myCommandBox.setText(instruction));
     highlightInHistory(instruction, instruction != myCurrentlyHighlighted && isReady);
-    myRightVBox.requestLayout(); // make sure everything is updated graphically
+    myRightVBox.requestLayout(); // make sure etopverything is updated graphically
     myInstructionQueue.add(instruction);
   }
 
@@ -998,7 +999,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     vBox.getChildren().add(new ImageView("slogo/frontEnd/Resources/" + imageName + ".png"));
   }
   private void makeNewUserProperties(int fileNum){
-    PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(fileNum),myColorPalette);
     FileChooser fileChooser = new FileChooser();
     File file = fileChooser.showOpenDialog(myStage);
     String filePath = "";
@@ -1010,7 +1010,12 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   executeInstruction("Load " + filePath);
   }
-  private void savePrefs(){
+  private void loadPrefs(){
     makeNewUserProperties(myFileNum);
+  }
+  private void savePrefs(){
+    String instruction = "Save src/" + RESOURCE_LOCATION;
+    String inst = instruction.substring(0,instruction.length() -1);
+    executeInstruction(inst + "/saved.xml");
   }
 }
