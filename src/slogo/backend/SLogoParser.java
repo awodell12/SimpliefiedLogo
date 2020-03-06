@@ -57,6 +57,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
     myTimelineLocation += 1;
     System.out.println("myTimelineLocation = " + myTimelineLocation);
     myPrevStates.add(myBackEnd.saveStateToMemento());
+    System.out.println("retList.size() = " + retList.size());
     return retList;
   }
 
@@ -69,7 +70,6 @@ public class SLogoParser implements BackEndExternal, Interpreter{
       results = myBackEnd.loadStateFromMemento(myPrevStates.get(myTimelineLocation), false, true);
     }
     return results;
-//    return myBackEnd.redo();
   }
 
   @Override
@@ -87,6 +87,11 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   }
 
   @Override
+  public void loadLibraryFile(String filePath) {
+    myBackEnd.loadLibraryFile(filePath);
+  }
+
+  @Override
   public void applyChanger(Changer changer) {
     changer.doChanges(this);
   }
@@ -99,7 +104,6 @@ public class SLogoParser implements BackEndExternal, Interpreter{
         Command command = identifyCommand(tokenList[programCounter]);
         String[] tokensToParse = Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length);
         results.addAll(parseSingleCommand(command, tokensToParse));
-        //in 'fd sum 30 40 bk 10', we advance by 4 then by 2.
         programCounter += results.get(results.size() - 1).getTokensParsed() + 1;
       } catch (ParseException e) {
         CommandResultBuilder builder = myBackEnd.startCommandResult(0);
@@ -108,9 +112,6 @@ public class SLogoParser implements BackEndExternal, Interpreter{
         return results;
       }
     }
-//    CommandResultBuilder builder = myBackEnd.startCommandResult(findRetVal(results));
-//    builder.setTokensParsed(programCounter);
-//    results.add(builder.buildCommandResult());
     return results;
   }
 
@@ -125,6 +126,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
     return listResult;
   }
 
+  //TODO: Use or remove.
   private double findRetVal(List<CommandResult> results) {
     double retVal = 0;
     if (!results.isEmpty()) {
@@ -137,8 +139,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
 
     String currentTokenType = getSymbol(tokenList[0]);
     if (isValue(currentTokenType)) {
-      CommandResultBuilder builder = myBackEnd.startCommandResult(parseValue(currentTokenType,tokenList[0]));
-      return List.of(builder.buildCommandResult());
+      return List.of(parseValue(currentTokenType,tokenList[0]));
     }
 
     Command command = identifyCommand(tokenList[0]);
@@ -181,17 +182,35 @@ public class SLogoParser implements BackEndExternal, Interpreter{
 
   private List<CommandResult> parseCommand(Command command, String[] tokenList)
       throws ParseException {
-    //'fd 50' expects to start at PC = 1, where '50' is.
     Stack<Double> commandValues = new Stack<>();
     List<String> variableNames = getCommandVars(command, tokenList);
+    List<CommandResult> results = new ArrayList<>();
     for (int programCounter = variableNames.size(); programCounter <= tokenList.length;
         programCounter++) {
       if (commandValues.size() >= command.getNumArgs()) {
-        return executeCurrentCommand(command, tokenList, commandValues, variableNames,
-            programCounter);
+        results.addAll(executeCurrentCommand(command, tokenList, commandValues, variableNames,
+            programCounter));
+        return results;
       }
-      programCounter += parseNextToken(tokenList, programCounter, commandValues);
+      if (programCounter >= tokenList.length) {
+        break;
+      }
+      String currentTokenRaw = tokenList[programCounter];
+      String currentTokenType = getSymbol(tokenList[programCounter]);
+      if (isValue(currentTokenType)) {
+//        return List.of(parseValue(currentTokenType, currentTokenRaw));
+        CommandResult valueResult = parseValue(currentTokenType, currentTokenRaw);
+        commandValues.add(valueResult.getReturnVal());
+        results.add(valueResult);
+      } else {
+        List<CommandResult> insideResult = parseCommand(identifyCommand(currentTokenRaw),
+            Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+        commandValues.add(insideResult.get(insideResult.size() - 1).getReturnVal());
+        results.addAll(insideResult);
+        programCounter += insideResult.get(insideResult.size()-1).getTokensParsed();
+      }
     }
+    //TODO: Export error text to resource file.
     throw new ParseException("Unexpected end of instructions.");
   }
 
@@ -215,34 +234,27 @@ public class SLogoParser implements BackEndExternal, Interpreter{
     return new ArrayList<>();
   }
 
-  private int parseNextToken(String[] tokenList, int programCounter, Stack<Double> commandValues)
-      throws ParseException {
-    if (programCounter >= tokenList.length) {
-      throw new ParseException("Unexpected end of instructions.");
-    }
-    String currentTokenRaw = tokenList[programCounter];
-    String currentTokenType = getSymbol(tokenList[programCounter]);
-    if (isValue(currentTokenType)) {
-      commandValues.add(parseValue(currentTokenType, currentTokenRaw));
-    } else {
-      List<CommandResult> insideResult = parseCommand(identifyCommand(currentTokenRaw),
-          Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
-      commandValues.add(insideResult.get(insideResult.size() - 1).getReturnVal());
-      return insideResult.get(insideResult.size() - 1).getTokensParsed();
-    }
-    return 0;
-  }
-
-  private double parseValue(String type, String token) throws ParseException {
+  private CommandResult parseValue(String type, String token) throws ParseException {
+    CommandResultBuilder builder;
     if (isVariable(type)) {
-      return myBackEnd.getVariable(token.substring(1));
+      builder = myBackEnd.startCommandResult(myBackEnd.getVariable(token.substring(1)));
     } else {
-      return Double.parseDouble(token);
+      builder = myBackEnd.startCommandResult(Double.parseDouble(token));
     }
+    builder.setIsActualCommand(false);
+    return builder.buildCommandResult();
   }
 
   private boolean isValue(String identity) {
     return identity.equals("Constant") || identity.equals("Variable");
+  }
+
+  private boolean isGroupOpen(String identity) {
+    return identity.equals("GroupStart");
+  }
+
+  private boolean isGroupEnd(String identity) {
+    return identity.equals("GroupEnd");
   }
 
   private boolean isVariable(String identity) {

@@ -255,4 +255,11 @@ public class SLogoBackEnd implements BackEndInternal {
   public void setActiveTurtleID(Integer id) {
     myActiveTurtleID = id;
   }
+
+  @Override
+  public void loadLibraryFile(String filePath) {
+    FileBuilder fileBuilder = new SLogoFileBuilder();
+    myVariables = new HashMap<>(fileBuilder.loadVariablesFromFile(filePath));
+    myUserCommandManager = new UserCommandManager(fileBuilder.loadCommandArguments(filePath),fileBuilder.loadCommandInstructions(filePath));
+  }
 }

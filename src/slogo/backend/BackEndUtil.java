@@ -33,7 +33,6 @@ public class BackEndUtil {
     int extraBrackets = 0;
     for (int i = 0; i < tokenList.length; i ++) {
       String token = tokenList[i];
-      System.out.println("(" + token + ")");
       if (isOpenBracket(token)) {
         extraBrackets++;
       } else if (isClosedBracket(token)) {
