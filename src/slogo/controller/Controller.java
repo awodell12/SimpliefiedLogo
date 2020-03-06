@@ -6,7 +6,9 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.stage.Stage;
+import javax.lang.model.util.Types;
 import slogo.backend.BackEndExternal;
+import slogo.backend.Command;
 import slogo.backend.SLogoLanguageChanger;
 import slogo.CommandResult;
 import slogo.backend.SLogoParser;
@@ -20,8 +22,9 @@ public class Controller extends Application{
             "disfare", "desfazer", "otmenit", "deshacer", "urduundo");
     private static final List<String> REDO_INSTRUCTIONS = List.of("redo", "chongzuo", "refaire", "wiederholen",
             "rifare", "refazer", "povtorit", "rehacer", "urduredo");
+  private static final List<String> SAVE_INSTRUCTION = List.of("Load");
 
-    private final List<Visualizer> myVisualizers = new ArrayList<>();
+  private final List<Visualizer> myVisualizers = new ArrayList<>();
     private final List<BackEndExternal> myModels = new ArrayList<>();
     private int numWorkspaces = 0;
 
@@ -61,7 +64,7 @@ public class Controller extends Application{
     }
 
     private void processInstructionQueueEvent(int workspace){
-        System.out.println(workspace);
+        //System.out.println(workspace);
         String input = myVisualizers.get(workspace).popInstructionQueue();
         if(input.length() >= LI_LENGTH && input.substring(0, LI_LENGTH).equals(LANGUAGE_INSTRUCTION)){
             SLogoLanguageChanger languageChanger = new SLogoLanguageChanger(input.substring(LI_LENGTH+1));
@@ -73,7 +76,12 @@ public class Controller extends Application{
                 resultList = (ArrayList<CommandResult>) myModels.get(workspace).undo();
             } else if(REDO_INSTRUCTIONS.contains(input)){
                 resultList = (ArrayList<CommandResult>) myModels.get(workspace).redo();
-            } else {
+            }
+            else if (SAVE_INSTRUCTION.contains(input.substring(0,4))){
+              resultList = myModels.get(workspace).loadLibraryFile(input.substring(5)) ;
+              System.out.println(input);
+            }
+            else {
                 resultList = (ArrayList<CommandResult>) myModels.get(workspace).parseScript(input);
             }
             for (CommandResult result : resultList) {

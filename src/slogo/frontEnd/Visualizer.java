@@ -999,7 +999,16 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
   private void makeNewUserProperties(int fileNum){
     PropertiesWriter propertyWriter = new PropertiesWriter(Integer.toString(fileNum),myColorPalette);
+    FileChooser fileChooser = new FileChooser();
+    File file = fileChooser.showOpenDialog(myStage);
+    String filePath = "";
+    try {
+      filePath = file.getCanonicalPath();
+    } catch (IOException e) {
+      showError(e.getMessage(), myLanguageResources);
+    }
 
+  executeInstruction("Load " + filePath);
   }
   private void savePrefs(){
     makeNewUserProperties(myFileNum);
