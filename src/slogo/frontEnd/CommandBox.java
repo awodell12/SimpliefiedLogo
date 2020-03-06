@@ -37,7 +37,9 @@ public class CommandBox extends HBox implements DisplayableTextOwner  {
             prompt = languageResources.getString("CommandBoxPrompt");
             inputArea.setText(prompt);
         }
-        else prompt = languageResources.getString("CommandBoxPrompt");
+        else {
+          prompt = languageResources.getString("CommandBoxPrompt");
+        }
     }
 
     /**

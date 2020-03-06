@@ -1,11 +1,14 @@
 package slogo.frontEnd;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.text.Text;
 
-import java.util.*;
+
 
 /**
  * holds all the visualizer's nodes with displayable text so the visualizer can easily update their texts all at once

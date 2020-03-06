@@ -6,6 +6,17 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Queue;
+import java.util.ResourceBundle;
+import java.util.TreeMap;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -18,8 +29,17 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -42,7 +62,6 @@ import javax.imageio.ImageIO;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.*;
 import java.util.function.Consumer;
 
 @SuppressWarnings({"unused", "StringEquality"})
@@ -341,7 +360,7 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void handleUndoRedo(boolean clearScreen, String originalInstruction,
       boolean isUndoCommand, boolean isRedoCommand) {
-    if(undoCommandsIssued.size() > 0 && undoCommandsIssued.get(0) == originalInstruction) {
+    if(!undoCommandsIssued.isEmpty() && undoCommandsIssued.get(0) == originalInstruction) {
       undoCommandsIssued.remove(0);
       if (isUndoCommand) {
         myTurtleView.clearPaths();
@@ -455,7 +474,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         step(false);
       } catch (Exception ex) {
         // note that this should ideally never be thrown
-        System.out.println(ex.getMessage());
+        showError("Animation Error", myLanguageResources);
         myErrorMessage.setText(myLanguageResources.getString("IOError"));
       }
     });
@@ -618,9 +637,10 @@ public class Visualizer extends Application implements FrontEndExternal{
     });
     // update the displayed value as slider is dragged, but only send command to change it when slider is dropped
     penSlider.valueChangingProperty().addListener((val, wasChanging, changing) -> {
-      if(wasChanging)
-        executeInstruction(myLanguageResources.getString("setPenSize") + " " + String.format("%.2f", penSlider.getValue()));
-    });
+      if(wasChanging) {
+        executeInstruction(myLanguageResources.getString("setPenSize") + " " + String
+            .format("%.2f", penSlider.getValue()));
+      }});
     penSlider.setMinorTickCount(PEN_SLIDER_TICKS);
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
@@ -815,7 +835,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     Menu menu = myMenuBar.getMenus().get(menuNameIndex);
     String menuType = MENU_TYPES.get(menuNameIndex);
     String menuItemNameTranslation = menuItemName;
-    if(isNonNumeric(menuItemName)) menuItemNameTranslation = myLanguageResources.getString(menuItemName);
+    if(isNonNumeric(menuItemName)) {
+      menuItemNameTranslation = myLanguageResources.getString(menuItemName);
+    }
     MenuItem menuItem = new MenuItem(menuItemNameTranslation);
     myDisplayableTextHolder.addMenuItem(menuItem, menuItemName);
     String methodName = myResources.getString(menuType);
@@ -913,7 +935,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       updateTurtleInfo(myCurrentTurtleID);
     } else if (!isReady) {
       isReady = true;
-      if (resultQueue.size() > 0) {
+      if (!resultQueue.isEmpty()) {
         processResult(null);
       }
     }
@@ -982,6 +1004,4 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void savePrefs(){
     makeNewUserProperties(myFileNum);
   }
-
-
 }
