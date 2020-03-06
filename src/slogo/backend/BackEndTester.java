@@ -69,10 +69,13 @@ public class BackEndTester {
 //      parser.parseScript("to foo [ :n ] [ fd :n ] foo to foo [ :n ] [ right :n ] fd 100.0 foo 10.0");
 //    System.out.println(SLogoBackEnd.distanceToEndBracketStatic(array));
     SLogoParser outerParser = new SLogoParser();
+    outerParser.loadLibraryFile("data/userlibraries/outputTest.xml");
     List<CommandResult> results = outerParser.parseScript("fd 50");
     for (CommandResult result : results) {
-      System.out.println("result.getTurtleID() = " + result.getTurtleID());
-      System.out.println("result.getTurtlePosition() = " + result.getTurtlePosition());
+//      System.out.println("result.getTurtleID() = " + result.getTurtleID());
+//      System.out.println("result.getTurtlePosition() = " + result.getTurtlePosition());
+      System.out.println("result.getVariables().toString() = " + result.getVariables().toString());
+      System.out.println("result.getUserDefinedCommands().toString() = " + result.getUserDefinedCommands().toString());
     }
   }
 }
