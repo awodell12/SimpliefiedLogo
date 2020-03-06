@@ -640,27 +640,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   protected static Button makeButton(String text, Rectangle shape, Object clazz, ResourceBundle languageResources){
-    Method method = null;
-    try {
-      method = clazz.getClass().getDeclaredMethod(text);
-    }
-    catch (NoSuchMethodException e) {
-      showError(e.getMessage(), languageResources);
-    }
-    Button button = new Button(languageResources.getString(text));
-    button.setLayoutY(shape.getY());
-    button.setLayoutX(shape.getX());
-    button.setMinSize(shape.getWidth(), shape.getHeight());
-    Method finalMethod = method;
-    button.setOnAction(event -> {
-      try {
-        assert finalMethod != null;
-        finalMethod.invoke(clazz);
-      } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
-        showError(e.getMessage(), languageResources);
-      }
-    });
-    return button;
+    return new ButtonMaker(text, shape, clazz, languageResources).invoke();
   }
 
   private void moveForward(){
@@ -858,7 +838,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
   }
 
-  private static void showError(String message, ResourceBundle languageResources) {
+  protected static void showError(String message, ResourceBundle languageResources) {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(languageResources.getString("IOError"));
     alert.setContentText(message);
@@ -982,4 +962,6 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void savePrefs(){
     makeNewUserProperties(myFileNum);
   }
+
+
 }
