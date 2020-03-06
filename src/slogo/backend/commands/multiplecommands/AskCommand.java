@@ -14,6 +14,8 @@ import slogo.backend.Turtle;
 
 public class AskCommand implements Command {
 
+  public static final int START_BUFFER = 3;
+
   @Override
   public int getNumArgs() {
     return 0;
@@ -28,7 +30,7 @@ public class AskCommand implements Command {
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
     int programCounter = 1;
-    int numTokens = new BackEndUtil().distanceToEndBracket(
+    int numTokens = BackEndUtil.distanceToEndBracket(
         Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
     List<Integer> activeTurtleNums = new ArrayList<>();
     for (programCounter = 1; programCounter <= numTokens; programCounter ++) {
@@ -38,7 +40,8 @@ public class AskCommand implements Command {
     backEnd.setActiveTurtles(activeTurtleNums);
 
     List<CommandResult> results = new ArrayList<>();
-    int totalParsed = new BackEndUtil().distanceToEndBracket(Arrays.copyOfRange(tokens,numTokens+3,tokens.length))-1;
+    String[] tokensToParse = Arrays.copyOfRange(tokens,numTokens+ START_BUFFER,tokens.length);
+    int totalParsed = BackEndUtil.distanceToEndBracket(tokensToParse)-1;
     for (Turtle newlyActive : backEnd.getActiveTurtles()) {
       CommandResultBuilder builder = backEnd.startCommandResult(
           newlyActive.getHeading(),
@@ -50,7 +53,7 @@ public class AskCommand implements Command {
       builder.setTurtleID(newlyActive.getId());
       results.add(builder.buildCommandResult());
     }
-    results.addAll(interpreter.parseCommandsList(Arrays.copyOfRange(tokens,numTokens+3,tokens.length)));
+    results.addAll(interpreter.parseCommandsList(tokensToParse));
     backEnd.setActiveTurtles(originalActives);
     CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
     builder.setRetVal(0);

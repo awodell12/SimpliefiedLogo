@@ -31,7 +31,26 @@ public class CommandResultBuilder {
   private boolean isUndo;
   private boolean isRedo;
 
-
+  /**
+   * Creates a CommandResultBuilder with starting settings that can be
+   * used to construct CommandResults.
+   *
+   * Has a large number of parameters because of there are many
+   * relevant pieces of information that need to be brought to the
+   * front end.
+   * @param turtleNumber
+   * @param turtleFacing
+   * @param turtlePosition
+   * @param activeTurtleNumbers
+   * @param visible
+   * @param pathColor
+   * @param bgColor
+   * @param shape
+   * @param size
+   * @param isUp
+   * @param varMap
+   * @param commandMap
+   */
   public CommandResultBuilder(int turtleNumber, double turtleFacing, List<Double> turtlePosition,
       List<Integer> activeTurtleNumbers, boolean visible,
       int pathColor, int bgColor, int shape, double size, boolean isUp,

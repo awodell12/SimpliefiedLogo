@@ -32,7 +32,6 @@ public class ToCommand implements Command {
       BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
     //TODO: Find out why adding an empty instruction doesn't parse the correct number of tokens.
     int programCounter = 0;
-    String cmdName = tokens[programCounter];
     int numVars = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter+2,tokens.length)) - 1;
     List<String> toVars = new ArrayList<>();
     for (programCounter = 2; programCounter < 2 + numVars; programCounter ++) {
@@ -44,7 +43,7 @@ public class ToCommand implements Command {
     }
     int numCommands = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
     String[] commandTokens = Arrays.copyOfRange(tokens,programCounter,programCounter + numCommands);
-    backEnd.setUserCommand(cmdName,toVars,commandTokens);
+    backEnd.setUserCommand(tokens[0],toVars,commandTokens);
     CommandResultBuilder builder = backEnd.startCommandResult(1.0);
     builder.setTokensParsed(programCounter+numCommands+1);
     return List.of(builder.buildCommandResult());
@@ -53,7 +52,7 @@ public class ToCommand implements Command {
   @Override
   public List<String> findVars(String[] tokenList) {
     List<String> vars = new ArrayList<>();
-    int numVars = new BackEndUtil().distanceToEndBracket(Arrays.copyOfRange(tokenList,1,tokenList.length));
+    int numVars = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokenList,1,tokenList.length));
     Collections.addAll(vars,Arrays.copyOfRange(tokenList,0,numVars));
     return vars;
   }

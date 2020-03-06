@@ -1,6 +1,5 @@
 package slogo.backend.commands.turtlecommands;
 
-import java.util.ArrayList;
 import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;

@@ -1,12 +1,10 @@
 package slogo.backend.commands.turtlecommands;
 
-import java.util.ArrayList;
 import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
-import slogo.backend.Interpreter;
 import slogo.backend.Turtle;
 
 public class BackCommand extends TurtleCommand implements Command {
