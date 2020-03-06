@@ -39,7 +39,6 @@ public class SLogoParser implements BackEndExternal, Interpreter{
         return e.getKey();
       }
     }
-    // FIXME: perhaps throw an exception instead
     return "NO MATCH";
   }
 

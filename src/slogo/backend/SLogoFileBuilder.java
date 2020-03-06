@@ -2,6 +2,7 @@ package slogo.backend;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -31,11 +33,16 @@ public class SLogoFileBuilder implements FileBuilder{
       DocumentBuilder docBuilder = factory.newDocumentBuilder();
       Document doc = docBuilder.newDocument();
       Element userLib = doc.createElement("UserLib");
-      Element varList = constructCommandList(argMap, instructionMap,doc);
+      try {
+        Element varList = constructCommandList(argMap, instructionMap,doc);
+        userLib.appendChild(varList);
+      } catch (FileBuilderException e) {
+        Element errorInfo = doc.createElement("Invalid");
+        userLib.appendChild(errorInfo);
+      }
       Element commandList = constructVarList(varMap,doc);;
       doc.appendChild(userLib);
       userLib.appendChild(commandList);
-      userLib.appendChild(varList);
 
       File xmlFile = new File(xmlFilePath);
       StreamResult streamResult = new StreamResult(xmlFile);
@@ -81,11 +88,14 @@ public class SLogoFileBuilder implements FileBuilder{
     return varList;
   }
 
-  private Element constructCommandList(Map<String,List<String>> argMap, Map<String,String> instructionMap, Document doc) {
+  private Element constructCommandList(Map<String,List<String>> argMap, Map<String,String> instructionMap, Document doc)
+      throws FileBuilderException {
     Element commandList = doc.createElement("CommandsList");
     //Traverses through by key instead of by entry because there are two maps that
-    //share a keySet.
-    //TODO: Error check, since we can't assume that the maps line up.
+    //share a keySet. An error is thrown and handled if this isn't the case.
+    if (!instructionMap.keySet().equals(argMap.keySet())) {
+      throw new FileBuilderException("Script map not aligned with argument map for commands.");
+    }
     for (String varName : instructionMap.keySet()) {
       commandList.appendChild(makeCommandElement(doc,varName, argMap.get(varName), instructionMap.get(varName)));
     }
@@ -110,7 +120,6 @@ public class SLogoFileBuilder implements FileBuilder{
     }
   }
 
-  //TODO: Use lambdas to for-each this so that it is well-designed.
   @Override
   public Map<String,List<String>> loadCommandArguments(String filepath) {
     File info = new File(filepath);
@@ -118,18 +127,22 @@ public class SLogoFileBuilder implements FileBuilder{
       NodeList commandsInFile = getNodesWithTag(info, "Command");
       Map<String,List<String>> commandArguments = new HashMap<>();
       for (int i = 0; i < commandsInFile.getLength(); i ++) {
-        String cmdName = commandsInFile.item(i).getAttributes().getNamedItem("name").getTextContent();
-        NodeList argsInCommand = commandsInFile.item(i).getChildNodes();
-        List<String> args = new ArrayList<>();
-        for (int j = 1; j < argsInCommand.getLength(); j += 2) {
-          args.add(argsInCommand.item(j).getAttributes().item(0).getTextContent());
-        }
-        commandArguments.put(cmdName,args);
+        commandArguments.entrySet().add(makeCommandArgumentEntry(commandsInFile.item(i)));
       }
       return commandArguments;
     } catch (Exception e) {
       return new HashMap<>();
     }
+  }
+
+  private Entry<String, List<String>> makeCommandArgumentEntry(Node command) {
+    String cmdName = command.getAttributes().getNamedItem("name").getTextContent();
+    NodeList argsInCommand = command.getChildNodes();
+    List<String> args = new ArrayList<>();
+    for (int j = 1; j < argsInCommand.getLength(); j += 2) {
+      args.add(argsInCommand.item(j).getAttributes().item(0).getTextContent());
+    }
+    return new AbstractMap.SimpleEntry(cmdName,args);
   }
 
   @Override
@@ -161,5 +174,13 @@ public class SLogoFileBuilder implements FileBuilder{
   @Override
   public void makeLibraryFile(Map<String, Double> variables, Map<String, List<String>> commandArgs, Map<String,String> commandContents) {
     makeXMLFile(FILEPATH, variables, commandArgs, commandContents);
+  }
+
+  public static void main(String[] args) {
+    Map<String, Double> vars = Map.of("a",3.0,"b",23.1,"c",44.0);
+    Map<String,List<String>> commandArgs = Map.of("foo",List.of("firstvar","secondvar"));
+    Map<String,String> commandInstructions = Map.of("foo","fd :firstvar bk :secondvar");
+
+    new SLogoFileBuilder().makeXMLFile(FILEPATH,vars,commandArgs,commandInstructions);
   }
 }

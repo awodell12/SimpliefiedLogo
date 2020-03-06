@@ -7,6 +7,7 @@ import java.util.List;
 import slogo.backend.BackEndUtil;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
+import slogo.backend.CommandFactory;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
