@@ -7,7 +7,7 @@ import slogo.backend.CommandResultBuilder;
 import slogo.CommandResult;
 import slogo.backend.Turtle;
 
-public class ForwardCommand extends TurtleCommand implements Command {
+public class ForwardCommand extends TurtleCommand {
 
   private static final int NUM_ARGS = 1;
   private static final int NUM_VARS = 0;

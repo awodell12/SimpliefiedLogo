@@ -8,7 +8,7 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
-public abstract class TurtleCommand implements Command {
+public abstract class TurtleCommand extends Command {
 
   protected double myRetVal;
 

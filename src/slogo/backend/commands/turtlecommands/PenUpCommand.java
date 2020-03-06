@@ -6,7 +6,7 @@ import slogo.backend.BackEndInternal;
 import slogo.CommandResult;
 import slogo.backend.Interpreter;
 
-public class PenUpCommand implements Command {
+public class PenUpCommand extends Command {
 
     private static final int NUM_ARGS = 0;
     private static final int NUM_VARS = 0;
