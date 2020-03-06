@@ -129,5 +129,7 @@ public interface BackEndInternal {
   List<CommandResult> loadStateFromMemento(SLogoMemento memento, boolean isUndo, boolean isRedo);
 
   void setActiveTurtleID(Integer id);
+
+  void loadLibraryFile(String filename);
 }
 

@@ -14,6 +14,15 @@ public class UserCommandManager {
     myCommands = new HashMap<>();
   }
 
+  public UserCommandManager(Map<String,List<String>> argMap, Map<String,String> instructionMap) {
+    //Looping through keySet() because there are two maps with matching keys
+    // (the file builder ensures that the keys match before they are stored).
+    myCommands = new HashMap<>();
+    for (String cmdName : argMap.keySet()) {
+      addUserCommand(cmdName,argMap.get(cmdName),BackEndUtil.getTokenList((instructionMap.get(cmdName))));
+    }
+  }
+
   public UserCommandManager(UserCommandManager original) {
     myCommands = original.myCommands;
   }
