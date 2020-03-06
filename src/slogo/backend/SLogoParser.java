@@ -92,6 +92,11 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   }
 
   @Override
+  public void writeLibraryFile(String filePath) {
+    myBackEnd.writeLibraryFile(filePath);
+  }
+
+  @Override
   public void applyChanger(Changer changer) {
     changer.doChanges(this);
   }

@@ -131,5 +131,7 @@ public interface BackEndInternal {
   void setActiveTurtleID(Integer id);
 
   List<CommandResult> loadLibraryFile(String filename);
+
+  void writeLibraryFile(String filename);
 }
 
