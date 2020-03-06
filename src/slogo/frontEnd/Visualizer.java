@@ -580,6 +580,22 @@ public class Visualizer extends Application implements FrontEndExternal{
       buttons.add(button);
       myDisplayableTextHolder.addButton(button, buttonName);
     }
+    makeTurtleMoveButtons(buttons);
+    Slider speedSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
+    speedSlider.valueProperty().addListener((ov, old_val, new_val) -> animation.setRate(speedSlider.getValue()));
+    speedSlider.setShowTickMarks(true);
+    speedSlider.setShowTickLabels(true);
+    Text sliderLabel = new Text(myLanguageResources.getString("AnimationSpeed"));
+    myDisplayableTextHolder.addText(sliderLabel, "AnimationSpeed");
+    sliderLabel.setUnderline(true);
+    Slider penSlider = makePenSlider();
+    Text penSliderLabel = new Text(myLanguageResources.getString("PenThicknessString"));
+    myDisplayableTextHolder.addText(penSliderLabel, "PenThicknessString");
+    penSliderLabel.setUnderline(true);
+    myCenterVBox.getChildren().addAll(sliderLabel, speedSlider, penSliderLabel, penSlider);
+  }
+
+  private void makeTurtleMoveButtons(List<Button> buttons) {
     for(int i=0; i<NUM_TURTLE_MOVE_BUTTONS; i++){
       HBox hbox = new HBox(SPACING);
       TextArea valueSetter = new TextArea(DEFAULT_MOVE_BUTTON_VALUE);
@@ -591,13 +607,9 @@ public class Visualizer extends Application implements FrontEndExternal{
     for(Button button : buttons.subList(NUM_TURTLE_MOVE_BUTTONS, buttons.size())){
       myCenterVBox.getChildren().add(button);
     }
-    Slider speedSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
-    speedSlider.valueProperty().addListener((ov, old_val, new_val) -> animation.setRate(speedSlider.getValue()));
-    speedSlider.setShowTickMarks(true);
-    speedSlider.setShowTickLabels(true);
-    Text sliderLabel = new Text(myLanguageResources.getString("AnimationSpeed"));
-    myDisplayableTextHolder.addText(sliderLabel, "AnimationSpeed");
-    sliderLabel.setUnderline(true);
+  }
+
+  private Slider makePenSlider() {
     Slider penSlider = new Slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
     penSlider.valueProperty().addListener((ov, old_val, new_val) -> {
       myTurtleView.setPenThickness(penSlider.getValue());
@@ -612,10 +624,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     penSlider.setMinorTickCount(PEN_SLIDER_TICKS);
     penSlider.setShowTickMarks(true);
     penSlider.setShowTickLabels(true);
-    Text penSliderLabel = new Text(myLanguageResources.getString("PenThicknessString"));
-    myDisplayableTextHolder.addText(penSliderLabel, "PenThicknessString");
-    penSliderLabel.setUnderline(true);
-    myCenterVBox.getChildren().addAll(sliderLabel, speedSlider, penSliderLabel, penSlider);
+    return penSlider;
   }
 
   private void setUpTopButtons() {
