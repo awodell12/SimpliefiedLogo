@@ -7,7 +7,6 @@ import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.stage.Stage;
 import slogo.backend.BackEndExternal;
-import slogo.backend.SLogoBackEnd;
 import slogo.backend.SLogoLanguageChanger;
 import slogo.CommandResult;
 import slogo.backend.SLogoParser;
@@ -76,6 +75,15 @@ public class Controller extends Application{
                 resultList = (ArrayList<CommandResult>) myModels.get(workspace).redo();
             } else {
                 resultList = (ArrayList<CommandResult>) myModels.get(workspace).parseScript(input);
+                System.out.println("COMMAND RESULT LIST START");
+                for (CommandResult result : resultList) {
+                    System.out.println("COMMAND RESULT START");
+                    System.out.println("result.getTurtleID() = " + result.getTurtleID());
+                    System.out.println("result.getTurtlePosition() = " + result.getTurtlePosition());
+                    System.out.println("result.getMyRotation() = " + result.getTurtleHeading());
+                    System.out.println("COMMAND RESULT END");
+                }
+                System.out.println("Total command result count: " + resultList.size());
             }
             for (CommandResult result : resultList) {
                 if(result.isActualCommand()) {

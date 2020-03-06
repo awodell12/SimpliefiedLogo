@@ -78,7 +78,7 @@ public class CommandResult {
     return myTokensParsed;
   }
 
-  public double getMyRotation() {
+  public double getTurtleHeading() {
     return myRotation;
   }
 
