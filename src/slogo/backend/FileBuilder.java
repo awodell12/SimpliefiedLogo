@@ -9,7 +9,6 @@ public interface FileBuilder {
 
   Map<String,Double> loadVariablesFromFile(String filepath);
 
-  //TODO: Use lambdas to for-each this so that it is well-designed.
   Map<String,List<String>> loadCommandArguments(String filepath);
 
   Map<String,String> loadCommandInstructions(String filepath);

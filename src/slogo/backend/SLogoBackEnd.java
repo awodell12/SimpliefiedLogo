@@ -75,7 +75,6 @@ public class SLogoBackEnd implements BackEndInternal {
   }
 
   @Override
-  //TODO: Figure out a way to report the contents of user-generated commands.
   public Collection<String> getUserCommandScript(String name) {
     return BackEndUtil.getTokenList(myUserCommandManager.getCommandScript(name));
   }
