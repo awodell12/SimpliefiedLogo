@@ -25,7 +25,9 @@ public class OrCommand implements Command {
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
         double retVal = 0;
-        if(arguments.get(0) != 0 || arguments.get(1) != 0){ retVal = 1;}
+        if(arguments.get(0) != 0 || arguments.get(1) != 0){
+            retVal = 1;
+        }
         return List.of(backEnd.makeCommandResult(retVal,0));
     }
 

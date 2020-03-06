@@ -14,7 +14,8 @@ import slogo.backend.Turtle;
 
 public class AskCommand implements Command {
 
-  public static final int START_BUFFER = 3;
+  private static final int START_BUFFER = 3;
+  private static final int NUM_TOKENS = 4;
 
   @Override
   public int getNumArgs() {
@@ -57,7 +58,7 @@ public class AskCommand implements Command {
     backEnd.setActiveTurtles(originalActives);
     CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
     builder.setRetVal(0);
-    builder.setTokensParsed(numTokens + totalParsed +4);
+    builder.setTokensParsed(numTokens + totalParsed +NUM_TOKENS);
     results.add(builder.buildCommandResult());
     return results;
   }

@@ -15,6 +15,7 @@ public class SetPaletteCommand implements Command {
     private static final int NUM_VARS = 0;
     private static final String INVALID_COLOR_MESSAGE = "Color components must be non-negative integers between 0 and 256";
     private static final int COLOR_COMPONENTS = 3;
+    private static final int MAX_COLOR = 256;
 
 
     @Override
@@ -42,9 +43,11 @@ public class SetPaletteCommand implements Command {
         if(isValidColor(color)){
             builder.setColor(paletteColor);
             builder.setPaletteIndex(idx);
+            backEnd.addPaletteColor(idx, paletteColor);
         }
-        else
+        else{
             builder.setErrorMessage(INVALID_COLOR_MESSAGE);
+        }
         return List.of(builder.buildCommandResult());
     }
 
@@ -59,7 +62,7 @@ public class SetPaletteCommand implements Command {
 
     private boolean isRGB(List<Double> color){
         for(double component : color){
-            if(component < 0 || component > 256){
+            if(component < 0 || component >= MAX_COLOR){
                 return false;
             }
         }
