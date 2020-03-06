@@ -4,7 +4,6 @@ import java.util.List;
 import slogo.backend.Command;
 import slogo.backend.BackEndInternal;
 import slogo.backend.CommandResultBuilder;
-import slogo.backend.ParseException;
 import slogo.CommandResult;
 import slogo.backend.Turtle;
 

@@ -29,7 +29,7 @@ public class TellCommand implements Command {
       BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
     double lastTurtleNum = 0;
     int programCounter = 1;
-    int numTokens = new BackEndUtil().distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
+    int numTokens = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
     List<Integer> activeTurtleNums = new ArrayList<>();
     for (programCounter = 1; programCounter <= numTokens; programCounter ++) {
       activeTurtleNums.add(Integer.parseInt(tokens[programCounter]));

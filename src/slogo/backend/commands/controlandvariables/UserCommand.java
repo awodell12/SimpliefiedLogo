@@ -16,8 +16,8 @@ public class UserCommand implements Command {
   private List<String> myInstructions;
 
   public UserCommand(List<String> arguments, List<String> commands) {
-    myArguments = arguments;
-    myInstructions = commands;
+    myArguments = new ArrayList<>(arguments);
+    myInstructions = new ArrayList<>(commands);
   }
 
   public Collection<String> getCommands() {

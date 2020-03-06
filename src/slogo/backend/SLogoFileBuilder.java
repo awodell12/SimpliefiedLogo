@@ -42,10 +42,8 @@ public class SLogoFileBuilder implements FileBuilder{
       DOMSource domSource = new DOMSource(doc);
 
       makeTransformer().transform(domSource,streamResult);
-    } catch (ParserConfigurationException | TransformerConfigurationException e) {
-
-    } catch (TransformerException e) {
-
+    } catch (ParserConfigurationException | TransformerException e) {
+      //Failed to make XMLFile due to factors outside the scope of the program to fix.
     }
   }
 
@@ -75,27 +73,6 @@ public class SLogoFileBuilder implements FileBuilder{
     return command;
   }
 
-  public static void main(String[] args) {
-    Map<String, Double> vars = new HashMap<>();
-    vars.put("a", 44.4);
-    vars.put("b", 99.0);
-
-    Map<String, List<String>> commandArgs = new HashMap<>();
-    commandArgs.put("func",List.of("arg","farg"));
-
-    Map<String,String> commandContents = new HashMap<>();
-    commandContents.put("func","fd 50");
-
-    new SLogoFileBuilder().makeXMLFile(FILEPATH, vars, commandArgs, commandContents);
-    Map<String, Double> variableMap = new SLogoFileBuilder().loadVariablesFromFile(FILEPATH);
-    System.out.println(variableMap.toString());
-    Map<String, String> commandMap = new SLogoFileBuilder().loadCommandInstructions(FILEPATH);
-    System.out.println(commandMap.toString());
-    Map<String, List<String>> commandArgMap = new SLogoFileBuilder().loadCommandArguments(FILEPATH);
-    System.out.println(commandArgMap.toString());
-
-  }
-
   private Element constructVarList(Map<String,Double> varMap, Document doc) {
     Element varList = doc.createElement("VariableList");
     for (Entry variable : varMap.entrySet()) {
@@ -106,6 +83,9 @@ public class SLogoFileBuilder implements FileBuilder{
 
   private Element constructCommandList(Map<String,List<String>> argMap, Map<String,String> instructionMap, Document doc) {
     Element commandList = doc.createElement("CommandsList");
+    //Traverses through by key instead of by entry because there are two maps that
+    //share a keySet.
+    //TODO: Error check, since we can't assume that the maps line up.
     for (String varName : instructionMap.keySet()) {
       commandList.appendChild(makeCommandElement(doc,varName, argMap.get(varName), instructionMap.get(varName)));
     }

@@ -44,7 +44,8 @@ public class ForLoopCommand implements Command {
     for (double i = start; i <= end; i += increment) {
       backEnd.setVariable(var,i);
       results.addAll(interpreter.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)));
-      returnVal = results.get(results.size()-1).getReturnVal();    }
+      returnVal = results.get(results.size()-1).getReturnVal();
+    }
     System.out.println("Ending FOR Loop.");
     results.add(backEnd.makeCommandResult(returnVal,listLength+2));
     return results;

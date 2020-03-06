@@ -23,6 +23,11 @@ public class BackEndUtil {
 
   private static ResourceBundle myResources = ResourceBundle.getBundle(RESOURCES_PACKAGE + SYNTAX_FILENAME);
 
+  private BackEndUtil() {
+    //utility classes should not have public constructors, so this empty
+    // constructor removes the implicit public constructor.
+  }
+
   public static int distanceToEndBracket(String[] tokenList) {
     //FIXME: deal with brackets without spaces before/after IDs - "Don't know how to"
     int extraBrackets = 0;
