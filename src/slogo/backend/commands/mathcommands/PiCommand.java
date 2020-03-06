@@ -7,7 +7,7 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class PiCommand implements Command {
+public class PiCommand extends Command {
 
     private static final int NUM_ARGS = 0;
     private static final int NUM_VARS = 0;

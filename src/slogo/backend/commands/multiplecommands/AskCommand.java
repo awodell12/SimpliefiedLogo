@@ -12,19 +12,21 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
-public class AskCommand implements Command {
+public class AskCommand extends Command {
 
   private static final int START_BUFFER = 3;
   private static final int NUM_TOKENS = 4;
+  private static final int NUM_ARGS = 0;
+  private static final int NUM_VARS = 0;
 
   @Override
   public int getNumArgs() {
-    return 0;
+    return NUM_ARGS;
   }
 
   @Override
   public int getNumVars() {
-    return 0;
+    return NUM_VARS;
   }
 
   @Override

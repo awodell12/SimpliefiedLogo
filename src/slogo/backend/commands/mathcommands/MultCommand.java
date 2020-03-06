@@ -7,7 +7,7 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class MultCommand implements Command {
+public class MultCommand extends Command {
 
   private static final int NUM_ARGS = 2;
   private static final int NUM_VARS = 0;

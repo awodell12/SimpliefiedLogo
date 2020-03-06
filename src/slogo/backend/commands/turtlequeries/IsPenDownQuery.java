@@ -7,7 +7,7 @@ import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.Interpreter;
 
-public class IsPenDownQuery implements Command {
+public class IsPenDownQuery extends Command {
 
     private static final int NUM_ARGS = 0;
     private static final int NUM_VARS = 0;

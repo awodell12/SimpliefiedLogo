@@ -8,7 +8,7 @@ import slogo.backend.CommandResultBuilder;
 import slogo.backend.Turtle;
 import slogo.backend.commands.turtlecommands.TurtleCommand;
 
-public class XCorQuery extends TurtleCommand implements Command {
+public class XCorQuery extends TurtleCommand{
 
     private static final int NUM_ARGS = 0;
     private static final int NUM_VARS = 0;

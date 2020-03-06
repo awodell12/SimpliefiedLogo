@@ -10,7 +10,7 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class UserCommand implements Command {
+public class UserCommand extends Command {
 
   private List<String> myArguments;
   private List<String> myInstructions;

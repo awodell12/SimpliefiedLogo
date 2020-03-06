@@ -9,7 +9,7 @@ import slogo.backend.CommandResultBuilder;
 import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 
-public class SetPaletteCommand implements Command {
+public class SetPaletteCommand extends Command {
 
     private static final int NUM_ARGS = 4;
     private static final int NUM_VARS = 0;

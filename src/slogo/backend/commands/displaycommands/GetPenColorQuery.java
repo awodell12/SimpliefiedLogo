@@ -8,7 +8,7 @@ import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.Interpreter;
 
-public class GetPenColorQuery implements Command {
+public class GetPenColorQuery extends Command {
 
     private static final int NUM_ARGS = 0;
     private static final int NUM_VARS = 0;

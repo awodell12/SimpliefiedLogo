@@ -9,7 +9,7 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class RandomCommand implements Command {
+public class RandomCommand extends Command {
 
     private static final int NUM_ARGS = 1;
     private static final int NUM_VARS = 0;

@@ -8,7 +8,7 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class SumCommand implements Command {
+public class SumCommand extends Command {
 
   private static final int NUM_ARGS = 2;
   private static final int NUM_VARS = 0;

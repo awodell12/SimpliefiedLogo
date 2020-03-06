@@ -8,7 +8,7 @@ import slogo.backend.CommandResultBuilder;
 import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 
-public class SetShapeCommand implements Command {
+public class SetShapeCommand extends Command {
 
     private static final int NUM_ARGS = 1;
     private static final int NUM_VARS = 0;

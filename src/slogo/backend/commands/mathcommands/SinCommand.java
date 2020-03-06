@@ -8,7 +8,7 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class SinCommand implements Command {
+public class SinCommand extends Command {
 
     private static final int NUM_ARGS = 1;
     private static final int NUM_VARS = 0;
