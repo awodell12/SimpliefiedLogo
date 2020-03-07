@@ -57,12 +57,7 @@ public class SLogoModel implements BackEndInternal {
   }
 
   @Override
-  public void setUserCommand(String name, List<String> parameters, String[] commands)
-      throws ParseException {
-    //TODO: Remove this last artifact of parsing from the internal interface
-    if (CommandFactory.hasCommand(BackEndUtil.getSymbol(name))) {
-      throw new ParseException("Can't redefine primitive " + name);
-    }
+  public void setUserCommand(String name, List<String> parameters, String[] commands) {
     myUserCommandManager.addUserCommand(name, parameters, Arrays.asList(commands));
   }
 

@@ -9,4 +9,6 @@ public interface Interpreter {
   public List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException;
 
   void setLanguage(String language);
+
+  boolean hasPrimitiveCommand(String command);
 }

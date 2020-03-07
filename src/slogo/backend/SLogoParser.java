@@ -274,4 +274,9 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   public void setLanguage(String language) {
     myLanguage = BackEndUtil.interpretPatterns(language);
   }
+
+  @Override
+  public boolean hasPrimitiveCommand(String command) {
+    return CommandFactory.hasCommand(getSymbol(command));
+  }
 }

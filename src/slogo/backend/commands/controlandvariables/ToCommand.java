@@ -18,7 +18,6 @@ public class ToCommand extends Command {
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-    //TODO: Find out why adding an empty instruction doesn't parse the correct number of tokens.
     int programCounter = 0;
     int numVars = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter+2,tokens.length)) - 1;
     List<String> toVars = new ArrayList<>();
@@ -31,6 +30,9 @@ public class ToCommand extends Command {
     }
     int numCommands = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
     String[] commandTokens = Arrays.copyOfRange(tokens,programCounter,programCounter + numCommands);
+    if (interpreter.hasPrimitiveCommand(tokens[0])) {
+      throw new ParseException("Can't redefine primitive " + tokens[0].toUpperCase());
+    }
     backEnd.setUserCommand(tokens[0],toVars,commandTokens);
     CommandResultBuilder builder = backEnd.startCommandResult(1.0);
     builder.setTokensParsed(programCounter+numCommands+1);
