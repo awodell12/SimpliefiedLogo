@@ -13,20 +13,7 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class ToCommand implements Command {
-
-  private static final int NUM_ARGS = 0;
-  private static final int NUM_VARS = 0;
-
-  @Override
-  public int getNumArgs() {
-    return NUM_ARGS;
-  }
-
-  @Override
-  public int getNumVars() {
-    return NUM_VARS;
-  }
+public class ToCommand extends Command {
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,

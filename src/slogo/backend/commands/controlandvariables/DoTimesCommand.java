@@ -11,19 +11,11 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class DoTimesCommand implements Command {
+public class DoTimesCommand extends Command {
 
-  private static final int NUM_ARGS = 1;
-  private static final int NUM_VARS = 1;
-
-  @Override
-  public int getNumArgs() {
-    return NUM_ARGS;
-  }
-
-  @Override
-  public int getNumVars() {
-    return NUM_VARS;
+  public DoTimesCommand(){
+    NUM_ARGS = 1;
+    NUM_VARS = 1;
   }
 
   @Override

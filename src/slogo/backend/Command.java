@@ -8,11 +8,16 @@ import slogo.CommandResult;
  * in the programming language used (SLogo in this case).
  * Implemented/Extended by concrete commands like "Forward".
  */
-public interface Command {
+public abstract class Command {
 
-  int getNumArgs();
+  protected int NUM_ARGS = 0;
+  protected int NUM_VARS = 0;
 
-  int getNumVars();
+  /*
+  public Command(){
+    NUM_ARGS = 0;
+    NUM_ARGS = 0;
+  } */
 
   /**
    * Carries out the command, changing the relevant data in the model according to the
@@ -21,18 +26,21 @@ public interface Command {
    * @return The effects on the model of this individual command, bundled into a CommandResult
    * instance.
    */
-
-  List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
+  public abstract List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd, Interpreter interpreter)
       throws ParseException;
 
-  List<String> findVars(String[] tokenList);
+  public abstract List<String> findVars(String[] tokenList);
 
-  default boolean runsPerTurtle() {
+  public int getNumArgs(){ return NUM_ARGS;}
+
+  public int getNumVars(){ return NUM_VARS; }
+
+  public boolean runsPerTurtle() {
     return false;
   }
 
-  default int getTokensParsed(String[] tokens) {
+  public int getTokensParsed(String[] tokens) {
     return 0;
   }
 }

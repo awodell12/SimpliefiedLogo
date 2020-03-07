@@ -7,25 +7,20 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class EqualCommand implements Command {
-    private static final int NUM_ARGS = 2;
-    private static final int NUM_VARS = 0;
+public class EqualCommand extends Command {
 
-    @Override
-    public int getNumArgs() {
-        return NUM_ARGS;
-    }
-
-    @Override
-    public int getNumVars() {
-        return NUM_VARS;
+    public EqualCommand(){
+        NUM_ARGS = 2;
+        NUM_VARS = 0;
     }
 
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
         double retVal = 0;
-        if(arguments.get(0).equals(arguments.get(1))){ retVal = 1;}
+        if(arguments.get(0).equals(arguments.get(1))){
+            retVal = 1;
+        }
         return List.of(backEnd.makeCommandResult(retVal,0));
     }
 

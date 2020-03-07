@@ -13,21 +13,10 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
-public class AskCommand extends TurtleCreationCommand implements Command {
+public class AskCommand extends TurtleCreationCommand {
 
-  public static final int START_BUFFER = 2;
   public static final int TOTAL_NUM_BRACKETS = 4;
   public static final int NUM_BRACKETS_BEFORE_COMMANDS = 3;
-
-  @Override
-  public int getNumArgs() {
-    return 0;
-  }
-
-  @Override
-  public int getNumVars() {
-    return 0;
-  }
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,

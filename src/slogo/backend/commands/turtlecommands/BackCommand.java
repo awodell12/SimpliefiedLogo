@@ -7,19 +7,10 @@ import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.Turtle;
 
-public class BackCommand extends TurtleCommand implements Command {
-
-    private static final int NUM_ARGS = 1;
-    private static final int NUM_VARS = 0;
-
-    @Override
-    public int getNumArgs() {
-        return NUM_ARGS;
-    }
-
-    @Override
-    public int getNumVars() {
-        return NUM_VARS;
+public class BackCommand extends TurtleCommand{
+    public BackCommand(){
+        NUM_ARGS = 1;
+        NUM_VARS = 0;
     }
 
     @Override

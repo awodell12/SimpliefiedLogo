@@ -8,16 +8,7 @@ import slogo.backend.ParseException;
 
 import java.util.List;
 
-public class NumTurtlesCommand implements Command {
-    @Override
-    public int getNumArgs() {
-        return 0;
-    }
-
-    @Override
-    public int getNumVars() {
-        return 0;
-    }
+public class NumTurtlesCommand extends Command {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,

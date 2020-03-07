@@ -10,19 +10,11 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class ForLoopCommand implements Command {
+public class ForLoopCommand extends Command {
 
-  public static final int NUM_ARGS = 3;
-  public static final int NUM_VARS = 1;
-
-  @Override
-  public int getNumArgs() {
-    return NUM_ARGS;
-  }
-
-  @Override
-  public int getNumVars() {
-    return NUM_VARS;
+  public ForLoopCommand(){
+    NUM_ARGS = 3;
+    NUM_VARS = 1;
   }
 
   @Override

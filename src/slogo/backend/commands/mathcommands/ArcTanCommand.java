@@ -7,24 +7,18 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class ArcTanCommand implements Command {
+public class ArcTanCommand extends  Command {
+    private static final double TO_RADIANS = Math.PI/180;
 
-    private static final int NUM_ARGS = 1;
-    private static final int NUM_VARS = 0;
-    @Override
-    public int getNumArgs() {
-        return NUM_ARGS;
-    }
-
-    @Override
-    public int getNumVars() {
-        return NUM_VARS;
+    public ArcTanCommand(){
+        NUM_ARGS = 1;
+        NUM_VARS = 0;
     }
 
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-        return List.of(backEnd.makeCommandResult(Math.atan(arguments.get(0) * Math.PI/180),0));
+        return List.of(backEnd.makeCommandResult(Math.atan(arguments.get(0) * TO_RADIANS),0));
     }
 
     @Override

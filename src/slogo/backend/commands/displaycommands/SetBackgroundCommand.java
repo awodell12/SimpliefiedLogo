@@ -8,19 +8,11 @@ import slogo.backend.CommandResultBuilder;
 import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 
-public class SetBackgroundCommand implements Command {
+public class SetBackgroundCommand extends Command {
 
-  private static final int NUM_ARGS = 1;
-  private static final int NUM_VARS = 0;
-
-  @Override
-  public int getNumArgs() {
-    return NUM_ARGS;
-  }
-
-  @Override
-  public int getNumVars() {
-    return NUM_VARS;
+  public SetBackgroundCommand(){
+    NUM_ARGS = 1;
+    NUM_VARS = 0;
   }
 
   @Override

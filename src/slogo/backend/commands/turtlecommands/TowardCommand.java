@@ -7,21 +7,13 @@ import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.Turtle;
 
-public class TowardCommand extends TurtleCommand implements Command {
+public class TowardCommand extends TurtleCommand {
 
-    private static final int NUM_ARGS = 2;
-    private static final int NUM_VARS = 0;
-
-    @Override
-    public int getNumArgs() {
-        return NUM_ARGS;
+    public TowardCommand(){
+        NUM_ARGS = 2;
+        NUM_VARS = 0;
     }
-
-    @Override
-    public int getNumVars() {
-        return NUM_VARS;
-    }
-
+    
     @Override
     protected void applyToTurtle(slogo.backend.Turtle turtle, List<Double> args) {
         myRetVal = turtle.moveTowards(args.get(0), args.get(1));
