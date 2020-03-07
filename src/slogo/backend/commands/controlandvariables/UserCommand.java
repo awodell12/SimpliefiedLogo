@@ -18,20 +18,12 @@ public class UserCommand extends Command {
   public UserCommand(List<String> arguments, List<String> commands) {
     myArguments = new ArrayList<>(arguments);
     myInstructions = new ArrayList<>(commands);
+    NUM_ARGS = myArguments.size();
+    NUM_VARS = 0;
   }
 
   public Collection<String> getCommands() {
     return new ArrayList<>(myInstructions);
-  }
-
-  @Override
-  public int getNumArgs() {
-    return myArguments.size();
-  }
-
-  @Override
-  public int getNumVars() {
-    return 0;
   }
 
   @Override

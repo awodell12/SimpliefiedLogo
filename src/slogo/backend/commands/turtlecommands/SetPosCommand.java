@@ -9,9 +9,10 @@ import slogo.backend.Turtle;
 
 public class SetPosCommand extends TurtleCommand {
 
-    private static final int NUM_ARGS = 2;
-    private static final int NUM_VARS = 0;
-
+    public SetPosCommand(){
+        NUM_ARGS = 2;
+        NUM_VARS = 0;
+    }
     @Override
     public int getNumArgs() {
         return NUM_ARGS;

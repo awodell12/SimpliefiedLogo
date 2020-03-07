@@ -11,21 +11,14 @@ import slogo.backend.ParseException;
 
 public class SetPaletteCommand extends Command {
 
-    private static final int NUM_ARGS = 4;
-    private static final int NUM_VARS = 0;
     private static final String INVALID_COLOR_MESSAGE = "Color components must be non-negative integers between 0 and 256";
     private static final int COLOR_COMPONENTS = 3;
     private static final int MAX_COLOR = 256;
 
 
-    @Override
-    public int getNumArgs() {
-        return NUM_ARGS;
-    }
-
-    @Override
-    public int getNumVars() {
-        return NUM_VARS;
+    public SetPaletteCommand(){
+        NUM_ARGS = 4;
+        NUM_VARS = 0;
     }
 
     @Override

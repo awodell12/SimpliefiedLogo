@@ -10,18 +10,11 @@ import slogo.CommandResult;
 
 public class TanCommand extends Command {
 
-    private static final int NUM_ARGS = 1;
-    private static final int NUM_VARS = 0;
     private static final double TO_RADIANS = Math.PI/180;
 
-    @Override
-    public int getNumArgs() {
-        return NUM_ARGS;
-    }
-
-    @Override
-    public int getNumVars() {
-        return NUM_VARS;
+    public TanCommand(){
+        NUM_ARGS = 1;
+        NUM_VARS = 0;
     }
 
     @Override

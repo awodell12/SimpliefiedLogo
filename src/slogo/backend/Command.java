@@ -10,8 +10,14 @@ import slogo.CommandResult;
  */
 public abstract class Command {
 
-  protected int NUM_ARGS;
-  protected int NUM_VARS;
+  protected int NUM_ARGS = 0;
+  protected int NUM_VARS = 0;
+
+  /*
+  public Command(){
+    NUM_ARGS = 0;
+    NUM_ARGS = 0;
+  } */
 
   /**
    * Carries out the command, changing the relevant data in the model according to the

@@ -9,17 +9,9 @@ import slogo.CommandResult;
 
 public class NotEqualCommand extends Command {
 
-    private static final int NUM_ARGS = 2;
-    private static final int NUM_VARS = 0;
-
-    @Override
-    public int getNumArgs() {
-        return NUM_ARGS;
-    }
-
-    @Override
-    public int getNumVars() {
-        return NUM_VARS;
+    public NotEqualCommand(){
+        NUM_ARGS = 2;
+        NUM_VARS = 0;
     }
 
     @Override
