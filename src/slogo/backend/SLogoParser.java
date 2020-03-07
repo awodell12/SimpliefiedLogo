@@ -199,26 +199,27 @@ public class SLogoParser implements BackEndExternal, Interpreter{
             programCounter));
         return results;
       }
-      if (programCounter >= tokenList.length) {
-        break;
-      }
-      String currentTokenRaw = tokenList[programCounter];
-      String currentTokenType = getSymbol(tokenList[programCounter]);
-      if (isValue(currentTokenType)) {
-//        return List.of(parseValue(currentTokenType, currentTokenRaw));
-        CommandResult valueResult = parseValue(currentTokenType, currentTokenRaw);
-        commandValues.add(valueResult.getReturnVal());
-        results.add(valueResult);
-      } else {
-        List<CommandResult> insideResult = parseCommand(identifyCommand(currentTokenRaw),
-            Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
-        commandValues.add(insideResult.get(insideResult.size() - 1).getReturnVal());
-        results.addAll(insideResult);
-        programCounter += insideResult.get(insideResult.size()-1).getTokensParsed();
-      }
+      results.addAll(parseNextToken(tokenList,programCounter));
+      commandValues.add(results.get(results.size()-1).getReturnVal());
+      programCounter += results.get(results.size()-1).getTokensParsed();
     }
-    //TODO: Export error text to resource file.
     throw new ParseException(END_OF_SCRIPT_ERROR);
+  }
+
+  private List<CommandResult> parseNextToken(String[] tokenList, int programCounter) throws ParseException {
+    if (programCounter >= tokenList.length) {
+      throw new ParseException(END_OF_SCRIPT_ERROR);
+    }
+    String currentTokenRaw = tokenList[programCounter];
+    String currentTokenType = getSymbol(tokenList[programCounter]);
+    if (isValue(currentTokenType)) {
+      CommandResult valueResult = parseValue(currentTokenType, currentTokenRaw);
+      return List.of(valueResult);
+    } else {
+      List<CommandResult> insideResult = parseCommand(identifyCommand(currentTokenRaw),
+          Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+      return insideResult;
+    }
   }
 
   private List<CommandResult> executeCurrentCommand(Command command, String[] tokenList,
@@ -229,7 +230,8 @@ public class SLogoParser implements BackEndExternal, Interpreter{
         Arrays.copyOfRange(tokenList, programCounter, tokenList.length),
         myBackEnd, this)));
     CommandResult lastResult = results.get(results.size() - 1);
-    //TODO: FIX BECAUSE THIS BREAKS IMMUTABILITY
+    //This breaks the immutability of command results, but not in a way
+    //that affects the front end, and it eliminates extraneous command results.
     lastResult.setTokensParsed(lastResult.getTokensParsed()+programCounter);
     return results;
   }
