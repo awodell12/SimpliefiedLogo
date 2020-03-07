@@ -22,7 +22,6 @@ public class SetPenColorCommand extends Command {
         backEnd.setPathColor(index);
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
         builder.setRetVal(index);
-        //TODO error handling if this is not a valid index or not an integer
         builder.setPathColor(backEnd.getPathColor());
         return List.of(builder.buildCommandResult());
     }

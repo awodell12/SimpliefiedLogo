@@ -136,15 +136,6 @@ public class SLogoParser implements BackEndExternal, Interpreter{
     return listResult;
   }
 
-  //TODO: Use or remove.
-  private double findRetVal(List<CommandResult> results) {
-    double retVal = 0;
-    if (!results.isEmpty()) {
-      retVal = results.get(results.size() - 1).getReturnVal();
-    }
-    return retVal;
-  }
-
   public List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException {
 
     String currentTokenType = getSymbol(tokenList[0]);

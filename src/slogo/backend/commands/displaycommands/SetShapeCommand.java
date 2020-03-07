@@ -23,7 +23,6 @@ public class SetShapeCommand extends Command {
         CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(), backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
         builder.setRetVal(index);
         builder.setShapeIndex(backEnd.getShapeIndex());
-        //TODO error handling if this is not a valid index or not an integer
         return List.of(builder.buildCommandResult());
     }
 

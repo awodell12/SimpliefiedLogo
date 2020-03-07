@@ -29,7 +29,6 @@ public class BackEndUtil {
   }
 
   public static int distanceToEndBracket(String[] tokenList) {
-    //FIXME: deal with brackets without spaces before/after IDs - "Don't know how to"
     int extraBrackets = 0;
     for (int i = 0; i < tokenList.length; i ++) {
       String token = tokenList[i];
