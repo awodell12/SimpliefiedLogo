@@ -1,6 +1,5 @@
 package slogo.backend.commands.multiplecommands;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,73 +12,49 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
-public class AskCommand extends TurtleCreationCommand implements Command {
 
-  public static final int START_BUFFER = 2;
-  public static final int TOTAL_NUM_BRACKETS = 4;
-  public static final int NUM_BRACKETS_BEFORE_COMMANDS = 3;
+public class AskCommand extends Command {
 
-  @Override
-  public int getNumArgs() {
-    return 0;
-  }
+  private static final int START_BUFFER = 3;
+  private static final int NUM_TOKENS = 4;
 
-  @Override
-  public int getNumVars() {
-    return 0;
-  }
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-    List<Integer> turtlesAsked = findTurtlesAsked(tokens);
-    String[] tokensToParse = findTokensToParse(tokens);
-
+    int programCounter = 1;
+    int numTokens = BackEndUtil.distanceToEndBracket(
+        Arrays.copyOfRange(tokens, programCounter, tokens.length)) - 1;
+    List<Integer> activeTurtleNums = new ArrayList<>();
+    for (programCounter = 1; programCounter <= numTokens; programCounter++) {
+      activeTurtleNums.add(Integer.parseInt(tokens[programCounter]));
+    }
     List<Integer> originalActives = backEnd.getActiveTurtleNumbers();
-    backEnd.setActiveTurtles(turtlesAsked);
+    backEnd.setActiveTurtles(activeTurtleNums);
 
-    List<CommandResult> results = activateTurtles(backEnd, backEnd.getActiveTurtleNumbers());
+    List<CommandResult> results = new ArrayList<>();
+    String[] tokensToParse = Arrays.copyOfRange(tokens, numTokens + START_BUFFER, tokens.length);
+    int totalParsed = BackEndUtil.distanceToEndBracket(tokensToParse) - 1;
+    for (Turtle newlyActive : backEnd.getActiveTurtles()) {
+      CommandResultBuilder builder = backEnd.startCommandResult(
+          newlyActive.getHeading(),
+          newlyActive.getPosition(),
+          newlyActive.getVisible());
+      builder.setRetVal(0);
+      builder.setTokensParsed(programCounter + 1);
+      builder.activeTurtleIDs(activeTurtleNums);
+      builder.setTurtleID(newlyActive.getId());
+      results.add(builder.buildCommandResult());
+    }
     results.addAll(interpreter.parseCommandsList(tokensToParse));
     backEnd.setActiveTurtles(originalActives);
-
-    CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
-    if (!results.isEmpty()) {
-      builder.setRetVal(results.get(results.size()-1).getReturnVal());
-    }
-    builder.setTokensParsed(turtlesAsked.size() + tokensToParse.length + TOTAL_NUM_BRACKETS);
+    CommandResultBuilder builder = backEnd
+        .startCommandResult(backEnd.getTurtles().get(0).getHeading(),
+            backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
+    builder.setRetVal(0);
+    builder.setTokensParsed(numTokens + totalParsed + NUM_TOKENS);
     results.add(builder.buildCommandResult());
     return results;
-  }
-
-  private List<CommandResult> activateTurtles(BackEndInternal backEnd,
-      List<Integer> activeTurtleNums) {
-    List<CommandResult> results = new ArrayList<>();
-    for (Turtle newlyActive : backEnd.getActiveTurtles()) {
-      results.add(initialTurtleResult(newlyActive,activeTurtleNums,backEnd));
-    }
-    return results;
-  }
-
-  private List<Integer> intStringToList(String[] tokens) {
-    List<Integer> activeTurtleNums = new ArrayList<>();
-    for (int i = 0; i < tokens.length; i ++) {
-      activeTurtleNums.add(Integer.parseInt(tokens[i]));
-    }
-    return activeTurtleNums;
-  }
-
-  private List<Integer> findTurtlesAsked(String[] tokens) {
-    int numTurtles = BackEndUtil.distanceToEndBracket(
-        Arrays.copyOfRange(tokens,1,tokens.length));
-    String[] newActives = Arrays.copyOfRange(tokens,1, numTurtles);
-   return intStringToList(newActives);
-  }
-  
-  private String[] findTokensToParse(String[] tokens) {
-    int start = findTurtlesAsked(tokens).size() + NUM_BRACKETS_BEFORE_COMMANDS;
-    String[] remaining = Arrays.copyOfRange(tokens,start,tokens.length);
-    int end = start + BackEndUtil.distanceToEndBracket(remaining) - 1;
-    return Arrays.copyOfRange(tokens,start,end);
   }
 
   @Override

@@ -7,20 +7,7 @@ import slogo.CommandResult;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.Interpreter;
 
-public class IsPenDownQuery implements Command {
-
-    private static final int NUM_ARGS = 0;
-    private static final int NUM_VARS = 0;
-
-    @Override
-    public int getNumArgs() {
-        return NUM_ARGS;
-    }
-
-    @Override
-    public int getNumVars() {
-        return NUM_VARS;
-    }
+public class IsPenDownQuery extends Command {
 
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,

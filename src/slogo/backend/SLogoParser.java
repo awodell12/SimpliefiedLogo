@@ -170,7 +170,6 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   private List<CommandResult> parseCommandPerTurtle(Command command, String[] tokenList) throws ParseException {
     System.out.println("Running PER TURTLE in SLogoParser");
     List<CommandResult> results = new ArrayList<>();
-//    myBackEnd.doActionPerTurtle( () -> (results.addAll(parseCommand(command,tokenList))) );
     System.out.println("myBackEnd.getActiveTurtles().size() = " + myBackEnd.getActiveTurtles().size());
     for (Turtle activeTurtle : myBackEnd.getActiveTurtles()) {
       myBackEnd.setActiveTurtleID(activeTurtle.getId());

@@ -10,7 +10,7 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class UserCommand implements Command {
+public class UserCommand extends Command {
 
   private List<String> myArguments;
   private List<String> myInstructions;
@@ -18,20 +18,12 @@ public class UserCommand implements Command {
   public UserCommand(List<String> arguments, List<String> commands) {
     myArguments = new ArrayList<>(arguments);
     myInstructions = new ArrayList<>(commands);
+    NUM_ARGS = myArguments.size();
+    NUM_VARS = 0;
   }
 
   public Collection<String> getCommands() {
     return new ArrayList<>(myInstructions);
-  }
-
-  @Override
-  public int getNumArgs() {
-    return myArguments.size();
-  }
-
-  @Override
-  public int getNumVars() {
-    return 0;
   }
 
   @Override

@@ -7,19 +7,11 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.CommandResult;
 
-public class NotEqualCommand implements Command {
+public class NotEqualCommand extends Command {
 
-    private static final int NUM_ARGS = 2;
-    private static final int NUM_VARS = 0;
-
-    @Override
-    public int getNumArgs() {
-        return NUM_ARGS;
-    }
-
-    @Override
-    public int getNumVars() {
-        return NUM_VARS;
+    public NotEqualCommand(){
+        NUM_ARGS = 2;
+        NUM_VARS = 0;
     }
 
     @Override
@@ -27,7 +19,9 @@ public class NotEqualCommand implements Command {
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
         System.out.println("Checking equality of " + arguments.get(0) + " and " + arguments.get(1));
         double retVal = 0;
-        if(arguments.get(0) != arguments.get(1)){ retVal = 1;}
+        if(arguments.get(0) != arguments.get(1)){
+            retVal = 1;
+        }
         return List.of(backEnd.makeCommandResult(retVal,0));
     }
 
