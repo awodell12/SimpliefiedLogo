@@ -20,7 +20,6 @@ public class TanCommand extends Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-        System.out.println("Calculating tangent of " + arguments.get(0));
         return List.of(backEnd.makeCommandResult(Math.tan(arguments.get(0) * TO_RADIANS), 0));
     }
 

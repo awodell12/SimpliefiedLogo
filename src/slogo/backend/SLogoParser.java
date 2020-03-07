@@ -4,11 +4,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import slogo.CommandResult;
 
 public class SLogoParser implements BackEndExternal, Interpreter{
+
+  public static final String STARTING_LANGUAGE = "English";
+  public static final String SYNTAX_FILENAME = "Syntax";
+  public static final String NO_MATCH_STRING = "NO MATCH";
+  public static final String ERROR_BUNDLE_LOCATION = "slogo/backend/resources/parsererrors";
+
+  private ResourceBundle errorBundle = ResourceBundle.getBundle(ERROR_BUNDLE_LOCATION);
+  private final String UNUSED_VALUE_ERROR = errorBundle.getString("UnusedValueError");
+  private final String UNKNOWN_COMMAND_ERROR = errorBundle.getString("UnknownCommandError");
+  private final String END_OF_SCRIPT_ERROR = errorBundle.getString("EndOfScriptError");
+
   private BackEndInternal myBackEnd;
   private List<Entry<String, Pattern>> myLanguage;
   private List<Entry<String, Pattern>> mySyntax;
@@ -23,23 +35,24 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   }
 
   public SLogoParser() {
-    this(new SLogoBackEnd());
-    mySyntax = BackEndUtil.interpretPatterns("Syntax");
-    setLanguage("English");
+    this(new SLogoModel());
+    mySyntax = BackEndUtil.interpretPatterns(SYNTAX_FILENAME);
+    setLanguage(STARTING_LANGUAGE);
   }
 
   public String getSymbol(String text) {
-    for (Entry<String, Pattern> e : myLanguage) {
-      if (match(text, e.getValue())) {
-        return e.getKey();
+    return getSymbolInLanguages(text,List.of(myLanguage,mySyntax));
+  }
+
+  private String getSymbolInLanguages(String text, List<List<Entry<String,Pattern>>> languages) {
+    for (List<Entry<String,Pattern>> language : languages) {
+      for (Entry<String, Pattern> e : language) {
+        if (match(text, e.getValue())) {
+          return e.getKey();
+        }
       }
     }
-    for (Entry<String, Pattern> e : mySyntax) {
-      if (match(text, e.getValue())) {
-        return e.getKey();
-      }
-    }
-    return "NO MATCH";
+    return NO_MATCH_STRING;
   }
 
   //from the parser spike on the cs308 repo
@@ -51,19 +64,15 @@ public class SLogoParser implements BackEndExternal, Interpreter{
     String[] scriptTokens = BackEndUtil.getTokenList(script).toArray(new String[0]);
     List<CommandResult> retList = parseCommandsList(scriptTokens);
     if (myTimelineLocation < myPrevStates.size()-1) {
-      System.out.println("Deleting previous state timeline");
       myPrevStates = new ArrayList<>(myPrevStates.subList(0,myTimelineLocation+1));
     }
     myTimelineLocation += 1;
-    System.out.println("myTimelineLocation = " + myTimelineLocation);
     myPrevStates.add(myBackEnd.saveStateToMemento());
-    System.out.println("retList.size() = " + retList.size());
     return retList;
   }
 
   @Override
   public List<CommandResult> redo() {
-    System.out.println("REDOING");
     List<CommandResult> results = new ArrayList<>();
     if (myTimelineLocation < myPrevStates.size()-1) {
       myTimelineLocation += 1;
@@ -74,15 +83,11 @@ public class SLogoParser implements BackEndExternal, Interpreter{
 
   @Override
   public List<CommandResult> undo() {
-    System.out.println("UNDOING");
     List<CommandResult> results = new ArrayList<>();
-    System.out.println("myTimelineLocation = " + myTimelineLocation);
     if (myTimelineLocation > 0) {
       myTimelineLocation -= 1;
       results = myBackEnd.loadStateFromMemento(myPrevStates.get(myTimelineLocation),true,false);
     }
-    System.out.println("results.get(0).getTurtleID() = " + results.get(0).getTurtleID());
-    System.out.println("results.get(0).getTurtlePosition() = " + results.get(0).getTurtlePosition());
     return results;
   }
 
@@ -131,15 +136,6 @@ public class SLogoParser implements BackEndExternal, Interpreter{
     return listResult;
   }
 
-  //TODO: Use or remove.
-  private double findRetVal(List<CommandResult> results) {
-    double retVal = 0;
-    if (!results.isEmpty()) {
-      retVal = results.get(results.size() - 1).getReturnVal();
-    }
-    return retVal;
-  }
-
   public List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException {
 
     String currentTokenType = getSymbol(tokenList[0]);
@@ -154,7 +150,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
 
   private Command identifyCommand(String rawToken) throws ParseException {
     if (isValue(getSymbol(rawToken))) {
-      throw new ParseException("Don't know what to do with " + rawToken);
+      throw new ParseException(UNUSED_VALUE_ERROR + rawToken);
     }
     try {
       return CommandFactory.makeCommand(getSymbol(rawToken));
@@ -163,17 +159,15 @@ public class SLogoParser implements BackEndExternal, Interpreter{
       if (command != null) {
         return command;
       }
-      throw new ParseException("Don't know how to " + rawToken.toUpperCase());
+      throw new ParseException(UNKNOWN_COMMAND_ERROR + rawToken.toUpperCase());
     }
   }
 
   private List<CommandResult> parseCommandPerTurtle(Command command, String[] tokenList) throws ParseException {
-    System.out.println("Running PER TURTLE in SLogoParser");
     List<CommandResult> results = new ArrayList<>();
-    System.out.println("myBackEnd.getActiveTurtles().size() = " + myBackEnd.getActiveTurtles().size());
+//    myBackEnd.doActionPerTurtle( () -> (results.addAll(parseCommand(command,tokenList))) );
     for (Turtle activeTurtle : myBackEnd.getActiveTurtles()) {
       myBackEnd.setActiveTurtleID(activeTurtle.getId());
-      System.out.println("myActiveTurtleID = " + activeTurtle.getId());
       results.addAll(parseCommand(command,tokenList));
     }
     myBackEnd.setActiveTurtleID(null);
@@ -196,26 +190,27 @@ public class SLogoParser implements BackEndExternal, Interpreter{
             programCounter));
         return results;
       }
-      if (programCounter >= tokenList.length) {
-        break;
-      }
-      String currentTokenRaw = tokenList[programCounter];
-      String currentTokenType = getSymbol(tokenList[programCounter]);
-      if (isValue(currentTokenType)) {
-//        return List.of(parseValue(currentTokenType, currentTokenRaw));
-        CommandResult valueResult = parseValue(currentTokenType, currentTokenRaw);
-        commandValues.add(valueResult.getReturnVal());
-        results.add(valueResult);
-      } else {
-        List<CommandResult> insideResult = parseCommand(identifyCommand(currentTokenRaw),
-            Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
-        commandValues.add(insideResult.get(insideResult.size() - 1).getReturnVal());
-        results.addAll(insideResult);
-        programCounter += insideResult.get(insideResult.size()-1).getTokensParsed();
-      }
+      results.addAll(parseNextToken(tokenList,programCounter));
+      commandValues.add(results.get(results.size()-1).getReturnVal());
+      programCounter += results.get(results.size()-1).getTokensParsed();
     }
-    //TODO: Export error text to resource file.
-    throw new ParseException("Unexpected end of instructions.");
+    throw new ParseException(END_OF_SCRIPT_ERROR);
+  }
+
+  private List<CommandResult> parseNextToken(String[] tokenList, int programCounter) throws ParseException {
+    if (programCounter >= tokenList.length) {
+      throw new ParseException(END_OF_SCRIPT_ERROR);
+    }
+    String currentTokenRaw = tokenList[programCounter];
+    String currentTokenType = getSymbol(tokenList[programCounter]);
+    if (isValue(currentTokenType)) {
+      CommandResult valueResult = parseValue(currentTokenType, currentTokenRaw);
+      return List.of(valueResult);
+    } else {
+      List<CommandResult> insideResult = parseCommand(identifyCommand(currentTokenRaw),
+          Arrays.copyOfRange(tokenList, programCounter + 1, tokenList.length));
+      return insideResult;
+    }
   }
 
   private List<CommandResult> executeCurrentCommand(Command command, String[] tokenList,
@@ -226,7 +221,8 @@ public class SLogoParser implements BackEndExternal, Interpreter{
         Arrays.copyOfRange(tokenList, programCounter, tokenList.length),
         myBackEnd, this)));
     CommandResult lastResult = results.get(results.size() - 1);
-    //TODO: FIX BECAUSE THIS BREAKS IMMUTABILITY
+    //This breaks the immutability of command results, but not in a way
+    //that affects the front end, and it eliminates extraneous command results.
     lastResult.setTokensParsed(lastResult.getTokensParsed()+programCounter);
     return results;
   }
@@ -268,5 +264,10 @@ public class SLogoParser implements BackEndExternal, Interpreter{
   @Override
   public void setLanguage(String language) {
     myLanguage = BackEndUtil.interpretPatterns(language);
+  }
+
+  @Override
+  public boolean hasPrimitiveCommand(String command) {
+    return CommandFactory.hasCommand(getSymbol(command));
   }
 }

@@ -8,6 +8,7 @@
         <Command contents="pu fd 50 pd " name="jump"/>
     </CommandsList>
     <VariableList>
+        <Variable name="a" value="5.0"/>
         <Variable name="whatclass" value="308.0"/>
         <Variable name="two" value="2.0"/>
         <Variable name="three" value="3.0"/>

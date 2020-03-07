@@ -11,7 +11,7 @@ import slogo.CommandResult;
 /**
  *
  */
-public class SLogoBackEnd implements BackEndInternal {
+public class SLogoModel implements BackEndInternal {
 
   public static final int INITIAL_BG_COLOR = 5;
   private Map<String, Double> myVariables;
@@ -27,7 +27,7 @@ public class SLogoBackEnd implements BackEndInternal {
   private Integer myActiveTurtleID;
 
 
-  public SLogoBackEnd() {
+  public SLogoModel() {
     myVariables = new HashMap<>();
     myUserCommandManager = new UserCommandManager();
     myTurtles = new ArrayList<>();
@@ -57,12 +57,7 @@ public class SLogoBackEnd implements BackEndInternal {
   }
 
   @Override
-  public void setUserCommand(String name, List<String> parameters, String[] commands)
-      throws ParseException {
-    //TODO: Remove this last artifact of parsing from the internal interface
-    if (CommandFactory.hasCommand(BackEndUtil.getSymbol(name))) {
-      throw new ParseException("Can't redefine primitive " + name);
-    }
+  public void setUserCommand(String name, List<String> parameters, String[] commands) {
     myUserCommandManager.addUserCommand(name, parameters, Arrays.asList(commands));
   }
 
@@ -266,7 +261,8 @@ public class SLogoBackEnd implements BackEndInternal {
 
   @Override
   public void writeLibraryFile(String filename) {
-    new SLogoFileBuilder().makeXMLFile(filename,new HashMap<>(myVariables),
+    FileBuilder fileBuilder = new SLogoFileBuilder();
+    fileBuilder.makeLibraryFile(filename,new HashMap<>(myVariables),
         myUserCommandManager.getArgumentsMap(),
         myUserCommandManager.getScriptMap());
   }

@@ -19,7 +19,6 @@ public class RandomCommand extends Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-        System.out.println("Printing a number strictly less than " + arguments.get(0));
         return List.of(backEnd.makeCommandResult(arguments.get(0) * new Random().nextDouble(), 0));
     }
 

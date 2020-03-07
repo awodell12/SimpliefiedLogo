@@ -12,41 +12,28 @@ import slogo.backend.Interpreter;
 import slogo.backend.ParseException;
 import slogo.backend.Turtle;
 
-public class TellCommand extends Command {
+public class TellCommand extends TurtleCreationCommand {
+  public static final int TOTAL_NUM_BRACKETS = 2;
 
   @Override
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
+    List<Integer> activeTurtleNums = findTurtlesAsked(tokens);
     double lastTurtleNum = 0;
-    int programCounter = 1;
-    int numTokens = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,programCounter,tokens.length)) - 1;
-    List<Integer> activeTurtleNums = new ArrayList<>();
-    for (programCounter = 1; programCounter <= numTokens; programCounter ++) {
-      activeTurtleNums.add(Integer.parseInt(tokens[programCounter]));
-      lastTurtleNum = Double.parseDouble(tokens[programCounter]);
+    if (!activeTurtleNums.isEmpty()) {
+      lastTurtleNum = activeTurtleNums.get(activeTurtleNums.size()-1);
     }
     backEnd.setActiveTurtles(activeTurtleNums);
     List<CommandResult> results = new ArrayList<>();
     for (Turtle newlyActive : backEnd.getActiveTurtles()) {
-      CommandResultBuilder builder = backEnd.startCommandResult(
-          newlyActive.getHeading(),
-          newlyActive.getPosition(),
-              newlyActive.getVisible());
-      builder.setRetVal(lastTurtleNum);
-      builder.setTokensParsed(programCounter+1);
-      builder.activeTurtleIDs(activeTurtleNums);
-      builder.setTurtleID(newlyActive.getId());
-      results.add(builder.buildCommandResult());
+      results.add(initialTurtleResult(newlyActive,activeTurtleNums,backEnd));
     }
-    if (results.isEmpty()) {
-      CommandResultBuilder builder = backEnd.startCommandResult(
-      backEnd.getTurtles().get(0).getHeading(),
-      backEnd.getTurtles().get(0).getPosition(),
-              backEnd.getTurtles().get(0).getVisible());
+    CommandResultBuilder builder = backEnd.startCommandResult(backEnd.getTurtles().get(0).getHeading(),backEnd.getTurtles().get(0).getPosition(), backEnd.getTurtles().get(0).getVisible());
+    if (!results.isEmpty()) {
       builder.setRetVal(lastTurtleNum);
-      builder.setTokensParsed(programCounter+1);
-      results.add(builder.buildCommandResult());
     }
+    builder.setTokensParsed(activeTurtleNums.size() + TOTAL_NUM_BRACKETS);
+    results.add(builder.buildCommandResult());
     return results;
   }
 

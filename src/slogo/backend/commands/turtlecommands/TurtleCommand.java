@@ -17,17 +17,14 @@ public abstract class TurtleCommand extends Command {
       BackEndInternal backEnd, Interpreter interpreter)
   throws ParseException {
     Integer id = backEnd.getActiveTurtleID();
-    System.out.println("id = " + id);
 
     if (id == null) {
-      System.out.println("ID was null");
       return List.of(backEnd.startCommandResult(0).buildCommandResult());
     }
     else {
       Turtle turtle = backEnd.getTurtles(List.of(id)).get(0);
       List<Double> prevPos = turtle.getPosition();
       applyToTurtle(turtle,arguments);
-      System.out.println("turtle.getPosition() = " + turtle.getPosition());
       return List.of(createCommandResult(turtle,arguments,prevPos,backEnd));
     }
   }

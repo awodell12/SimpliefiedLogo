@@ -11,7 +11,6 @@ public class HideTurtleCommand extends TurtleCommand {
 
     @Override
     protected void applyToTurtle(Turtle turtle, List<Double> args) {
-        System.out.println("Turtle is hidden");
         myRetVal = 0;
         turtle.setVisible(false);
     }
