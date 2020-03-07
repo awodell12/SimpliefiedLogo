@@ -40,30 +40,6 @@ public class AskCommand extends TurtleCreationCommand {
     return results;
   }
 
-  private List<CommandResult> activateTurtles(BackEndInternal backEnd,
-      List<Integer> activeTurtleNums) {
-    List<CommandResult> results = new ArrayList<>();
-    for (Turtle newlyActive : backEnd.getActiveTurtles()) {
-      results.add(initialTurtleResult(newlyActive,activeTurtleNums,backEnd));
-    }
-    return results;
-  }
-
-  private List<Integer> intStringToList(String[] tokens) {
-    List<Integer> activeTurtleNums = new ArrayList<>();
-    for (int i = 0; i < tokens.length; i ++) {
-      activeTurtleNums.add(Integer.parseInt(tokens[i]));
-    }
-    return activeTurtleNums;
-  }
-
-  private List<Integer> findTurtlesAsked(String[] tokens) {
-    int numTurtles = BackEndUtil.distanceToEndBracket(
-        Arrays.copyOfRange(tokens,1,tokens.length));
-    String[] newActives = Arrays.copyOfRange(tokens,1, numTurtles);
-    return intStringToList(newActives);
-  }
-
   private String[] findTokensToParse(String[] tokens) {
     int start = findTurtlesAsked(tokens).size() + NUM_BRACKETS_BEFORE_COMMANDS;
     String[] remaining = Arrays.copyOfRange(tokens,start,tokens.length);

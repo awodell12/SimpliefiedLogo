@@ -102,12 +102,12 @@ public class SLogoFileBuilder implements FileBuilder{
 
   private Element constructCommandList(Map<String,List<String>> argMap, Map<String,String> instructionMap, Document doc)
       throws FileBuilderException {
-    Element commandList = doc.createElement(COMMAND_LIST_LABEL);
     //Traverses through by key instead of by entry because there are two maps that
     //share a keySet. An error is thrown and handled if this isn't the case.
     if (!instructionMap.keySet().equals(argMap.keySet())) {
       throw new FileBuilderException(MISALIGNED_ERROR_MESSAGE);
     }
+    Element commandList = doc.createElement(COMMAND_LIST_LABEL);
     for (String varName : instructionMap.keySet()) {
       commandList.appendChild(makeCommandElement(doc,varName, argMap.get(varName), instructionMap.get(varName)));
     }

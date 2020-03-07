@@ -4,9 +4,9 @@ import java.util.List;
 import slogo.CommandResult;
 
 public interface Interpreter {
-  public List<CommandResult> parseCommandsList(String[] tokenList);
+  List<CommandResult> parseCommandsList(String[] tokenList);
 
-  public List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException;
+  List<CommandResult> parseForRetVal(String[] tokenList) throws ParseException;
 
   void setLanguage(String language);
 
