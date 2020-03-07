@@ -3,10 +3,11 @@ package slogo.backend.commands.multiplecommands;
 import java.util.List;
 import slogo.CommandResult;
 import slogo.backend.BackEndInternal;
+import slogo.backend.Command;
 import slogo.backend.CommandResultBuilder;
 import slogo.backend.Turtle;
 
-public abstract class TurtleCreationCommand {
+public abstract class TurtleCreationCommand extends Command {
   protected CommandResult initialTurtleResult(Turtle newlyActive, List<Integer> activeTurtleNums, BackEndInternal backEnd) {
     CommandResultBuilder builder = backEnd.startCommandResult(
         newlyActive.getHeading(),

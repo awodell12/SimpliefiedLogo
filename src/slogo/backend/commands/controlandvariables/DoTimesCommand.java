@@ -22,7 +22,6 @@ public class DoTimesCommand extends Command {
   public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
       BackEndInternal backEnd, Interpreter interpreter)
       throws ParseException {
-    System.out.println("Beginning DOTIMES Loop.");
     double limit = arguments.get(0);
     String var = vars.get(1);
     double returnVal = 0;
@@ -30,8 +29,6 @@ public class DoTimesCommand extends Command {
     int listLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,2,tokens.length));
     for (double i = 1; i <= limit; i ++) {
       backEnd.setVariable(var,i);
-      System.out.println("limit = " + limit);
-      System.out.println("var = " + backEnd.getVariable(var));
       BackEndUtil.printRemainingTokens(Arrays.copyOfRange(tokens,2,listLength+1),0);
       results.addAll(interpreter.parseCommandsList(Arrays.copyOfRange(tokens,2,listLength+1)));
       returnVal = results.get(results.size()-1).getReturnVal();

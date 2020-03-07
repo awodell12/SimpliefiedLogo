@@ -23,15 +23,11 @@ public class IfElseCommand extends Command {
     List<CommandResult> results;
     int firstListLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,1,tokens.length));
     int secondListLength = BackEndUtil.distanceToEndBracket(Arrays.copyOfRange(tokens,firstListLength+2,tokens.length));
-    System.out.println("firstListLength = " + firstListLength);
-    System.out.println("secondListLength = " + secondListLength);
     if (arguments.get(0) != 0) {
-      System.out.println("IF evaluated to TRUE");
       BackEndUtil.printRemainingTokens(Arrays.copyOfRange(tokens,1,firstListLength),0);
       results = interpreter.parseCommandsList(Arrays.copyOfRange(tokens,1,firstListLength));
     }
     else {
-      System.out.println("IF evaluated to FALSE");
       BackEndUtil.printRemainingTokens(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1),0);
       results = interpreter.parseCommandsList(Arrays.copyOfRange(tokens,2+firstListLength,firstListLength+secondListLength+1));
     }

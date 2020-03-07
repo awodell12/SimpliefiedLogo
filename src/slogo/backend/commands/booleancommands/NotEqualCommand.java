@@ -17,7 +17,6 @@ public class NotEqualCommand extends Command {
     @Override
     public List<CommandResult> execute(List<Double> arguments, List<String> vars, String[] tokens,
         BackEndInternal backEnd, Interpreter interpreter) throws ParseException {
-        System.out.println("Checking equality of " + arguments.get(0) + " and " + arguments.get(1));
         double retVal = 0;
         if(arguments.get(0) != arguments.get(1)){
             retVal = 1;
