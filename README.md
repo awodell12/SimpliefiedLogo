@@ -36,9 +36,11 @@ Undo/Redo is working. Animation is working.
 
 ### Notes/Assumptions
 
-Assumptions or Simplifications: 
+Assumptions or Simplifications: The size of a lot of UI components are fixed and thus the current application
+window only fits on some screens. The window size was created assuming a 16:9 aspect ratio that is common
+for computers. 
 
-Interesting data files:
+Interesting data files: 
 
 Known Bugs:
 
@@ -47,3 +49,6 @@ Extra credit:
 
 ### Impressions
 
+I liked the assignment and the amount of freedom we had to do things our own way and decide on some 
+difficult decisions. That said it definitely wasn't simple and there was some pretty complex logic /
+algorithms that had to implemented for this to be successful. 
