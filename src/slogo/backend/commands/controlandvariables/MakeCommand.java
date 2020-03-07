@@ -12,7 +12,7 @@ public class MakeCommand extends Command {
 
   public MakeCommand(){
     NUM_ARGS = 1;
-    NUM_VARS = 0;
+    NUM_VARS = 1;
   }
 
   @Override
