@@ -4,11 +4,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import slogo.CommandResult;
 
 public class SLogoParser implements BackEndExternal, Interpreter{
+
+  public static final String STARTING_LANGUAGE = "English";
+  public static final String SYNTAX_FILENAME = "Syntax";
+  public static final String NO_MATCH_STRING = "NO MATCH";
+  public static final String ERROR_BUNDLE_LOCATION = "slogo/backend/resources/parsererrors";
+
+  private ResourceBundle errorBundle = ResourceBundle.getBundle(ERROR_BUNDLE_LOCATION);
+  private final String UNUSED_VALUE_ERROR = errorBundle.getString("UnusedValueError");
+  private final String UNKNOWN_COMMAND_ERROR = errorBundle.getString("UnknownCommandError");
+  private final String END_OF_SCRIPT_ERROR = errorBundle.getString("EndOfScriptError");
+
   private BackEndInternal myBackEnd;
   private List<Entry<String, Pattern>> myLanguage;
   private List<Entry<String, Pattern>> mySyntax;
@@ -24,8 +36,8 @@ public class SLogoParser implements BackEndExternal, Interpreter{
 
   public SLogoParser() {
     this(new SLogoModel());
-    mySyntax = BackEndUtil.interpretPatterns("Syntax");
-    setLanguage("English");
+    mySyntax = BackEndUtil.interpretPatterns(SYNTAX_FILENAME);
+    setLanguage(STARTING_LANGUAGE);
   }
 
   public String getSymbol(String text) {
@@ -40,7 +52,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
         }
       }
     }
-    return "NO MATCH";
+    return NO_MATCH_STRING;
   }
 
   //from the parser spike on the cs308 repo
@@ -147,7 +159,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
 
   private Command identifyCommand(String rawToken) throws ParseException {
     if (isValue(getSymbol(rawToken))) {
-      throw new ParseException("Don't know what to do with " + rawToken);
+      throw new ParseException(UNUSED_VALUE_ERROR + rawToken);
     }
     try {
       return CommandFactory.makeCommand(getSymbol(rawToken));
@@ -156,7 +168,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
       if (command != null) {
         return command;
       }
-      throw new ParseException("Don't know how to " + rawToken.toUpperCase());
+      throw new ParseException(UNKNOWN_COMMAND_ERROR + rawToken.toUpperCase());
     }
   }
 
@@ -206,7 +218,7 @@ public class SLogoParser implements BackEndExternal, Interpreter{
       }
     }
     //TODO: Export error text to resource file.
-    throw new ParseException("Unexpected end of instructions.");
+    throw new ParseException(END_OF_SCRIPT_ERROR);
   }
 
   private List<CommandResult> executeCurrentCommand(Command command, String[] tokenList,
