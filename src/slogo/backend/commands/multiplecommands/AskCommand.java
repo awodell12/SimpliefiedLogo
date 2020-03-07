@@ -61,9 +61,9 @@ public class AskCommand extends TurtleCreationCommand {
     int numTurtles = BackEndUtil.distanceToEndBracket(
         Arrays.copyOfRange(tokens,1,tokens.length));
     String[] newActives = Arrays.copyOfRange(tokens,1, numTurtles);
-   return intStringToList(newActives);
+    return intStringToList(newActives);
   }
-  
+
   private String[] findTokensToParse(String[] tokens) {
     int start = findTurtlesAsked(tokens).size() + NUM_BRACKETS_BEFORE_COMMANDS;
     String[] remaining = Arrays.copyOfRange(tokens,start,tokens.length);

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <UserLib>
     <CommandsList>
-        <command contents="fd sum :a :b " name="foo">
-            <argument label="a"/>
-            <argument label="b"/>
-        </command>
+        <Command contents="pu fd 50 lt 90 fd 210 pd rt 180 fd 60 bk 30 rt 90 fd 100 rt 90 fd 30 bk 60 pu bk 30 pd rt 90 fd 100 bk 100 rt 90 fd 60 pu fd 15 pd lt 90 fd 100 bk 100 rt 90 fd 40 lt 90 fd 100 lt 90 fd 40 bk 40 lt 90 fd 100 lt 90 pu fd 20 lt 90 fd 100 pd rt 160 fd 110 lt 140 fd 110 rt 70 pu fd 20 pd fd 50 bk 50 rt 90 fd 50 lt 90 fd 30 bk 30 rt 90 fd 50 lt 90 fd 50 pu fd 40 pd lt 90 fd 100 bk 100 rt 90 fd 40 lt 90 fd 100 " name="love"/>
+        <Command contents="Repeat 8 [ fd :x rt 45 ] " name="oct">
+            <argument label="x"/>
+        </Command>
+        <Command contents="pu fd 50 pd " name="jump"/>
     </CommandsList>
     <VariableList>
         <Variable name="a" value="5.0"/>

@@ -66,6 +66,7 @@ import java.util.function.Consumer;
 
 @SuppressWarnings({"unused", "StringEquality"})
 public class Visualizer extends Application implements FrontEndExternal{
+
   private static final String RESOURCE_LOCATION = "slogo/frontEnd/Resources.";
   private static final ResourceBundle myResources = ResourceBundle.getBundle(RESOURCE_LOCATION + "config");
   private static final List<String> MENU_TYPES = Arrays.asList(myResources.getString("MenuTypes").split(","));
@@ -121,6 +122,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private static final String LANGUAGE_INSTRUCTION_STRING = "language: ";
   private static final int PEN_SLIDER_TICKS = 10;
   private static final String DEFAULT_MOVE_BUTTON_VALUE = "45";
+  public static final String XML_PREFS_FILE_NAME = "/saved.xml";
   private final int myFileNum;
 
   private ResourceBundle myLanguageResources;
@@ -992,7 +994,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
   private void loadNewUserProperties(int fileNum, boolean isStartUp){
     if (isStartUp){
-      executeInstruction("Load " + "src/" + RESOURCE_LOCATION + "/saved.xml");
+      executeInstruction("Load " + "src/" + RESOURCE_LOCATION + XML_PREFS_FILE_NAME);
     }
     else {
       FileChooser fileChooser = new FileChooser();
@@ -1012,6 +1014,6 @@ public class Visualizer extends Application implements FrontEndExternal{
   private void savePrefs(){
     String instruction = "Save src/" + RESOURCE_LOCATION;
     String inst = instruction.substring(0,instruction.length() -1);
-    executeInstruction(inst + "/saved.xml");
+    executeInstruction(inst + XML_PREFS_FILE_NAME);
   }
 }

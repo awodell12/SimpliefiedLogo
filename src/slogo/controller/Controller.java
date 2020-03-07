@@ -3,6 +3,7 @@ package slogo.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.stage.Stage;
@@ -48,18 +49,13 @@ public class Controller extends Application{
         int thisWorkspace = numWorkspaces; // need this variable because we don't want to pass in a dynamic value!
         ListChangeListener<String> instructionQueueListener = c -> processInstructionQueueEvent(thisWorkspace);
         myVisualizers.add(new Visualizer(instructionQueueListener, c-> {
-            try {
-                createNewWorkspace();
-            } catch (Exception e) {
-                System.out.println("error creating new workspace");
-                System.out.println(e.getMessage());
-            }
-        }, thisWorkspace));
+          createNewWorkspace();
+          } , thisWorkspace));
         myVisualizers.get(thisWorkspace).start(primaryStage);
         numWorkspaces++;
     }
 
-    private void createNewWorkspace() throws Exception {
+    private void createNewWorkspace() {
         start(new Stage());
     }
 
