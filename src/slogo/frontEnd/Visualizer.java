@@ -3,9 +3,6 @@ package slogo.frontEnd;
 import java.io.File;
 
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -29,8 +26,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
@@ -175,6 +170,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   private final int myStartingImage;
   private boolean clearedAtStart = true;
   private boolean clearScreenScheduled;
+  private MenuFactory myMenuFactory;
 
   /**
    * Constructor for the visualizer class, which manages the display components and state
@@ -430,8 +426,8 @@ public class Visualizer extends Application implements FrontEndExternal{
 
   private void updateColorMenus(int paletteIndex, Color newColor) {
     myColorPalette.put(Integer.toString(paletteIndex), newColor);
-    addMenuItem(MENU_TYPES.indexOf("Background"),  Integer.toString(paletteIndex));
-    addMenuItem(myMenuNames.indexOf("PenColor"), Integer.toString(paletteIndex));
+    myMenuFactory.addMenuItem(MENU_TYPES.indexOf("Background"),  Integer.toString(paletteIndex));
+    myMenuFactory.addMenuItem(myMenuNames.indexOf("PenColor"), Integer.toString(paletteIndex));
   }
 
   private void createTurtle(Point2D turtlePos, int turtleID) {
@@ -566,7 +562,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     myRightVBox.getChildren().addAll(myHistory, myUserDefinedCommands, myVariables, myPenText, turtleInfoPane);
   }
 
-  private void setPenText(){
+  protected void setPenText(){
     String[] penState = myTurtleView.getPenState();
     double thick = Double.parseDouble(penState[2]);
     String penThick = String.format("%.2f", thick);
@@ -577,20 +573,20 @@ public class Visualizer extends Application implements FrontEndExternal{
             penThicknessString + ": " + penThick);
   }
 
-  private void endPause(){
+  protected void endPause(){
     paused = false;
   }
-  private void setPause(){
+  protected void setPause(){
     paused = true;
   }
 
-  private void singleStep(){
+  protected void singleStep(){
     step(true);
   }
   private void setUpTopCenterButtons() {
     List<Button> buttons = new ArrayList<>();
     for(String buttonName : TOP_CENTER_BUTTON_METHODS){
-      Button button = makeButton(buttonName, TURTLE_BUTTON_SHAPE, this, myLanguageResources);
+      Button button = new ButtonMaker(buttonName, TURTLE_BUTTON_SHAPE, this, myLanguageResources).invoke();
       buttons.add(button);
       myDisplayableTextHolder.addButton(button, buttonName);
     }
@@ -647,69 +643,46 @@ public class Visualizer extends Application implements FrontEndExternal{
     topButtons.setVgap(SPACING/2);
     topButtons.setHgap(SPACING);
     for(int i=0; i<TOP_RIGHT_BUTTON_METHODS.length; i++){
-      Button button = makeButton(TOP_RIGHT_BUTTON_METHODS[i], TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources);
+      Button button = new ButtonMaker(TOP_RIGHT_BUTTON_METHODS[i], TOP_RIGHT_BUTTON_SHAPE, this, myLanguageResources).invoke();
       topButtons.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
       myDisplayableTextHolder.addButton(button, TOP_RIGHT_BUTTON_METHODS[i]);
     }
     myRightVBox.getChildren().add(topButtons);
   }
 
-  protected static Button makeButton(String text, Rectangle shape, Object clazz, ResourceBundle languageResources){
-    Method method = null;
-    try {
-      method = clazz.getClass().getDeclaredMethod(text);
-    }
-    catch (NoSuchMethodException e) {
-      new ErrorDisplay(e.getMessage(), languageResources);
-    }
-    Button button = new Button(languageResources.getString(text));
-    button.setLayoutY(shape.getY());
-    button.setLayoutX(shape.getX());
-    button.setMinSize(shape.getWidth(), shape.getHeight());
-    Method finalMethod = method;
-    button.setOnAction(event -> {
-      try {
-        assert finalMethod != null;
-        finalMethod.invoke(clazz);
-      } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
-        new ErrorDisplay(e.getMessage(), languageResources);
-      }
-    });
-    return button;
-  }
 
-  private void moveForward(){
+  protected void moveForward(){
     executeInstruction(myLanguageResources.getString("fd") + " " + turtleMovementButtons.get(0).getText());
   }
 
-  private void moveBackward(){
+  protected void moveBackward(){
     executeInstruction(myLanguageResources.getString("bk") + " " + turtleMovementButtons.get(1).getText());
   }
 
-  private void rotateRight(){
+  protected void rotateRight(){
     executeInstruction(myLanguageResources.getString("rt") + " " + turtleMovementButtons.get(2).getText());
   }
 
-  private void rotateLeft(){
+  protected void rotateLeft(){
     executeInstruction(myLanguageResources.getString("lt") + " " + turtleMovementButtons.get(3).getText());
   }
 
-  private void resetAnimation() {
+  protected void resetAnimation() {
     executeInstruction(myLanguageResources.getString("clearscreen") + "");
   }
 
-  private void newWorkspace(){
+  protected void newWorkspace(){
     myOnNewWorkSpaceClicked.accept(0);
   }
 
-  private void undoButton(){
+  protected void undoButton(){
     numUndoCommandsIssued++;
     String instruction = myLanguageResources.getString("undo") + "";
     undoCommandsIssued.add(instruction);
     executeInstruction(instruction);
   }
 
-  private void redoButton(){
+  protected void redoButton(){
     if(numUndoCommandsIssued > 0) {
       numUndoCommandsIssued--;
       String instruction = myLanguageResources.getString("redo") + "";
@@ -718,17 +691,17 @@ public class Visualizer extends Application implements FrontEndExternal{
     }
   }
 
-  private void setPenColor(String colorIndex){
+  protected void setPenColor(String colorIndex){
     executeInstruction(myLanguageResources.getString("setpencolor") + " " + colorIndex);
     //myTurtleView.setPenColor(myColorPalette.get(colorIndex), Integer.parseInt(colorIndex));
     setPenText();
   }
 
-  private void setPenUp(String menuName){
+  protected void setPenUp(String menuName){
     executeInstruction(myLanguageResources.getString(menuName) + ""); // need the blank string so it registers as a new distinct string object
   }
 
-  private void setBackGroundColor(String colorIndex){
+  protected void setBackGroundColor(String colorIndex){
     executeInstruction(myLanguageResources.getString("setbackground") + " " + colorIndex);
     //myTurtleView.setBackGroundColor(myColorPalette.get(colorIndex));
   }
@@ -738,31 +711,32 @@ public class Visualizer extends Application implements FrontEndExternal{
    *    command results will be returned
    * @param language the language to change to, IN ENGLISH
    */
-  private void setLanguage(String language){
+  protected void setLanguage(String language){
     setDisplayableTexts(language);
     myInstructionQueue.add(LANGUAGE_INSTRUCTION_STRING + language);
   }
 
-  private void setTurtleImageIndex(String num){
+  protected void setTurtleImageIndex(String num){
     //Image image = imageList.get(Integer.parseInt(num));
     //myTurtleView.setTurtleImage(image);
     executeInstruction(myLanguageResources.getString("setshape") + " " + Integer.parseInt(num));
   }
 
-  private void runButton(){
+  protected void runButton(){
     String instruction = myCommandBox.getContents() + "";
     executeInstruction(instruction);
+    System.out.println("Here");
   }
 
-  private void clearButton(){
+  protected void clearButton(){
     myCommandBox.clearContents();
   }
 
-  private Node getColorLabel(String index){
+  protected Node getColorLabel(String index){
     return new Rectangle(MENU_LABEL_SIZE, MENU_LABEL_SIZE, myColorPalette.get(index));
   }
 
-  private Node getTurtleImageLabel(String index){
+  protected Node getTurtleImageLabel(String index){
     ImageView imageView = new ImageView(imageList.get(Integer.parseInt(index)));
     imageView.setFitHeight(MENU_LABEL_SIZE);
     imageView.setFitWidth(MENU_LABEL_SIZE);
@@ -770,7 +744,7 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   @SuppressWarnings("SameReturnValue")
-  private Node getLanguageLabel(String irrelevant){
+  protected Node getLanguageLabel(String irrelevant){
     return null;
   }
 
@@ -803,62 +777,13 @@ public class Visualizer extends Application implements FrontEndExternal{
   }
 
   private void setUpMenus(){
-    myMenuNames = Arrays.asList(myLanguageResources.getString("MenuNames").split(","));
-    List<List<String>> myMenuOptions = new ArrayList<>();
-    for(String menuType : MENU_TYPES){
-      myMenuOptions.add(Arrays.asList(myWorkSpaceResources.getString(menuType+"Options").split(",")));
-    }
-    int penIndex = MENU_TYPES.indexOf("PenColor");
-    int backIndex = MENU_TYPES.indexOf("Background");
-    List<String> colorIndices = new ArrayList<>();
-    colorIndices.addAll(myColorPalette.keySet());
-    myMenuOptions.set(penIndex,colorIndices);
-    myMenuOptions.set(backIndex,colorIndices);
-    myMenuBar = new MenuBar();
-    myLeftVBox.getChildren().add(myMenuBar);
-    for(int i=0; i<myMenuNames.size(); i++){
-      Menu menu = new Menu(myMenuNames.get(i));
-      myMenuBar.getMenus().add(menu);
-      myDisplayableTextHolder.addMenu(menu, MENU_TYPES.get(i));
-      for(String entry : myMenuOptions.get(i)){
-        addMenuItem(i, entry);
-      }
-    }
+myMenuFactory = new MenuFactory(this, this.getClass(), myLanguageResources, myWorkSpaceResources, myColorPalette.keySet(), myLeftVBox, myDisplayableTextHolder);
+myMenuFactory.makeMenus();
   }
 
-  private void addMenuItem(int menuNameIndex, String menuItemName){
-    Menu menu = myMenuBar.getMenus().get(menuNameIndex);
-    String menuType = MENU_TYPES.get(menuNameIndex);
-    String menuItemNameTranslation = menuItemName;
-    if(isNonNumeric(menuItemName)) {
-      menuItemNameTranslation = myLanguageResources.getString(menuItemName);
-    }
-    MenuItem menuItem = new MenuItem(menuItemNameTranslation);
-    myDisplayableTextHolder.addMenuItem(menuItem, menuItemName);
-    String methodName = myResources.getString(menuType);
-    String labelGetterName = myResources.getString(menuType + "Label");
-    // get another method name that will give us the label corresponding to this menu name
-    // the method should return a node object
-    try {
-      Method method = this.getClass().getDeclaredMethod(methodName, String.class);
-      Method labelGetter = this.getClass().getDeclaredMethod(labelGetterName, String.class);
-      menuItem.setGraphic((Node) labelGetter.invoke(this, menuItemName));
-      menuItem.setOnAction(event -> {
-        try {
-          method.invoke(this, menuItemName);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-          new ErrorDisplay(myLanguageResources.getString("InvokeError"), myLanguageResources);
-        }
-      });
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      new ErrorDisplay(myLanguageResources.getString("NoMethodError"), myLanguageResources);
-    }
-    String finalMenuItemNameTranslation = menuItemNameTranslation; // intellij makes us put this in a variable. Don't delete it.
-    menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(finalMenuItemNameTranslation));
-    menu.getItems().add(menuItem);
-  }
 
-  private void setTurtleImage() {
+
+  protected void setTurtleImage() {
     final FileChooser fileChooser = new FileChooser();
     File file = fileChooser.showOpenDialog(myStage);
     if(file != null) {
@@ -867,7 +792,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         WritableImage fximage = new WritableImage(buffImage.getWidth(), buffImage.getHeight());
         Image image = SwingFXUtils.toFXImage(buffImage, fximage);
         imageList.add(image);
-        addMenuItem(myMenuNames.indexOf(myLanguageResources.getString("TurtleImageMenu")), Integer.toString(imageList.size()-1));
+        myMenuFactory.addMenuItem(myMenuNames.indexOf(myLanguageResources.getString("TurtleImageMenu")), Integer.toString(imageList.size()-1));
         setTurtleImageIndex(Integer.toString(imageList.size()-1));
       } catch (IOException | NullPointerException ex) {
         new ErrorDisplay(myLanguageResources.getString("LoadTurtle"), myLanguageResources).invoke();
@@ -881,7 +806,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     buttonGrid.setHgap(SPACING);
     buttonGrid.setVgap(SPACING);
     for(int i=0; i<BOTTOM_BUTTON_METHOD_NAMES.length; i++){
-      Button button = makeButton(BOTTOM_BUTTON_METHOD_NAMES[i], RUN_BUTTON_SHAPE, this, myLanguageResources);
+      Button button = new ButtonMaker(BOTTOM_BUTTON_METHOD_NAMES[i], RUN_BUTTON_SHAPE, this, myLanguageResources).invoke();
       button.setTooltip(new Tooltip(myLanguageResources.getString(BOTTOM_BUTTON_HOVER_NAMES[i])));
       buttonGrid.add(button, BOTTOM_BUTTON_POSITIONS.get(i).get(0), BOTTOM_BUTTON_POSITIONS.get(i).get(1));
       myDisplayableTextHolder.addButton(button, BOTTOM_BUTTON_METHOD_NAMES[i]);
@@ -960,7 +885,7 @@ public class Visualizer extends Application implements FrontEndExternal{
     myInstructionQueue.add(instruction);
   }
 
-  private void displayHelp(){
+  protected void displayHelp(){
     Stage stage = new Stage();
     stage.setTitle(myLanguageResources.getString("HelpWindowTitle"));
     VBox vBox = new VBox(SPACING);
@@ -1002,14 +927,13 @@ public class Visualizer extends Application implements FrontEndExternal{
       executeInstruction("Load " + filePath);
     }
   }
-  private void loadPrefs(){
+  protected void loadPrefs(){
       loadNewUserProperties(myFileNum, false);
   }
-  private void savePrefs(){
+  protected void savePrefs(){
     String instruction = "Save src/" + RESOURCE_LOCATION;
     String inst = instruction.substring(0,instruction.length() -1);
     executeInstruction(inst + XML_PREFS_FILE_NAME);
   }
-
 
 }

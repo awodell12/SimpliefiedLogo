@@ -4,6 +4,9 @@ import java.util.ResourceBundle;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
+/**
+ * Created an object to replace the static showError method to better adhere to OO design principles
+ */
 public class ErrorDisplay {
 
   private String message;
@@ -14,7 +17,7 @@ public class ErrorDisplay {
     this.languageResources = languageResources;
   }
 
-  public void invoke() {
+  protected void invoke() {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(languageResources.getString("IOError"));
     alert.setContentText(message);

@@ -43,7 +43,7 @@ public class ClearableEntriesBox extends HBox implements DisplayableTextOwner {
         scrollPane.setContent(myTextFlow);
         scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-        clearButton = Visualizer.makeButton("clearEntryBox", clearButtonShape, this, languageResources);
+        clearButton = new ButtonMaker("clearEntryBox", clearButtonShape, this, languageResources).invoke();
         clearButton.setTooltip(new Tooltip(languageResources.getString("HoverText")));
         clearButton.setOnAction(event -> clearEntryBox());
         rightSide = new VBox(SPACING);
