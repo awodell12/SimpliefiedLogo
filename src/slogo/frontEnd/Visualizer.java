@@ -476,7 +476,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         step(false);
       } catch (Exception ex) {
         // note that this should ideally never be thrown
-        showError("Animation Error", myLanguageResources);
+        new ErrorDisplay("Animation Error", myLanguageResources);
         myErrorMessage.setText(myLanguageResources.getString("IOError"));
       }
     });
@@ -660,7 +660,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       method = clazz.getClass().getDeclaredMethod(text);
     }
     catch (NoSuchMethodException e) {
-      showError(e.getMessage(), languageResources);
+      new ErrorDisplay(e.getMessage(), languageResources);
     }
     Button button = new Button(languageResources.getString(text));
     button.setLayoutY(shape.getY());
@@ -672,7 +672,7 @@ public class Visualizer extends Application implements FrontEndExternal{
         assert finalMethod != null;
         finalMethod.invoke(clazz);
       } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
-        showError(e.getMessage(), languageResources);
+        new ErrorDisplay(e.getMessage(), languageResources);
       }
     });
     return button;
@@ -847,11 +847,11 @@ public class Visualizer extends Application implements FrontEndExternal{
         try {
           method.invoke(this, menuItemName);
         } catch (IllegalAccessException | InvocationTargetException e) {
-          showError(myLanguageResources.getString("InvokeError"), myLanguageResources);
+          new ErrorDisplay(myLanguageResources.getString("InvokeError"), myLanguageResources);
         }
       });
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      showError(myLanguageResources.getString("NoMethodError"), myLanguageResources);
+      new ErrorDisplay(myLanguageResources.getString("NoMethodError"), myLanguageResources);
     }
     String finalMenuItemNameTranslation = menuItemNameTranslation; // intellij makes us put this in a variable. Don't delete it.
     menu.getItems().removeIf(oldMenuItem -> oldMenuItem.getText().equals(finalMenuItemNameTranslation));
@@ -870,17 +870,11 @@ public class Visualizer extends Application implements FrontEndExternal{
         addMenuItem(myMenuNames.indexOf(myLanguageResources.getString("TurtleImageMenu")), Integer.toString(imageList.size()-1));
         setTurtleImageIndex(Integer.toString(imageList.size()-1));
       } catch (IOException | NullPointerException ex) {
-        showError(myLanguageResources.getString("LoadTurtle"), myLanguageResources);
+        new ErrorDisplay(myLanguageResources.getString("LoadTurtle"), myLanguageResources).invoke();
       }
     }
   }
 
-  protected static void showError(String message, ResourceBundle languageResources) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(languageResources.getString("IOError"));
-    alert.setContentText(message);
-    alert.showAndWait();
-  }
 
   private void setUpBottomButtons() {
     GridPane buttonGrid = new GridPane();
@@ -1003,7 +997,7 @@ public class Visualizer extends Application implements FrontEndExternal{
       try {
         filePath = file.getCanonicalPath();
       } catch (IOException e) {
-        showError(e.getMessage(), myLanguageResources);
+        new ErrorDisplay(e.getMessage(), myLanguageResources);
       }
       executeInstruction("Load " + filePath);
     }
@@ -1016,4 +1010,6 @@ public class Visualizer extends Application implements FrontEndExternal{
     String inst = instruction.substring(0,instruction.length() -1);
     executeInstruction(inst + XML_PREFS_FILE_NAME);
   }
+
+
 }
